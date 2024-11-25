@@ -34,6 +34,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
   void initState() {
     super.initState();
     mainAxisScrollController.addListener(_scrollListener);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(homeViewModelProvider.notifier).init();
+    });
   }
 
   @override
@@ -109,6 +113,27 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     '오늘의 운세 기반 추천 할 일',
                     style: DoitTypos.suitSB16,
                   ),
+                  const Spacer(),
+                  SizedBox(
+                    height: 32,
+                    child: TextButton(
+                      onPressed: () {},
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        backgroundColor: doitColorTheme.main,
+                        foregroundColor: doitColorTheme.background,
+                      ),
+                      child: Text(
+                        '추가로 받기',
+                        style: DoitTypos.suitR12
+                            .copyWith(color: doitColorTheme.background),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -162,12 +187,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: List<Widget>.generate(
-                  3,
+                  state.todoList.length,
                   (int index) => Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       if (index != 0) const Divider(height: 12),
-                      const TodoListItemWidget(),
+                      TodoListItemWidget(
+                        model: state.todoList[index],
+                      ),
                     ],
                   ),
                 ),

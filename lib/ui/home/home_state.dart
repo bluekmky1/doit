@@ -1,31 +1,48 @@
 import 'package:equatable/equatable.dart';
 import '../../../../core/loading_status.dart';
+import '../../domain/todo/model/recommended_todo_model.dart';
+import '../../domain/todo/model/todo_model.dart';
 
 class HomeState extends Equatable {
-  final LoadingStatus loadingStatus;
-  final String example;
+  final LoadingStatus getTodoListLoadingStatus;
+  final LoadingStatus getRecommendedTodoListLoadingStatus;
+  final List<TodoModel> todoList;
+  final List<RecommendedTodoModel> recommendedTodoList;
 
   const HomeState({
-    required this.loadingStatus,
-    required this.example,
+    required this.getTodoListLoadingStatus,
+    required this.getRecommendedTodoListLoadingStatus,
+    required this.todoList,
+    required this.recommendedTodoList,
   });
 
   const HomeState.init()
-      : loadingStatus = LoadingStatus.none,
-        example = '';
+      : getTodoListLoadingStatus = LoadingStatus.none,
+        getRecommendedTodoListLoadingStatus = LoadingStatus.none,
+        todoList = const <TodoModel>[],
+        recommendedTodoList = const <RecommendedTodoModel>[];
 
   HomeState copyWith({
-    LoadingStatus? loadingStatus,
-    String? example,
+    LoadingStatus? getTodoListLoadingStatus,
+    LoadingStatus? getRecommendedTodoListLoadingStatus,
+    List<TodoModel>? todoList,
+    List<RecommendedTodoModel>? recommendedTodoList,
   }) =>
       HomeState(
-        loadingStatus: loadingStatus ?? this.loadingStatus,
-        example: example ?? this.example,
+        getTodoListLoadingStatus:
+            getTodoListLoadingStatus ?? this.getTodoListLoadingStatus,
+        getRecommendedTodoListLoadingStatus:
+            getRecommendedTodoListLoadingStatus ??
+                this.getRecommendedTodoListLoadingStatus,
+        todoList: todoList ?? this.todoList,
+        recommendedTodoList: recommendedTodoList ?? this.recommendedTodoList,
       );
 
   @override
   List<Object> get props => <Object>[
-        loadingStatus,
-        example,
+        getTodoListLoadingStatus,
+        getRecommendedTodoListLoadingStatus,
+        todoList,
+        recommendedTodoList,
       ];
 }

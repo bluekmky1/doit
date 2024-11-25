@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../../domain/todo/model/recommended_todo_model.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
 import '../../common/consts/assets.dart';
+import '../home_state.dart';
+import '../home_view_model.dart';
 
-class CardSliderWidget extends StatefulWidget {
+class CardSliderWidget extends ConsumerStatefulWidget {
   const CardSliderWidget({super.key});
 
   @override
-  State<CardSliderWidget> createState() => _CardSliderWidgetState();
+  ConsumerState<CardSliderWidget> createState() => _CardSliderWidgetState();
 }
 
-class _CardSliderWidgetState extends State<CardSliderWidget> {
+class _CardSliderWidgetState extends ConsumerState<CardSliderWidget> {
   final PageController cardCarouselController =
       PageController(viewportFraction: 300 / 375);
 
   @override
   Widget build(BuildContext context) {
+    final HomeState state = ref.watch(homeViewModelProvider);
     final double screenWidth = MediaQuery.of(context).size.width;
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
@@ -30,19 +35,15 @@ class _CardSliderWidgetState extends State<CardSliderWidget> {
           child: PageView.builder(
             physics: const ClampingScrollPhysics(),
             controller: cardCarouselController,
-            itemCount: 3,
-            itemBuilder: (BuildContext context, int index) =>
-                const _AnimatedCard(
-              title: '제목1',
-              comment: '내용이 길 경우 줄바꿈이 되어야 합니다.',
-              iconPath: Assets.pigOutlined,
-              done: false,
+            itemCount: state.recommendedTodoList.length,
+            itemBuilder: (BuildContext context, int index) => _AnimatedCard(
+              model: state.recommendedTodoList[index],
             ),
           ),
         ),
         SmoothPageIndicator(
           controller: cardCarouselController,
-          count: 3,
+          count: state.recommendedTodoList.length,
           effect: ExpandingDotsEffect(
             dotColor: doitColorTheme.gray20,
             activeDotColor: doitColorTheme.main,
@@ -57,23 +58,19 @@ class _CardSliderWidgetState extends State<CardSliderWidget> {
   }
 }
 
-class _AnimatedCard extends StatelessWidget {
-  final String title;
-  final String comment;
-  final String iconPath;
-  final bool done;
+class _AnimatedCard extends ConsumerWidget {
+  final RecommendedTodoModel model;
 
   const _AnimatedCard({
-    required this.title,
-    required this.comment,
-    required this.iconPath,
-    required this.done,
+    required this.model,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
+
+    final HomeViewModel viewModel = ref.watch(homeViewModelProvider.notifier);
     return Container(
       margin: const EdgeInsets.only(right: 16, bottom: 16, top: 16),
       padding: const EdgeInsets.fromLTRB(20, 16, 16, 0),
@@ -98,7 +95,7 @@ class _AnimatedCard extends StatelessWidget {
                 Expanded(
                   // 40 자까지 적을 수 있음
                   child: Text(
-                    title,
+                    model.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: DoitTypos.suitSB16,
@@ -110,7 +107,7 @@ class _AnimatedCard extends StatelessWidget {
           Row(
             children: <Widget>[
               SvgPicture.asset(
-                iconPath,
+                fortuneIconPath,
                 colorFilter: ColorFilter.mode(
                   doitColorTheme.main,
                   BlendMode.srcIn,
@@ -120,7 +117,7 @@ class _AnimatedCard extends StatelessWidget {
               Expanded(
                 // 23 자까지 적을 수 있음
                 child: Text(
-                  comment,
+                  '${model.fortune}이 상승하는 할 일 입니다.',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: DoitTypos.suitR12,
@@ -142,7 +139,7 @@ class _AnimatedCard extends StatelessWidget {
                           width: 150,
                           height: 150,
                           child: Image.asset(
-                            Assets.money,
+                            fortuneImagePath,
                           ),
                         ),
                       ),
@@ -156,13 +153,17 @@ class _AnimatedCard extends StatelessWidget {
                   height: 53,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    color: done ? doitColorTheme.main : doitColorTheme.gray20,
+                    color: model.isDone
+                        ? doitColorTheme.main
+                        : doitColorTheme.gray20,
                   ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
                       splashColor: doitColorTheme.main.withOpacity(0.2),
-                      onTap: () {},
+                      onTap: () {
+                        viewModel.toggleRecommendedTodoDone(id: model.id);
+                      },
                       child: SvgPicture.asset(
                         Assets.done,
                         colorFilter: ColorFilter.mode(
@@ -179,5 +180,31 @@ class _AnimatedCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String get fortuneIconPath {
+    if (model.fortune == '연애운') {
+      return Assets.heartOutlined;
+    }
+    if (model.fortune == '금전운') {
+      return Assets.pigOutlined;
+    }
+    if (model.fortune == '학업운') {
+      return Assets.bookOutlined;
+    }
+    return Assets.puzzle;
+  }
+
+  String get fortuneImagePath {
+    if (model.fortune == '연애운') {
+      return Assets.love;
+    }
+    if (model.fortune == '금전운') {
+      return Assets.money;
+    }
+    if (model.fortune == '학업운') {
+      return Assets.study;
+    }
+    return Assets.allLuck;
   }
 }

@@ -2,53 +2,97 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/common/use_case/use_case_result.dart';
 import '../../../../core/loading_status.dart';
-import '../../domain/example/model/example_model.dart';
-import '../../domain/example/use_case/get_example_use_case.dart';
+import '../../domain/todo/model/recommended_todo_model.dart';
+import '../../domain/todo/model/todo_model.dart';
+import '../../domain/todo/use_case/get_recommended_todo_list_use_case.dart';
+import '../../domain/todo/use_case/get_todo_list_use_case.dart';
 import 'home_state.dart';
 
 final AutoDisposeStateNotifierProvider<HomeViewModel, HomeState>
     homeViewModelProvider = StateNotifierProvider.autoDispose(
   (Ref ref) => HomeViewModel(
     state: const HomeState.init(),
-    getExampleUseCase: ref.watch(getExampleUseCaseProvider),
+    getTodoListUseCase: ref.watch(getTodoListUseCaseProvider),
+    getRecommendedTodoListUseCase:
+        ref.watch(getRecommendedTodoListUseCaseProvider),
   ),
 );
 
 class HomeViewModel extends StateNotifier<HomeState> {
-  final GetExampleUseCase _getExampleUseCase;
+  final GetTodoListUseCase _getTodoListUseCase;
+  final GetRecommendedTodoListUseCase _getRecommendedTodoListUseCase;
   HomeViewModel({
     required HomeState state,
-    required GetExampleUseCase getExampleUseCase,
-  })  : _getExampleUseCase = getExampleUseCase,
+    required GetTodoListUseCase getTodoListUseCase,
+    required GetRecommendedTodoListUseCase getRecommendedTodoListUseCase,
+  })  : _getTodoListUseCase = getTodoListUseCase,
+        _getRecommendedTodoListUseCase = getRecommendedTodoListUseCase,
         super(state);
 
-  Future<void> getExample() async {
+  Future<void> init() async {
+    await getTodoList();
+    await getRecommendedTodoList();
+  }
+
+  Future<void> getTodoList() async {
     state = state.copyWith(
-      loadingStatus: LoadingStatus.loading,
+      getTodoListLoadingStatus: LoadingStatus.loading,
     );
 
-    final UseCaseResult<ExampleModel> result = await _getExampleUseCase(
-      title: 'example',
-    );
+    final UseCaseResult<List<TodoModel>> result = await _getTodoListUseCase();
 
     switch (result) {
-      case SuccessUseCaseResult<ExampleModel>():
+      case SuccessUseCaseResult<List<TodoModel>>():
         state = state.copyWith(
-          example: 'result.data',
-          loadingStatus: LoadingStatus.success,
+          todoList: result.data,
+          getTodoListLoadingStatus: LoadingStatus.success,
         );
-      case FailureUseCaseResult<ExampleModel>():
+      case FailureUseCaseResult<List<TodoModel>>():
         state = state.copyWith(
-          loadingStatus: LoadingStatus.error,
+          getTodoListLoadingStatus: LoadingStatus.error,
         );
     }
   }
 
-  void onchangeExample({required String example}) {
-    state = state.copyWith(example: example);
+  Future<void> getRecommendedTodoList() async {
+    state = state.copyWith(
+      getRecommendedTodoListLoadingStatus: LoadingStatus.loading,
+    );
+
+    final UseCaseResult<List<RecommendedTodoModel>> result =
+        await _getRecommendedTodoListUseCase();
+
+    switch (result) {
+      case SuccessUseCaseResult<List<RecommendedTodoModel>>():
+        state = state.copyWith(
+          recommendedTodoList: result.data,
+          getRecommendedTodoListLoadingStatus: LoadingStatus.success,
+        );
+      case FailureUseCaseResult<List<RecommendedTodoModel>>():
+        state = state.copyWith(
+          getRecommendedTodoListLoadingStatus: LoadingStatus.error,
+        );
+    }
   }
 
-  void onToggleExample() {
-    state = state.copyWith(example: 'example');
+  // ref.read(homeViewModelProvider.notifier).toggleDone(id);
+
+  Future<void> toggleRecommendedTodoDone({required String id}) async {
+    // await _toggleDoneUseCase(id);
+    state = state.copyWith(
+      recommendedTodoList: state.recommendedTodoList
+          .map((RecommendedTodoModel e) =>
+              e.id == id ? e.copyWith(isDone: !e.isDone) : e)
+          .toList(),
+    );
+  }
+
+  Future<void> toggleTodoDone({required String id}) async {
+    // await _toggleDoneUseCase(id);
+    state = state.copyWith(
+      todoList: state.todoList
+          .map((TodoModel e) => e.id == id ? e.copyWith(isDone: !e.isDone) : e)
+          .toList(),
+    );
   }
 }
