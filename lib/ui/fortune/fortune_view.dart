@@ -5,7 +5,6 @@ import '../../routes/routes.dart';
 import '../../theme/doit_color_theme.dart';
 import '../../theme/doit_typos.dart';
 import '../common/widgets/bottom_navigation_bar_widget.dart';
-import 'widgets/chip_list_widget.dart';
 import 'widgets/circular_graph_widget.dart';
 import 'widgets/fortune_app_bar_widget.dart';
 import 'widgets/fortune_card_widget.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:go_router/go_router.dart';
 
 import '../../routes/routes.dart';
@@ -92,9 +91,7 @@ class _MyViewState extends ConsumerState<MyView> {
 }
 
 class _ChallengedGoalCardWidget extends StatelessWidget {
-  const _ChallengedGoalCardWidget({
-    super.key,
-  });
+  const _ChallengedGoalCardWidget();
 
   @override
   Widget build(BuildContext context) {

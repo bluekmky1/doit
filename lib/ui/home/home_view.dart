@@ -51,7 +51,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   @override
   Widget build(BuildContext context) {
     final HomeState state = ref.watch(homeViewModelProvider);
-    final HomeViewModel viewModel = ref.read(homeViewModelProvider.notifier);
+    // final HomeViewModel viewModel = ref.read(homeViewModelProvider.notifier);
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
 

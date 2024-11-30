@@ -86,7 +86,7 @@ class TodoDetailModalWidget extends ConsumerWidget {
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
 
-    final HomeViewModel viewModel = ref.watch(homeViewModelProvider.notifier);
+    // final HomeViewModel viewModel = ref.watch(homeViewModelProvider.notifier);
     return Container(
       decoration: BoxDecoration(
         color: doitColorTheme.background,

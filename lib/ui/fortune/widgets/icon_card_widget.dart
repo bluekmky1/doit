@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
-import '../../common/consts/assets.dart';
 import '../../common/consts/fortune_category.dart';
 import '../fortune_view_model.dart';
 
