@@ -35,6 +35,12 @@ class Routes {
     path: '/onboarding/goal-setting',
   );
 
+  // 목표 기간 설정 온보딩
+  static const RouteInfo onboardingGoalDurationSetting = RouteInfo(
+    name: '/onboarding/duration-setting',
+    path: '/onboarding/duration-setting',
+  );
+
   // 홈(메인)페이지
   static const RouteInfo home = RouteInfo(
     name: '/home',

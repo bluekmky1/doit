@@ -19,6 +19,15 @@ class OnboardingState extends Equatable {
   final String birthMinuteError;
   final bool isBirthDateUnknown;
   final bool isAgreeTerms;
+  final String goalForUser;
+  final String goalForUserInput;
+  final List<String> recommendedGoal;
+  final String startYear;
+  final String startMonth;
+  final String startDay;
+  final String endYear;
+  final String endMonth;
+  final String endDay;
 
   const OnboardingState({
     required this.gender,
@@ -36,6 +45,15 @@ class OnboardingState extends Equatable {
     required this.birthMinuteError,
     required this.isBirthDateUnknown,
     required this.isAgreeTerms,
+    required this.goalForUser,
+    required this.goalForUserInput,
+    required this.recommendedGoal,
+    required this.startYear,
+    required this.startMonth,
+    required this.startDay,
+    required this.endYear,
+    required this.endMonth,
+    required this.endDay,
   });
 
   const OnboardingState.init()
@@ -53,7 +71,20 @@ class OnboardingState extends Equatable {
         birthMinute = '',
         birthMinuteError = '',
         isBirthDateUnknown = false,
-        isAgreeTerms = false;
+        isAgreeTerms = false,
+        goalForUser = '',
+        goalForUserInput = '',
+        recommendedGoal = const <String>[
+          '오늘 하루 평범하게 보내기',
+          '오늘 하루 최고로 보내기',
+          '오늘 하루 최선으로 보내기',
+        ],
+        startYear = '',
+        startMonth = '',
+        startDay = '',
+        endYear = '',
+        endMonth = '',
+        endDay = '';
 
   OnboardingState copyWith({
     Gender? gender,
@@ -71,6 +102,15 @@ class OnboardingState extends Equatable {
     String? birthMinuteError,
     bool? isBirthDateUnknown,
     bool? isAgreeTerms,
+    String? goalForUser,
+    String? goalForUserInput,
+    List<String>? recommendedGoal,
+    String? startYear,
+    String? startMonth,
+    String? startDay,
+    String? endYear,
+    String? endMonth,
+    String? endDay,
   }) =>
       OnboardingState(
         gender: gender ?? this.gender,
@@ -88,6 +128,15 @@ class OnboardingState extends Equatable {
         birthMinuteError: birthMinuteError ?? this.birthMinuteError,
         isBirthDateUnknown: isBirthDateUnknown ?? this.isBirthDateUnknown,
         isAgreeTerms: isAgreeTerms ?? this.isAgreeTerms,
+        goalForUser: goalForUser ?? this.goalForUser,
+        goalForUserInput: goalForUserInput ?? this.goalForUserInput,
+        recommendedGoal: recommendedGoal ?? this.recommendedGoal,
+        startYear: startYear ?? this.startYear,
+        startMonth: startMonth ?? this.startMonth,
+        startDay: startDay ?? this.startDay,
+        endYear: endYear ?? this.endYear,
+        endMonth: endMonth ?? this.endMonth,
+        endDay: endDay ?? this.endDay,
       );
 
   @override
@@ -107,6 +156,15 @@ class OnboardingState extends Equatable {
         birthMinuteError,
         isBirthDateUnknown,
         isAgreeTerms,
+        goalForUser,
+        goalForUserInput,
+        recommendedGoal,
+        startYear,
+        startMonth,
+        startDay,
+        endYear,
+        endMonth,
+        endDay,
       ];
 
   bool get isAllFormValid =>
@@ -118,4 +176,17 @@ class OnboardingState extends Equatable {
       birthDay.isNotEmpty &&
       (isBirthDateUnknown ||
           (birthHourError.isEmpty && birthMinuteError.isEmpty));
+
+  bool get isGoalForUserValid => goalForUser.isNotEmpty;
+
+  bool get isStartDateValid =>
+      startYear.isNotEmpty && startMonth.isNotEmpty && startDay.isNotEmpty;
+
+  bool get isDurationValid =>
+      startYear.isNotEmpty &&
+      startMonth.isNotEmpty &&
+      startDay.isNotEmpty &&
+      endYear.isNotEmpty &&
+      endMonth.isNotEmpty &&
+      endDay.isNotEmpty;
 }

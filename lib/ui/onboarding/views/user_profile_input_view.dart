@@ -29,9 +29,35 @@ class UserProfileInputPage extends ConsumerStatefulWidget {
 class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
   final ScrollController scrollController = ScrollController();
 
+  final TextEditingController birthYearInputController =
+      TextEditingController();
+  final TextEditingController birthMonthInputController =
+      TextEditingController();
+  final TextEditingController birthDayInputController = TextEditingController();
+  final TextEditingController birthHourInputController =
+      TextEditingController();
+  final TextEditingController birthMinuteInputController =
+      TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final OnboardingState state = ref.read(onboardingViewModelProvider);
+    birthYearInputController.text = state.birthYear;
+    birthMonthInputController.text = state.birthMonth;
+    birthDayInputController.text = state.birthDay;
+    birthHourInputController.text = state.birthHour;
+    birthMinuteInputController.text = state.birthMinute;
+  }
+
   @override
   void dispose() {
     scrollController.dispose();
+    birthYearInputController.dispose();
+    birthMonthInputController.dispose();
+    birthDayInputController.dispose();
+    birthHourInputController.dispose();
+    birthMinuteInputController.dispose();
     super.dispose();
   }
 
@@ -65,7 +91,7 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
             ),
             padding: EdgeInsets.zero,
           ),
-          onPressed: !state.isAllFormValid
+          onPressed: state.isAllFormValid
               ? state.isAgreeTerms
                   ? () {
                       context.pushNamed(Routes.onboardingGoalSetting.name);
@@ -82,7 +108,11 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
                     ? '입력완료'
                     : '약관 동의'
                 : '올바른 정보를 입력해주세요',
-            style: DoitTypos.suitR20.copyWith(),
+            style: DoitTypos.suitR20.copyWith(
+              color: state.isAllFormValid
+                  ? doitColorTheme.background
+                  : doitColorTheme.gray80,
+            ),
           ),
         ),
       ),
@@ -143,6 +173,7 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
                             children: <Widget>[
                               Expanded(
                                 child: OutlinedTextFieldWidget(
+                                  controller: birthYearInputController,
                                   hintText: 'YYYY',
                                   inputFormatters: <TextInputFormatter>[
                                     FilteringTextInputFormatter.digitsOnly,
@@ -162,6 +193,7 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
                                   children: <Widget>[
                                     Expanded(
                                       child: OutlinedTextFieldWidget(
+                                        controller: birthMonthInputController,
                                         hintText: 'MM',
                                         errorText: state.birthMonthError.isEmpty
                                             ? null
@@ -181,6 +213,7 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: OutlinedTextFieldWidget(
+                                        controller: birthDayInputController,
                                         hintText: 'DD',
                                         errorText: state.birthDayError.isEmpty
                                             ? null
@@ -238,6 +271,8 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
                                       children: <Widget>[
                                         Expanded(
                                           child: OutlinedTextFieldWidget(
+                                            controller:
+                                                birthHourInputController,
                                             hintText: 'HH',
                                             errorText:
                                                 state.birthHourError.isEmpty
@@ -269,6 +304,8 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
                                         ),
                                         Expanded(
                                           child: OutlinedTextFieldWidget(
+                                            controller:
+                                                birthMinuteInputController,
                                             // ignore: lines_longer_than_80_chars
                                             inputFormatters: <TextInputFormatter>[
                                               FilteringTextInputFormatter

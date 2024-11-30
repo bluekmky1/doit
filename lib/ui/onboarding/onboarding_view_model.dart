@@ -127,4 +127,50 @@ class OnboardingViewModel extends StateNotifier<OnboardingState> {
   void changeIsAgreeTerms({required bool isAgreeTerms}) {
     state = state.copyWith(isAgreeTerms: isAgreeTerms);
   }
+
+  void selectGoalForUser({required String goalForUser}) {
+    if (state.goalForUser == goalForUser) {
+      state = state.copyWith(goalForUser: state.goalForUserInput);
+      return;
+    }
+    state = state.copyWith(goalForUser: goalForUser);
+  }
+
+  void changeGoalForUserInput({required String goalForUserInput}) {
+    if (state.recommendedGoal.contains(goalForUserInput)) {
+      state = state.copyWith(
+        goalForUser: goalForUserInput,
+        goalForUserInput: '',
+      );
+      return;
+    }
+    state = state.copyWith(
+      goalForUserInput: goalForUserInput,
+      goalForUser: goalForUserInput,
+    );
+  }
+
+  void changeGoalStartYear({required String startYear}) {
+    state = state.copyWith(startYear: startYear);
+  }
+
+  void changeGoalStartMonth({required String startMonth}) {
+    state = state.copyWith(startMonth: startMonth);
+  }
+
+  void changeGoalStartDay({required String startDay}) {
+    state = state.copyWith(startDay: startDay);
+  }
+
+  void changeGoalEndYear({required String endYear}) {
+    state = state.copyWith(endYear: endYear);
+  }
+
+  void changeGoalEndMonth({required String endMonth}) {
+    state = state.copyWith(endMonth: endMonth);
+  }
+
+  void changeGoalEndDay({required String endDay}) {
+    state = state.copyWith(endDay: endDay);
+  }
 }

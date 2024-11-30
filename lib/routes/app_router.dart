@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../ui/fortune/fortune_view.dart';
 import '../ui/home/home_view.dart';
 import '../ui/my/my_view.dart';
+import '../ui/onboarding/views/goal_duration_setting_view.dart';
 import '../ui/onboarding/views/goal_setting_view.dart';
 import '../ui/onboarding/views/onboarding_start_view.dart';
 import '../ui/onboarding/views/user_profile_input_view.dart';
@@ -97,6 +98,16 @@ class AppRouter {
           context: context,
           state: state,
           child: const GoalSettingView(),
+        ),
+      ),
+      GoRoute(
+        name: Routes.onboardingGoalDurationSetting.name,
+        path: Routes.onboardingGoalDurationSetting.path,
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: const GoalDurationSettingView(),
         ),
       ),
       GoRoute(

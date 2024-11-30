@@ -6,16 +6,54 @@ import '../../../routes/routes.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
 import '../../common/widgets/outlined_text_field_widget.dart';
+import '../onboarding_state.dart';
+import '../onboarding_view_model.dart';
 import '../widgets/goal_suggestion_widget.dart';
 import '../widgets/onboarding_app_bar.dart';
 
-class GoalSettingView extends ConsumerWidget {
+class GoalSettingView extends ConsumerStatefulWidget {
   const GoalSettingView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GoalSettingView> createState() => _GoalSettingViewState();
+}
+
+class _GoalSettingViewState extends ConsumerState<GoalSettingView> {
+  final TextEditingController goalForUserInputController =
+      TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    final OnboardingState state = ref.read(onboardingViewModelProvider);
+    goalForUserInputController.text = state.goalForUser;
+  }
+
+  @override
+  void dispose() {
+    goalForUserInputController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final OnboardingState state = ref.watch(onboardingViewModelProvider);
+    final OnboardingViewModel viewModel =
+        ref.read(onboardingViewModelProvider.notifier);
+
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
+
+    ref.listen(
+        onboardingViewModelProvider
+            .select((OnboardingState value) => value.goalForUserInput),
+        (String? prev, String next) {
+      if (prev != next && next.isEmpty) {
+        goalForUserInputController.clear();
+      }
+    });
+
     return Scaffold(
       appBar: OnboardingAppBar(
         pageController: PageController(initialPage: 2),
@@ -25,21 +63,25 @@ class GoalSettingView extends ConsumerWidget {
         width: double.infinity,
         child: TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: doitColorTheme.main,
-            foregroundColor: doitColorTheme.background,
+            backgroundColor: state.isGoalForUserValid
+                ? doitColorTheme.main
+                : doitColorTheme.gray20,
+            foregroundColor: state.isGoalForUserValid
+                ? doitColorTheme.background
+                : doitColorTheme.gray80,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(0),
             ),
             padding: EdgeInsets.zero,
           ),
-          onPressed: () {
-            context.pushNamed(Routes.onboardingUserProfileInput.name);
-          },
+          onPressed: state.isGoalForUserValid
+              ? () {
+                  context.pushNamed(Routes.onboardingGoalDurationSetting.name);
+                }
+              : null,
           child: Text(
             '목표 설정 완료',
-            style: DoitTypos.suitSB20.copyWith(
-              color: doitColorTheme.background,
-            ),
+            style: DoitTypos.suitSB20.copyWith(),
           ),
         ),
       ),
@@ -59,13 +101,17 @@ class GoalSettingView extends ConsumerWidget {
                   ),
                   const SizedBox(height: 10),
                   OutlinedTextFieldWidget(
+                    controller: goalForUserInputController,
+                    enabled: !state.recommendedGoal.contains(state.goalForUser),
                     height: 52,
                     hintText: '예) 매일 30분씩 명상하기',
                     hintStyle: DoitTypos.suitR12.copyWith(
                       color: doitColorTheme.gray40,
                       height: 2,
                     ),
-                    onChanged: (String value) {},
+                    onChanged: (String value) {
+                      viewModel.changeGoalForUserInput(goalForUserInput: value);
+                    },
                     textAlign: TextAlign.start,
                   ),
 
@@ -75,21 +121,17 @@ class GoalSettingView extends ConsumerWidget {
                     style: DoitTypos.suitR16,
                   ),
                   const SizedBox(height: 10),
-                  GoalSuggestionWidget(
-                    title: '긍정적인 사람 되어보기',
-                    isChecked: false,
-                    onPressedCheck: () {},
+                  ...state.recommendedGoal.map(
+                    (String goal) => GoalSuggestionWidget(
+                      title: goal,
+                      isChecked: state.goalForUser == goal,
+                      onPressedCheck: () {
+                        goalForUserInputController.clear();
+                        viewModel.selectGoalForUser(goalForUser: goal);
+                      },
+                    ),
                   ),
-                  GoalSuggestionWidget(
-                    title: '긍정적인 사람 되어보기',
-                    isChecked: false,
-                    onPressedCheck: () {},
-                  ),
-                  GoalSuggestionWidget(
-                    title: '긍정적인 사람 되어보기',
-                    isChecked: false,
-                    onPressedCheck: () {},
-                  ),
+
                   const SizedBox(height: 40),
                 ],
               ),

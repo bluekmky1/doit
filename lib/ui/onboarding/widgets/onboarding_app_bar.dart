@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../theme/doit_color_theme.dart';
@@ -18,6 +19,11 @@ class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       backgroundColor: doitColorTheme.background,
+      leading: IconButton(
+          onPressed: () {
+            context.pop();
+          },
+          icon: const Icon(Icons.arrow_back_ios_new_rounded)),
       scrolledUnderElevation: 0,
       elevation: 0,
       actions: <Widget>[

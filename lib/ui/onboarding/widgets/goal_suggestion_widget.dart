@@ -25,7 +25,7 @@ class GoalSuggestionWidget extends ConsumerWidget {
         Theme.of(context).extension<DoitColorTheme>()!;
 
     return GestureDetector(
-      onTap: () {},
+      onTap: onPressedCheck,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.fromLTRB(
@@ -59,8 +59,8 @@ class GoalSuggestionWidget extends ConsumerWidget {
             Container(
               clipBehavior: Clip.hardEdge,
               margin: const EdgeInsets.only(bottom: 21),
-              width: 32,
-              height: 32,
+              width: 28,
+              height: 28,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(100),
                 color: isChecked ? doitColorTheme.main : doitColorTheme.gray20,
@@ -69,7 +69,7 @@ class GoalSuggestionWidget extends ConsumerWidget {
                 color: Colors.transparent,
                 child: InkWell(
                   splashColor: doitColorTheme.main.withOpacity(0.2),
-                  onTap: () {},
+                  onTap: onPressedCheck,
                   child: SvgPicture.asset(
                     Assets.done,
                     colorFilter: ColorFilter.mode(

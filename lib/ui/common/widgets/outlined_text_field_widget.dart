@@ -7,6 +7,7 @@ class OutlinedTextFieldWidget extends StatelessWidget {
   const OutlinedTextFieldWidget({
     required this.hintText,
     required this.onChanged,
+    this.controller,
     this.maxLength,
     this.inputFormatters,
     this.errorText,
@@ -17,6 +18,7 @@ class OutlinedTextFieldWidget extends StatelessWidget {
     super.key,
   });
 
+  final TextEditingController? controller;
   final String hintText;
   final int? maxLength;
   final ValueChanged<String> onChanged;
@@ -26,6 +28,7 @@ class OutlinedTextFieldWidget extends StatelessWidget {
   final bool enabled;
   final TextAlign textAlign;
   final TextStyle? hintStyle;
+
   @override
   Widget build(BuildContext context) {
     final DoitColorTheme doitColorTheme =
@@ -38,6 +41,7 @@ class OutlinedTextFieldWidget extends StatelessWidget {
         SizedBox(
           height: height,
           child: TextField(
+            controller: controller,
             enabled: enabled,
             textAlign: textAlign,
             maxLength: maxLength,
@@ -54,8 +58,8 @@ class OutlinedTextFieldWidget extends StatelessWidget {
                         enabled ? doitColorTheme.gray40 : doitColorTheme.gray20,
                     height: 0,
                   ),
-              filled: !enabled,
-              fillColor: enabled ? null : doitColorTheme.gray10,
+              filled: true,
+              fillColor: enabled ? Colors.white : doitColorTheme.gray10,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(
