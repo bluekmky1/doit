@@ -41,6 +41,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
   }
 
   @override
+  void dispose() {
+    mainAxisScrollController
+      ..removeListener(_scrollListener)
+      ..dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final HomeState state = ref.watch(homeViewModelProvider);
     final HomeViewModel viewModel = ref.read(homeViewModelProvider.notifier);
@@ -177,7 +185,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: <BoxShadow>[
                   BoxShadow(
-                    color: doitColorTheme.shadow1.withOpacity(0.15),
+                    color: doitColorTheme.shadow2.withOpacity(0.2),
                     blurRadius: 16,
                   ),
                 ],

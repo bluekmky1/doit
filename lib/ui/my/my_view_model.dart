@@ -6,23 +6,23 @@ import '../../domain/todo/model/recommended_todo_model.dart';
 import '../../domain/todo/model/todo_model.dart';
 import '../../domain/todo/use_case/get_recommended_todo_list_use_case.dart';
 import '../../domain/todo/use_case/get_todo_list_use_case.dart';
-import 'home_state.dart';
+import 'my_state.dart';
 
-final AutoDisposeStateNotifierProvider<HomeViewModel, HomeState>
-    homeViewModelProvider = StateNotifierProvider.autoDispose(
-  (Ref ref) => HomeViewModel(
-    state: const HomeState.init(),
+final AutoDisposeStateNotifierProvider<MyViewModel, MyState>
+    myViewModelProvider = StateNotifierProvider.autoDispose(
+  (Ref ref) => MyViewModel(
+    state: const MyState.init(),
     getTodoListUseCase: ref.watch(getTodoListUseCaseProvider),
     getRecommendedTodoListUseCase:
         ref.watch(getRecommendedTodoListUseCaseProvider),
   ),
 );
 
-class HomeViewModel extends StateNotifier<HomeState> {
+class MyViewModel extends StateNotifier<MyState> {
   final GetTodoListUseCase _getTodoListUseCase;
   final GetRecommendedTodoListUseCase _getRecommendedTodoListUseCase;
-  HomeViewModel({
-    required HomeState state,
+  MyViewModel({
+    required MyState state,
     required GetTodoListUseCase getTodoListUseCase,
     required GetRecommendedTodoListUseCase getRecommendedTodoListUseCase,
   })  : _getTodoListUseCase = getTodoListUseCase,

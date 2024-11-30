@@ -41,18 +41,19 @@ class _CardSliderWidgetState extends ConsumerState<CardSliderWidget> {
             ),
           ),
         ),
-        SmoothPageIndicator(
-          controller: cardCarouselController,
-          count: state.recommendedTodoList.length,
-          effect: ExpandingDotsEffect(
-            dotColor: doitColorTheme.gray20,
-            activeDotColor: doitColorTheme.main,
-            dotHeight: 4,
-            dotWidth: 4,
-            expansionFactor: 2,
-            spacing: 2,
+        if (state.recommendedTodoList.isNotEmpty)
+          SmoothPageIndicator(
+            controller: cardCarouselController,
+            count: state.recommendedTodoList.length,
+            effect: ExpandingDotsEffect(
+              dotColor: doitColorTheme.gray20,
+              activeDotColor: doitColorTheme.main,
+              dotHeight: 4,
+              dotWidth: 4,
+              expansionFactor: 2,
+              spacing: 2,
+            ),
           ),
-        ),
       ],
     );
   }
@@ -117,7 +118,7 @@ class _AnimatedCard extends ConsumerWidget {
               Expanded(
                 // 23 자까지 적을 수 있음
                 child: Text(
-                  '${model.fortune}이 상승하는 할 일 입니다.',
+                  '${model.fortune}이 상승하는 할 일입니다.',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: DoitTypos.suitR12,

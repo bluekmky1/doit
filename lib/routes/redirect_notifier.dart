@@ -6,8 +6,7 @@ import '../service/app/app_state.dart';
 
 final ChangeNotifierProvider<RedirectNotifier> redirectNotifierProvider =
     ChangeNotifierProvider<RedirectNotifier>(
-  (ChangeNotifierProviderRef<RedirectNotifier> ref) =>
-      RedirectNotifier(ref: ref),
+  (Ref<RedirectNotifier> ref) => RedirectNotifier(ref: ref),
 );
 
 // app router 에게 refresh 하라고 알려주는 notifier입니다.

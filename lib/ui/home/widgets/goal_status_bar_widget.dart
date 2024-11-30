@@ -132,7 +132,7 @@ class GoalDetailModalWidget extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
-              overlayColor: doitColorTheme.gray80,
+              overlayColor: doitColorTheme.main,
               padding: EdgeInsets.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
@@ -198,7 +198,7 @@ class GoalDetailModalWidget extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
-              overlayColor: doitColorTheme.gray80,
+              overlayColor: doitColorTheme.error,
               padding: EdgeInsets.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),

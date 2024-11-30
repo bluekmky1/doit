@@ -47,9 +47,9 @@ class _BottomNavigationBarWidgetState
             label: '운세',
             selectedAsset: Assets.fortuneColored,
             unselectedAsset: Assets.fortuneFilled,
-            isSelected: widget.currentRouteName == 'fortune',
+            isSelected: widget.currentRouteName == Routes.fortune.name,
             onTap: () {
-              context.goNamed(Routes.home.name);
+              context.goNamed(Routes.fortune.name);
             },
           ),
           BottomNavigationBarItemWidget(
@@ -65,9 +65,9 @@ class _BottomNavigationBarWidgetState
             label: 'MY',
             selectedAsset: Assets.profileColored,
             unselectedAsset: Assets.profileOutlined,
-            isSelected: widget.currentRouteName == 'profile',
+            isSelected: widget.currentRouteName == Routes.my.name,
             onTap: () {
-              context.goNamed(Routes.home.name);
+              context.goNamed(Routes.my.name);
             },
           ),
         ],
