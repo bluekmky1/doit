@@ -1,3 +1,4 @@
+import 'package:flame_lottie/flame_lottie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../routes/routes.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
+import '../../common/consts/assets.dart';
 import '../onboarding_state.dart';
 import '../onboarding_view_model.dart';
 import '../widgets/onboarding_app_bar.dart';
@@ -28,12 +30,12 @@ class _OnboardingStartViewState extends ConsumerState<OnboardingStartView>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 15),
+      duration: const Duration(seconds: 28),
       vsync: this,
     )..repeat();
 
     _offsetAnimation = Tween<Offset>(
-      begin: const Offset(1.0, 0.0),
+      begin: const Offset(0.4, 0.0),
       end: const Offset(-1.0, 0.0),
     ).animate(
       CurvedAnimation(
@@ -118,14 +120,70 @@ class _OnboardingStartViewState extends ConsumerState<OnboardingStartView>
                   SlideTransition(
                     position: _offsetAnimation,
                     child: Container(
-                      width: 1000,
+                      alignment: Alignment.bottomCenter,
                       height: 80,
-                      color: doitColorTheme.error,
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
-                          Text('start'),
-                          Text('end'),
+                          Lottie.asset(
+                            Assets.mouseMove,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          const SizedBox(width: 40),
+                          Lottie.asset(
+                            Assets.cowMove,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          const SizedBox(width: 40),
+                          Lottie.asset(
+                            Assets.tigerMove,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          const SizedBox(width: 40),
+                          Lottie.asset(
+                            Assets.rabbitMove,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          const SizedBox(width: 40),
+                          Lottie.asset(
+                            Assets.dragonMove,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          const SizedBox(width: 40),
+                          Lottie.asset(
+                            Assets.snakeMove,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          const SizedBox(width: 40),
+                          Lottie.asset(
+                            Assets.horseMove,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          const SizedBox(width: 40),
+                          Lottie.asset(
+                            Assets.sheepMove,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          const SizedBox(width: 40),
+                          Lottie.asset(
+                            Assets.chickenMove,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          const SizedBox(width: 40),
+                          Lottie.asset(
+                            Assets.dogMove,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          const SizedBox(width: 40),
+                          Lottie.asset(
+                            Assets.monkeyMove,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          const SizedBox(width: 40),
+                          Lottie.asset(
+                            Assets.pigMove,
+                            fit: BoxFit.fitHeight,
+                          ),
                         ],
                       ),
                     ),

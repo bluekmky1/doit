@@ -41,6 +41,12 @@ class Routes {
     path: '/onboarding/duration-setting',
   );
 
+  // 튜토리얼 페이지
+  static const RouteInfo tutorial = RouteInfo(
+    name: '/tutorial',
+    path: '/tutorial',
+  );
+
   // 홈(메인)페이지
   static const RouteInfo home = RouteInfo(
     name: '/home',

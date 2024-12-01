@@ -95,4 +95,11 @@ class HomeViewModel extends StateNotifier<HomeState> {
           .toList(),
     );
   }
+
+  Future<void> addTodo({required TodoModel todo}) async {
+    // await _addTodoUseCase(todo);
+    state = state.copyWith(
+      todoList: <TodoModel>[...state.todoList, todo],
+    );
+  }
 }

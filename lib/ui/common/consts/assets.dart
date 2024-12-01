@@ -139,113 +139,119 @@ class Assets {
 
   static const String gameBackgroundAsset = 'assets/images/game_background.png';
 
-//   //게임 배경
-  static const String gameBackground = 'game_background.png';
-  static const String farmBackground = 'farm_background.png';
-  static const String farmBackgroundLandscape = 'farm_background_landscape.png';
+  //게임 배경
+  static const String gameBackground = 'assets/images/game_background.png';
+  static const String farmBackground = 'assets/images/farm_background.png';
+  static const String farmBackgroundLandscape =
+      'assets/images/farm_background_landscape.png';
   static const String kingBackground = 'assets/images/king_background.png';
-  static const String whiteBackground = 'white_background.png';
+  static const String whiteBackground = 'assets/images/white_background.png';
   static const String gameBackgroundWithoutCloud =
       'assets/images/game_background_without_cloud.png';
 
-//   //빈공간 이미지
+  //빈공간 이미지
   static const String emptyDragon = 'assets/images/empty_dragon.png';
 
-//   // 튜토리얼
+  // 튜토리얼
   static const String tutorialFirstImage =
       'assets/images/tutorial_first_image.png';
   static const String tutorialSecondImage =
       'assets/images/tutorial_second_image.png';
+
+  // 특이개체 애니메이션
+  static const String kingMouseAppear =
+      'assets/lotties/appear/king_mouse_appear.json';
+  static const String kingMouseStop =
+      'assets/lotties/stop/king_mouse_stop.json';
+
+  static const String kingChickenAppear =
+      'assets/lotties/appear/king_chicken_appear.json';
+  static const String kingChickenStop =
+      'assets/lotties/stop/king_chicken_stop.json';
+
+  //애니메이션
+
+  static const String chickenStop = 'assets/lotties/stop/chicken_stop.json';
+  static const String cowStop = 'assets/lotties/stop/cow_stop.json';
+  static const String dogStop = 'assets/lotties/stop/dog_stop.json';
+  static const String dragonStop = 'assets/lotties/stop/dragon_stop.json';
+  static const String horseStop = 'assets/lotties/stop/horse_stop.json';
+  static const String monkeyStop = 'assets/lotties/stop/monkey_stop.json';
+  static const String mouseStop = 'assets/lotties/stop/mouse_stop.json';
+  static const String pigStop = 'assets/lotties/stop/pig_stop.json';
+  static const String rabbitStop = 'assets/lotties/stop/rabbit_stop.json';
+  static const String sheepStop = 'assets/lotties/stop/sheep_stop.json';
+  static const String snakeStop = 'assets/lotties/stop/snake_stop.json';
+  static const String tigerStop = 'assets/lotties/stop/tiger_stop.json';
+
+  static const String chickenMove = 'assets/lotties/move/chicken_move.json';
+  static const String cowMove = 'assets/lotties/move/cow_move.json';
+  static const String dogMove = 'assets/lotties/move/dog_move.json';
+  static const String dragonMove = 'assets/lotties/move/dragon_move.json';
+  static const String horseMove = 'assets/lotties/move/horse_move.json';
+  static const String monkeyMove = 'assets/lotties/move/monkey_move.json';
+  static const String mouseMove = 'assets/lotties/move/mouse_move.json';
+  static const String pigMove = 'assets/lotties/move/pig_move.json';
+  static const String rabbitMove = 'assets/lotties/move/rabbit_move.json';
+  static const String sheepMove = 'assets/lotties/move/sheep_move.json';
+  static const String snakeMove = 'assets/lotties/move/snake_move.json';
+  static const String tigerMove = 'assets/lotties/move/tiger_move.json';
+  static const String kingChickenMove =
+      'assets/lotties/move/king_chicken_move.json';
+
+  static const String noShadowChickenStop =
+      'assets/lotties/no_shadow_stop/no_shadow_chicken_stop.json';
+  static const String noShadowCowStop =
+      'assets/lotties/no_shadow_stop/no_shadow_cow_stop.json';
+  static const String noShadowDogStop =
+      'assets/lotties/no_shadow_stop/no_shadow_dog_stop.json';
+  static const String noShadowDragonStop =
+      'assets/lotties/no_shadow_stop/no_shadow_dragon_stop.json';
+  static const String noShadowHorseStop =
+      'assets/lotties/no_shadow_stop/no_shadow_horse_stop.json';
+  static const String noShadowMonkeyStop =
+      'assets/lotties/no_shadow_stop/no_shadow_monkey_stop.json';
+  static const String noShadowMouseStop =
+      'assets/lotties/no_shadow_stop/no_shadow_mouse_stop.json';
+  static const String noShadowPigStop =
+      'assets/lotties/no_shadow_stop/no_shadow_pig_stop.json';
+  static const String noShadowRabbitStop =
+      'assets/lotties/no_shadow_stop/no_shadow_rabbit_stop.json';
+  static const String noShadowSheepStop =
+      'assets/lotties/no_shadow_stop/no_shadow_sheep_stop.json';
+  static const String noShadowSnakeStop =
+      'assets/lotties/no_shadow_stop/no_shadow_snake_stop.json';
+  static const String noShadowTigerStop =
+      'assets/lotties/no_shadow_stop/no_shadow_tiger_stop.json';
+
+  static const String noShadowChickenMove =
+      'assets/lotties/no_shadow_move/no_shadow_chicken_move.json';
+  static const String noShadowCowMove =
+      'assets/lotties/no_shadow_move/no_shadow_cow_move.json';
+  static const String noShadowDogMove =
+      'assets/lotties/no_shadow_move/no_shadow_dog_move.json';
+  static const String noShadowDragonMove =
+      'assets/lotties/no_shadow_move/no_shadow_dragon_move.json';
+  static const String noShadowHorseMove =
+      'assets/lotties/no_shadow_move/no_shadow_horse_move.json';
+  static const String noShadowMonkeyMove =
+      'assets/lotties/no_shadow_move/no_shadow_monkey_move.json';
+  static const String noShadowMouseMove =
+      'assets/lotties/no_shadow_move/no_shadow_mouse_move.json';
+  static const String noShadowPigMove =
+      'assets/lotties/no_shadow_move/no_shadow_pig_move.json';
+  static const String noShadowRabbitMove =
+      'assets/lotties/no_shadow_move/no_shadow_rabbit_move.json';
+  static const String noShadowSheepMove =
+      'assets/lotties/no_shadow_move/no_shadow_sheep_move.json';
+  static const String noShadowSnakeMove =
+      'assets/lotties/no_shadow_move/no_shadow_snake_move.json';
+  static const String noShadowTigerMove =
+      'assets/lotties/no_shadow_move/no_shadow_tiger_move.json';
 }
-//   //애니메이션
-//   static const String loading = 'assets/animation/loading.json';
 
-//   static const String chickenStop = 'assets/animation/stop/chicken_stop.json';
-//   static const String cowStop = 'assets/animation/stop/cow_stop.json';
-//   static const String dogStop = 'assets/animation/stop/dog_stop.json';
-//   static const String dragonStop = 'assets/animation/stop/dragon_stop.json';
-//   static const String horseStop = 'assets/animation/stop/horse_stop.json';
-//   static const String monkeyStop = 'assets/animation/stop/monkey_stop.json';
-//   static const String mouseStop = 'assets/animation/stop/mouse_stop.json';
-//   static const String pigStop = 'assets/animation/stop/pig_stop.json';
-//   static const String rabbitStop = 'assets/animation/stop/rabbit_stop.json';
-//   static const String sheepStop = 'assets/animation/stop/sheep_stop.json';
-//   static const String snakeStop = 'assets/animation/stop/snake_stop.json';
-//   static const String tigerStop = 'assets/animation/stop/tiger_stop.json';
-//   static const String kingMouseStop =
-//       'assets/animation/stop/king_mouse_stop.json';
-//   static const String kingChickenStop =
-//       'assets/animation/stop/king_chicken_stop.json';
 
-//   static const String chickenMove = 'assets/animation/move/chicken_move.json';
-//   static const String cowMove = 'assets/animation/move/cow_move.json';
-//   static const String dogMove = 'assets/animation/move/dog_move.json';
-//   static const String dragonMove = 'assets/animation/move/dragon_move.json';
-//   static const String horseMove = 'assets/animation/move/horse_move.json';
-//   static const String monkeyMove = 'assets/animation/move/monkey_move.json';
-//   static const String mouseMove = 'assets/animation/move/mouse_move.json';
-//   static const String pigMove = 'assets/animation/move/pig_move.json';
-//   static const String rabbitMove = 'assets/animation/move/rabbit_move.json';
-//   static const String sheepMove = 'assets/animation/move/sheep_move.json';
-//   static const String snakeMove = 'assets/animation/move/snake_move.json';
-//   static const String tigerMove = 'assets/animation/move/tiger_move.json';
-//   static const String kingChickenMove =
-//       'assets/animation/move/king_chicken_move.json';
 
-//   static const String noShadowChickenStop =
-//       'assets/animation/no_shadow_stop/no_shadow_chicken_stop.json';
-//   static const String noShadowCowStop =
-//       'assets/animation/no_shadow_stop/no_shadow_cow_stop.json';
-//   static const String noShadowDogStop =
-//       'assets/animation/no_shadow_stop/no_shadow_dog_stop.json';
-//   static const String noShadowDragonStop =
-//       'assets/animation/no_shadow_stop/no_shadow_dragon_stop.json';
-//   static const String noShadowHorseStop =
-//       'assets/animation/no_shadow_stop/no_shadow_horse_stop.json';
-//   static const String noShadowMonkeyStop =
-//       'assets/animation/no_shadow_stop/no_shadow_monkey_stop.json';
-//   static const String noShadowMouseStop =
-//       'assets/animation/no_shadow_stop/no_shadow_mouse_stop.json';
-//   static const String noShadowPigStop =
-//       'assets/animation/no_shadow_stop/no_shadow_pig_stop.json';
-//   static const String noShadowRabbitStop =
-//       'assets/animation/no_shadow_stop/no_shadow_rabbit_stop.json';
-//   static const String noShadowSheepStop =
-//       'assets/animation/no_shadow_stop/no_shadow_sheep_stop.json';
-//   static const String noShadowSnakeStop =
-//       'assets/animation/no_shadow_stop/no_shadow_snake_stop.json';
-//   static const String noShadowTigerStop =
-//       'assets/animation/no_shadow_stop/no_shadow_tiger_stop.json';
-
-//   static const String noShadowChickenMove =
-//       'assets/animation/no_shadow_move/no_shadow_chicken_move.json';
-//   static const String noShadowCowMove =
-//       'assets/animation/no_shadow_move/no_shadow_cow_move.json';
-//   static const String noShadowDogMove =
-//       'assets/animation/no_shadow_move/no_shadow_dog_move.json';
-//   static const String noShadowDragonMove =
-//       'assets/animation/no_shadow_move/no_shadow_dragon_move.json';
-//   static const String noShadowHorseMove =
-//       'assets/animation/no_shadow_move/no_shadow_horse_move.json';
-//   static const String noShadowMonkeyMove =
-//       'assets/animation/no_shadow_move/no_shadow_monkey_move.json';
-//   static const String noShadowMouseMove =
-//       'assets/animation/no_shadow_move/no_shadow_mouse_move.json';
-//   static const String noShadowPigMove =
-//       'assets/animation/no_shadow_move/no_shadow_pig_move.json';
-//   static const String noShadowRabbitMove =
-//       'assets/animation/no_shadow_move/no_shadow_rabbit_move.json';
-//   static const String noShadowSheepMove =
-//       'assets/animation/no_shadow_move/no_shadow_sheep_move.json';
-//   static const String noShadowSnakeMove =
-//       'assets/animation/no_shadow_move/no_shadow_snake_move.json';
-//   static const String noShadowTigerMove =
-//       'assets/animation/no_shadow_move/no_shadow_tiger_move.json';
-
-//   static const String kingMouseAppear =
-//       'assets/animation/appear/king_mouse_appear.json';
-//   static const String kingChickenAppear =
-//       'assets/animation/appear/king_chicken_appear.json';
 
 
 // }

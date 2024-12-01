@@ -19,6 +19,7 @@ dependencies:
   go_router: ^14.3.0
   intl: ^0.19.0
   json_annotation: ^4.9.0
+  lottie: ^3.1.3
   pretty_dio_logger: ^1.4.0
   retrofit: ^4.4.1
   smooth_page_indicator: ^1.2.0+3
@@ -37,6 +38,12 @@ flutter:
     - assets/
     - assets/icons/
     - assets/images/
+    - assets/lotties/
+    - assets/lotties/appear/
+    - assets/lotties/move/
+    - assets/lotties/stop/
+    - assets/lotties/no_shadow_move/
+    - assets/lotties/no_shadow_stop/
 
   fonts:
     - family: SUIT

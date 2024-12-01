@@ -86,7 +86,7 @@ class _GoalDurationSettingViewState
           ),
           onPressed: state.isDurationValid
               ? () {
-                  context.pushNamed(Routes.onboardingUserProfileInput.name);
+                  context.goNamed(Routes.tutorial.name);
                 }
               : null,
           child: Text(

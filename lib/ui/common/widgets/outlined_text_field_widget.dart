@@ -9,6 +9,7 @@ class OutlinedTextFieldWidget extends StatelessWidget {
     required this.onChanged,
     this.controller,
     this.maxLength,
+    this.maxLines,
     this.inputFormatters,
     this.errorText,
     this.height = 40,
@@ -21,6 +22,7 @@ class OutlinedTextFieldWidget extends StatelessWidget {
   final TextEditingController? controller;
   final String hintText;
   final int? maxLength;
+  final int? maxLines;
   final ValueChanged<String> onChanged;
   final List<TextInputFormatter>? inputFormatters;
   final String? errorText;
@@ -39,12 +41,14 @@ class OutlinedTextFieldWidget extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         SizedBox(
-          height: height,
+          height: maxLines != null ? null : height,
           child: TextField(
             controller: controller,
             enabled: enabled,
             textAlign: textAlign,
             maxLength: maxLength,
+            minLines: maxLines != null ? 1 : null,
+            maxLines: maxLines,
             cursorColor: doitColorTheme.main,
             onTapOutside: (PointerDownEvent event) {
               FocusScope.of(context).unfocus();

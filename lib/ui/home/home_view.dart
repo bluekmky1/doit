@@ -10,6 +10,7 @@ import '../common/consts/assets.dart';
 import '../common/widgets/bottom_navigation_bar_widget.dart';
 import 'home_state.dart';
 import 'home_view_model.dart';
+import 'widgets/add_todo_bottom_sheet_widget.dart';
 import 'widgets/card_slider_widget.dart';
 import 'widgets/goal_status_bar_widget.dart';
 import 'widgets/todo_list_item_widget.dart';
@@ -165,7 +166,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       padding: EdgeInsets.zero,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            const AddTodoBottomSheetWidget(),
+                      );
+                    },
                     icon: SvgPicture.asset(
                       Assets.add,
                       colorFilter: ColorFilter.mode(

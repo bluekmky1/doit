@@ -10,6 +10,7 @@ import '../ui/onboarding/views/goal_duration_setting_view.dart';
 import '../ui/onboarding/views/goal_setting_view.dart';
 import '../ui/onboarding/views/onboarding_start_view.dart';
 import '../ui/onboarding/views/user_profile_input_view.dart';
+import '../ui/tutorial/tutorial_view.dart';
 import 'app_router_interceptor.dart';
 import 'redirect_notifier.dart';
 import 'routes.dart';
@@ -59,7 +60,7 @@ class AppRouter {
       _appRouterInterceptor.redirect(context, state);
 
   late final GoRouter _router = GoRouter(
-    initialLocation: Routes.onboardingStart.name,
+    initialLocation: Routes.home.name,
     debugLogDiagnostics: true,
     navigatorKey: rootNavigatorKey,
     refreshListenable: _refreshListenable,
@@ -108,6 +109,16 @@ class AppRouter {
           context: context,
           state: state,
           child: const GoalDurationSettingView(),
+        ),
+      ),
+      GoRoute(
+        name: Routes.tutorial.name,
+        path: Routes.tutorial.path,
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            buildPageWithFadeTransition<void>(
+          context: context,
+          state: state,
+          child: const TutorialView(),
         ),
       ),
       GoRoute(

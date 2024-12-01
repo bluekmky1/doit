@@ -8,6 +8,8 @@ import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
 import '../../common/consts/assets.dart';
 import '../home_view_model.dart';
+import 'delete_todo_bottom_sheet_widget.dart';
+import 'edit_todo_bottom_sheet_widget.dart';
 
 class TodoListItemWidget extends ConsumerWidget {
   const TodoListItemWidget({
@@ -123,7 +125,14 @@ class TodoDetailModalWidget extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              context.pop();
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) =>
+                    const EditTodoBottomSheetWidget(),
+              );
+            },
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -158,6 +167,11 @@ class TodoDetailModalWidget extends ConsumerWidget {
           TextButton(
             onPressed: () {
               context.pop();
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) =>
+                    const DeleteTodoBottomSheetWidget(),
+              );
             },
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
