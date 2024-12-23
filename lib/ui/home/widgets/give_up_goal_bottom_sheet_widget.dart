@@ -28,7 +28,7 @@ class GiveUpGoalBottomSheetWidget extends ConsumerWidget {
               children: <Widget>[
                 const Expanded(
                   child: Text(
-                    '의 이름',
+                    '중단할 목표의 이름',
                     style: DoitTypos.suitSB16,
                   ),
                 ),
@@ -54,8 +54,7 @@ class GiveUpGoalBottomSheetWidget extends ConsumerWidget {
                 Column(
                   children: <Widget>[
                     Text(
-                      '이 미션을 정말로 삭제하시겠습니까?\n'
-                      '삭제된 미션은 되돌릴 수 없어요.',
+                      '이 목표을 정말로 중단하시겠습니까?',
                       style: DoitTypos.suitSB16,
                       textAlign: TextAlign.center,
                     ),
@@ -105,7 +104,7 @@ class GiveUpGoalBottomSheetWidget extends ConsumerWidget {
                       context.pop();
                     },
                     child: const Text(
-                      '삭제',
+                      '중단',
                       style: DoitTypos.suitSB16,
                     ),
                   ),

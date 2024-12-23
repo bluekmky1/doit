@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
 import '../../common/consts/assets.dart';
+import 'edit_goal_duration_bottom_sheet_widget.dart';
+import 'give_up_goal_bottom_sheet_widget.dart';
 
 class GoalStatusBarWidget extends StatelessWidget {
   const GoalStatusBarWidget({
@@ -22,7 +24,9 @@ class GoalStatusBarWidget extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: doitColorTheme.background,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: const BorderRadius.vertical(
+          bottom: Radius.circular(16),
+        ),
         border: Border.all(
           color: Colors.transparent,
         ),
@@ -33,7 +37,6 @@ class GoalStatusBarWidget extends StatelessWidget {
           ),
         ],
       ),
-      height: 82,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -74,6 +77,8 @@ class GoalStatusBarWidget extends StatelessWidget {
           ),
           const Text(
             '한 달 안에 긍정적인 사람 되어보기',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: DoitTypos.suitSB20,
           ),
         ],
@@ -160,7 +165,15 @@ class GoalDetailModalWidget extends StatelessWidget {
             height: 29,
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              context.pop();
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (BuildContext context) =>
+                    const EditGoalDurationBottomSheetWidget(),
+              );
+            },
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -193,7 +206,14 @@ class GoalDetailModalWidget extends StatelessWidget {
             height: 29,
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              context.pop();
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) =>
+                    const GiveUpGoalBottomSheetWidget(),
+              );
+            },
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -213,7 +233,7 @@ class GoalDetailModalWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '목표 포기하기',
+                  '목표 중단하기',
                   style: DoitTypos.suitSB16.copyWith(
                     color: doitColorTheme.error,
                   ),

@@ -8,7 +8,6 @@ import '../../theme/doit_typos.dart';
 import '../common/consts/assets.dart';
 import '../common/widgets/accordion_card_widget.dart';
 import '../common/widgets/bottom_navigation_bar_widget.dart';
-import '../common/widgets/elevated_card_widget.dart';
 import '../common/widgets/text_chip_widget.dart';
 import 'widgets/my_app_bar_widget.dart';
 
@@ -24,6 +23,9 @@ class _MyViewState extends ConsumerState<MyView> {
   Widget build(BuildContext context) {
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double gridItemSpacing = screenWidth / 375 * 12;
+    final double gridItemRunSpacing = screenWidth / 375 * 16;
 
     return Scaffold(
       floatingActionButton: BottomNavigationBarWidget(
@@ -41,31 +43,31 @@ class _MyViewState extends ConsumerState<MyView> {
               // 앱바
               MyAppBarWidget(doitColorTheme: doitColorTheme),
               // 목표 달성 그래프
-              const ElevatedCardWidget(
-                height: 220,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      '미션 달성 그래프',
-                      style: DoitTypos.suitSB16,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 36,
-              ),
+              // const ElevatedCardWidget(
+              //   height: 220,
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: <Widget>[
+              //       Text(
+              //         '미션 달성 그래프',
+              //         style: DoitTypos.suitSB16,
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // const SizedBox(
+              //   height: 36,
+              // ),
               // 내가 도전한 목표
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   const Text(
-                    '내가 도전한 목표',
+                    '이번달에 모은 동물들',
                     style: DoitTypos.suitSB16,
                   ),
                   Text(
-                    '48개',
+                    '48마리',
                     style: DoitTypos.suitSB16.copyWith(
                       color: doitColorTheme.main,
                     ),
@@ -73,11 +75,71 @@ class _MyViewState extends ConsumerState<MyView> {
                 ],
               ),
               const SizedBox(height: 16),
+              Column(
+                children: <Widget>[
+                  GridView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4, // 한 줄에 4개
+                      childAspectRatio: 2 / 1, // 가로:세로 = 2:1
+                      crossAxisSpacing: gridItemSpacing, // 가로 간격
+                      mainAxisSpacing: gridItemRunSpacing, // 세로 간격
+                    ),
+                    itemCount: 12, // 4개씩 3줄 = 12개
+                    itemBuilder: (BuildContext context, int index) => Container(
+                      clipBehavior: Clip.hardEdge,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: doitColorTheme.gray20,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: <Widget>[
+                          const Positioned(
+                            left: 12,
+                            child: Text(
+                              '12',
+                              style: DoitTypos.suitSB16,
+                            ),
+                          ),
+                          Positioned(
+                            left: 40,
+                            child: SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: Image.asset(Assets.allLuck),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Divider(
+                height: 48,
+                thickness: 3,
+                color: doitColorTheme.gray20,
+              ),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    '이전에 모은 동물들',
+                    style: DoitTypos.suitSB16,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               ...List<Widget>.generate(
                 3,
                 (int index) => const Padding(
-                  padding: EdgeInsets.only(bottom: 8),
-                  child: _ChallengedGoalCardWidget(),
+                  padding: EdgeInsets.only(bottom: 16),
+                  child: _CompletedTodoCardWidget(),
                 ),
               ),
 
@@ -90,8 +152,8 @@ class _MyViewState extends ConsumerState<MyView> {
   }
 }
 
-class _ChallengedGoalCardWidget extends StatelessWidget {
-  const _ChallengedGoalCardWidget();
+class _CompletedTodoCardWidget extends StatelessWidget {
+  const _CompletedTodoCardWidget();
 
   @override
   Widget build(BuildContext context) {
@@ -108,24 +170,19 @@ class _ChallengedGoalCardWidget extends StatelessWidget {
           Row(
             children: <Widget>[
               Text(
-                '2024.01.01 - 2024.12.31',
-                style: DoitTypos.suitR10.copyWith(
+                '2024년 01월',
+                style: DoitTypos.suitR14.copyWith(
                   color: doitColorTheme.gray60,
                 ),
               ),
               const Padding(
                 padding: EdgeInsets.only(left: 12),
                 child: TextChipWidget(
-                  title: '성공 미션 74개',
+                  title: '완료한 할 일 74개',
                   padding: EdgeInsets.symmetric(horizontal: 8),
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '바리스타 자격증 취득 바리스타 자격증 취득',
-            style: DoitTypos.suitR14,
           ),
         ],
       ),
@@ -172,28 +229,30 @@ class _ChallengedGoalCardWidget extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 12),
-          TextButton(
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.zero,
-                backgroundColor: doitColorTheme.main,
-                foregroundColor: doitColorTheme.background,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onPressed: () {},
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    '목표 농장으로 이동',
-                    style: DoitTypos.suitR14.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ))
+
+          // TODO: 월 별 농장으로 이동하는 버튼 추가 기획 필요
+          // const SizedBox(height: 12),
+          // TextButton(
+          //     style: TextButton.styleFrom(
+          //       padding: EdgeInsets.zero,
+          //       backgroundColor: doitColorTheme.main,
+          //       foregroundColor: doitColorTheme.background,
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(8),
+          //       ),
+          //     ),
+          //     onPressed: () {},
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: <Widget>[
+          //         Text(
+          //           '농장으로 이동',
+          //           style: DoitTypos.suitR14.copyWith(
+          //             color: Colors.white,
+          //           ),
+          //         ),
+          //       ],
+          //     ))
         ],
       ),
     );

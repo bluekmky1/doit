@@ -1,19 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:go_router/go_router.dart';
 
 import '../../routes/routes.dart';
 import '../../theme/doit_color_theme.dart';
 import '../../theme/doit_typos.dart';
+import '../common/consts/assets.dart';
 import '../common/widgets/bottom_navigation_bar_widget.dart';
+import 'widgets/card_slider_widget.dart';
 import 'widgets/circular_graph_widget.dart';
 import 'widgets/fortune_app_bar_widget.dart';
 import 'widgets/fortune_card_widget.dart';
 import 'widgets/fortune_score_gage_widget.dart';
 import 'widgets/icon_card_widget.dart';
 
-class FortuneView extends StatelessWidget {
+class FortuneView extends ConsumerStatefulWidget {
   const FortuneView({super.key});
 
+  @override
+  ConsumerState<FortuneView> createState() => _FortuneViewState();
+}
+
+class _FortuneViewState extends ConsumerState<FortuneView> {
   @override
   Widget build(BuildContext context) {
     final DoitColorTheme doitColorTheme =
@@ -73,7 +82,24 @@ class FortuneView extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 140),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: <Widget>[
+                  SvgPicture.asset(
+                    Assets.fortuneColored,
+                  ),
+                  const SizedBox(width: 10),
+                  const Text(
+                    '오늘의 운세 기반 추천 미션',
+                    style: DoitTypos.suitSB16,
+                  ),
+                ],
+              ),
+            ),
+            const CardSliderWidget(),
+            const SizedBox(height: 120),
           ],
         ),
       ),

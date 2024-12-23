@@ -7,8 +7,8 @@ import '../../../domain/todo/model/recommended_todo_model.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
 import '../../common/consts/assets.dart';
-import '../home_state.dart';
-import '../home_view_model.dart';
+import '../fortune_state.dart';
+import '../fortune_view_model.dart';
 
 class CardSliderWidget extends ConsumerStatefulWidget {
   const CardSliderWidget({super.key});
@@ -23,7 +23,7 @@ class _CardSliderWidgetState extends ConsumerState<CardSliderWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final HomeState state = ref.watch(homeViewModelProvider);
+    final FortuneState state = ref.watch(fortuneViewModelProvider);
     final double screenWidth = MediaQuery.of(context).size.width;
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
@@ -71,7 +71,6 @@ class _AnimatedCard extends ConsumerWidget {
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
 
-    final HomeViewModel viewModel = ref.watch(homeViewModelProvider.notifier);
     return Container(
       margin: const EdgeInsets.only(right: 16, bottom: 16, top: 16),
       padding: const EdgeInsets.fromLTRB(20, 16, 16, 0),
@@ -162,11 +161,9 @@ class _AnimatedCard extends ConsumerWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       splashColor: doitColorTheme.main.withOpacity(0.2),
-                      onTap: () {
-                        viewModel.toggleRecommendedTodoDone(id: model.id);
-                      },
+                      onTap: () {},
                       child: SvgPicture.asset(
-                        Assets.done,
+                        Assets.add,
                         colorFilter: ColorFilter.mode(
                           doitColorTheme.background,
                           BlendMode.srcIn,

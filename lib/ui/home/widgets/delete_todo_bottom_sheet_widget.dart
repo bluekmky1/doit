@@ -28,7 +28,7 @@ class DeleteTodoBottomSheetWidget extends ConsumerWidget {
               children: <Widget>[
                 const Expanded(
                   child: Text(
-                    '미션의 이름',
+                    '할 일의 이름',
                     style: DoitTypos.suitSB16,
                   ),
                 ),
@@ -54,7 +54,7 @@ class DeleteTodoBottomSheetWidget extends ConsumerWidget {
                 Column(
                   children: <Widget>[
                     Text(
-                      '이 미션을 정말로 삭제하시겠습니까?\n'
+                      '이 할 일을 정말로 삭제하시겠습니까?\n'
                       '삭제된 미션은 되돌릴 수 없어요.',
                       style: DoitTypos.suitSB16,
                       textAlign: TextAlign.center,

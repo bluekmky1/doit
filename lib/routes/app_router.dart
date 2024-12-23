@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../ui/fortune/fortune_view.dart';
+import '../ui/goal/views/new_goal_duration_setting_view.dart';
+import '../ui/goal/views/new_goal_setting_view.dart';
 import '../ui/home/home_view.dart';
 import '../ui/my/my_view.dart';
 import '../ui/onboarding/views/goal_duration_setting_view.dart';
@@ -119,6 +121,22 @@ class AppRouter {
           context: context,
           state: state,
           child: const TutorialView(),
+        ),
+      ),
+      GoRoute(
+        name: Routes.goalSetting.name,
+        path: Routes.goalSetting.path,
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            const NoTransitionPage<dynamic>(
+          child: NewGoalSettingView(),
+        ),
+      ),
+      GoRoute(
+        name: Routes.goalDurationSetting.name,
+        path: Routes.goalDurationSetting.path,
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            const NoTransitionPage<dynamic>(
+          child: NewGoalDurationSettingView(),
         ),
       ),
       GoRoute(

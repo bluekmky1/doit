@@ -8,7 +8,6 @@ import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
 import '../../common/consts/assets.dart';
 import '../home_view_model.dart';
-import 'delete_todo_bottom_sheet_widget.dart';
 import 'edit_todo_bottom_sheet_widget.dart';
 
 class TodoListItemWidget extends ConsumerWidget {
@@ -46,8 +45,8 @@ class TodoListItemWidget extends ConsumerWidget {
           ),
         ),
         Container(
-          width: 28,
-          height: 28,
+          width: 24,
+          height: 24,
           clipBehavior: Clip.hardEdge,
           margin: const EdgeInsets.only(left: 16),
           decoration: BoxDecoration(
@@ -87,8 +86,7 @@ class TodoDetailModalWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
-
-    // final HomeViewModel viewModel = ref.watch(homeViewModelProvider.notifier);
+    final HomeViewModel viewModel = ref.watch(homeViewModelProvider.notifier);
     return Container(
       decoration: BoxDecoration(
         color: doitColorTheme.background,
@@ -130,7 +128,7 @@ class TodoDetailModalWidget extends ConsumerWidget {
               showModalBottomSheet(
                 context: context,
                 builder: (BuildContext context) =>
-                    const EditTodoBottomSheetWidget(),
+                    EditTodoBottomSheetWidget(model: model),
               );
             },
             style: TextButton.styleFrom(
@@ -167,11 +165,7 @@ class TodoDetailModalWidget extends ConsumerWidget {
           TextButton(
             onPressed: () {
               context.pop();
-              showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context) =>
-                    const DeleteTodoBottomSheetWidget(),
-              );
+              viewModel.deleteTodo(id: model.id);
             },
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(

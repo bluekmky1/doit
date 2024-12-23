@@ -16,7 +16,7 @@ class MyAppBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(0, 52, 0, 36),
+        padding: const EdgeInsets.fromLTRB(0, 52, 0, 18),
         child: Row(
           children: <Widget>[
             Text(

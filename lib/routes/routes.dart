@@ -53,6 +53,18 @@ class Routes {
     path: '/home',
   );
 
+  // 목표 설정 페이지
+  static const RouteInfo goalSetting = RouteInfo(
+    name: '/goal/setting',
+    path: '/goal/setting',
+  );
+
+  // 목표 기간 설정 페이지
+  static const RouteInfo goalDurationSetting = RouteInfo(
+    name: '/goal/duration-setting',
+    path: '/goal/duration-setting',
+  );
+
   // 운세 페이지
   static const RouteInfo fortune = RouteInfo(
     name: '/home/fortune',

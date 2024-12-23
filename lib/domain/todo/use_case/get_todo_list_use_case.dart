@@ -25,19 +25,19 @@ class GetTodoListUseCase {
       SuccessRepositoryResult<List<TodoModel>>(
         data: <TodoModel>[
           TodoModel(
-            id: '1',
+            id: '할 일1',
             title: '할 일1',
             isDone: false,
             createdAt: DateTime.now(),
           ),
           TodoModel(
-            id: '2',
+            id: '할 일2',
             title: '할 일2',
             isDone: false,
             createdAt: DateTime.now(),
           ),
           TodoModel(
-            id: '3',
+            id: '할 일3',
             title: '할 일3',
             isDone: false,
             createdAt: DateTime.now(),

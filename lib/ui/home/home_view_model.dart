@@ -2,36 +2,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/common/use_case/use_case_result.dart';
 import '../../../../core/loading_status.dart';
-import '../../domain/todo/model/recommended_todo_model.dart';
 import '../../domain/todo/model/todo_model.dart';
-import '../../domain/todo/use_case/get_recommended_todo_list_use_case.dart';
 import '../../domain/todo/use_case/get_todo_list_use_case.dart';
 import 'home_state.dart';
 
 final AutoDisposeStateNotifierProvider<HomeViewModel, HomeState>
     homeViewModelProvider = StateNotifierProvider.autoDispose(
   (Ref ref) => HomeViewModel(
-    state: const HomeState.init(),
+    state: HomeState.init(),
     getTodoListUseCase: ref.watch(getTodoListUseCaseProvider),
-    getRecommendedTodoListUseCase:
-        ref.watch(getRecommendedTodoListUseCaseProvider),
   ),
 );
 
 class HomeViewModel extends StateNotifier<HomeState> {
   final GetTodoListUseCase _getTodoListUseCase;
-  final GetRecommendedTodoListUseCase _getRecommendedTodoListUseCase;
   HomeViewModel({
     required HomeState state,
     required GetTodoListUseCase getTodoListUseCase,
-    required GetRecommendedTodoListUseCase getRecommendedTodoListUseCase,
   })  : _getTodoListUseCase = getTodoListUseCase,
-        _getRecommendedTodoListUseCase = getRecommendedTodoListUseCase,
         super(state);
 
   void init() {
     getTodoList();
-    getRecommendedTodoList();
   }
 
   Future<void> getTodoList() async {
@@ -54,38 +46,7 @@ class HomeViewModel extends StateNotifier<HomeState> {
     }
   }
 
-  Future<void> getRecommendedTodoList() async {
-    state = state.copyWith(
-      getRecommendedTodoListLoadingStatus: LoadingStatus.loading,
-    );
-
-    final UseCaseResult<List<RecommendedTodoModel>> result =
-        await _getRecommendedTodoListUseCase();
-
-    switch (result) {
-      case SuccessUseCaseResult<List<RecommendedTodoModel>>():
-        state = state.copyWith(
-          recommendedTodoList: result.data,
-          getRecommendedTodoListLoadingStatus: LoadingStatus.success,
-        );
-      case FailureUseCaseResult<List<RecommendedTodoModel>>():
-        state = state.copyWith(
-          getRecommendedTodoListLoadingStatus: LoadingStatus.error,
-        );
-    }
-  }
-
   // ref.read(homeViewModelProvider.notifier).toggleDone(id);
-
-  Future<void> toggleRecommendedTodoDone({required String id}) async {
-    // await _toggleDoneUseCase(id);
-    state = state.copyWith(
-      recommendedTodoList: state.recommendedTodoList
-          .map((RecommendedTodoModel e) =>
-              e.id == id ? e.copyWith(isDone: !e.isDone) : e)
-          .toList(),
-    );
-  }
 
   Future<void> toggleTodoDone({required String id}) async {
     // await _toggleDoneUseCase(id);
@@ -96,10 +57,64 @@ class HomeViewModel extends StateNotifier<HomeState> {
     );
   }
 
-  Future<void> addTodo({required TodoModel todo}) async {
+  Future<void> addTodo({required String todo}) async {
     // await _addTodoUseCase(todo);
+
+    final TodoModel todoModel = TodoModel(
+      id: todo,
+      title: todo,
+      isDone: false,
+      createdAt: DateTime.now(),
+    );
     state = state.copyWith(
-      todoList: <TodoModel>[...state.todoList, todo],
+      todoList: <TodoModel>[...state.todoList, todoModel],
+    );
+  }
+
+  Future<void> deleteTodo({required String id}) async {
+    // await _deleteTodoUseCase(id);
+    state = state.copyWith(
+      todoList: state.todoList.where((TodoModel e) => e.id != id).toList(),
+    );
+  }
+
+  Future<void> updateTodo({required String id, required String title}) async {
+    // await _updateTodoUseCase(id, title);
+    state = state.copyWith(
+      todoList: state.todoList
+          .map((TodoModel e) => e.id == id ? e.copyWith(title: title) : e)
+          .toList(),
+    );
+  }
+
+  void setIsAddingTodo({required bool value}) {
+    state = state.copyWith(
+      isAddingTodo: value,
+    );
+  }
+
+  void moveToNextWeek() {
+    state = state.copyWith(
+      currentWeekStart: state.currentWeekStart.add(const Duration(days: 7)),
+    );
+  }
+
+  void moveToPreviousWeek() {
+    state = state.copyWith(
+      currentWeekStart:
+          state.currentWeekStart.subtract(const Duration(days: 7)),
+    );
+  }
+
+  void setSelectedDate({required DateTime date}) {
+    state = state.copyWith(
+      selectedDate: date,
+    );
+  }
+
+  void setCurrentWeekStart({required DateTime date}) {
+    state = state.copyWith(
+      currentWeekStart: date,
     );
   }
 }

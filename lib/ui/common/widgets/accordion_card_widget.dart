@@ -76,7 +76,7 @@ class _AccordionCardWidgetState extends State<AccordionCardWidget>
         borderRadius: BorderRadius.circular(widget.borderRadius),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: doitColorTheme.shadow2.withOpacity(0.2),
+            color: doitColorTheme.shadow1.withOpacity(0.2),
             blurRadius: 4,
           ),
         ],
