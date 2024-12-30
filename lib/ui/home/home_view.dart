@@ -1,13 +1,18 @@
+import 'dart:math' as math;
+
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../domain/todo/model/todo_model.dart';
 import '../../routes/routes.dart';
 import '../../theme/doit_color_theme.dart';
 import '../../theme/doit_typos.dart';
 import '../common/consts/assets.dart';
 import '../common/widgets/bottom_navigation_bar_widget.dart';
+import '../farm/game/farm_game.dart';
 import 'home_state.dart';
 import 'home_view_model.dart';
 import 'widgets/calender_bar_widget.dart';
@@ -25,6 +30,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
   final TextEditingController addTodoTextEditingController =
       TextEditingController();
 
+  late FarmGame _farmGame;
+
   // 스크롤이 맨 위(0.99)까지 갔을 때 1으로 이동ㅎ
   void _scrollListener() {
     if (mainAxisScrollController.offset <= 0.99) {
@@ -36,7 +43,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   void initState() {
     super.initState();
     mainAxisScrollController.addListener(_scrollListener);
-
+    _farmGame = FarmGame();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(homeViewModelProvider.notifier).init();
     });
@@ -52,11 +59,44 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> lottiePaths = <String>[
+      Assets.noShadowMouseMove,
+      Assets.noShadowCowMove,
+      Assets.noShadowTigerMove,
+      Assets.noShadowRabbitMove,
+      Assets.noShadowDragonMove,
+      Assets.noShadowSnakeMove,
+      Assets.noShadowChickenMove,
+      Assets.noShadowPigMove,
+      Assets.noShadowSheepMove,
+      Assets.noShadowHorseMove,
+      Assets.noShadowDogMove,
+      Assets.noShadowMonkeyMove,
+    ];
+
     final HomeState state = ref.watch(homeViewModelProvider);
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
-
+    final Size size = MediaQuery.of(context).size;
     final double gameHeight = MediaQuery.of(context).size.width / 375 * 218;
+    FarmGame.screenSize = Vector2(size.width, gameHeight);
+
+    ref.listen(
+        homeViewModelProvider.select((HomeState state) => state.todoList),
+        (List<TodoModel>? prev, List<TodoModel> next) {
+      if (prev != null && prev.length < next.length) {
+        // 랜덤한 위치에 새로운 MovableObject 추가
+        final math.Random random = math.Random();
+        final Vector2 position = Vector2(
+          random.nextDouble() * FarmGame.screenSize.x,
+          random.nextDouble() * FarmGame.screenSize.y,
+        );
+        _farmGame.world.add(MovableObject(
+          position: position,
+          lottiePath: lottiePaths[random.nextInt(lottiePaths.length)],
+        ));
+      }
+    });
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -92,13 +132,35 @@ class _HomeViewState extends ConsumerState<HomeView> {
                       Container(
                         color: const Color(0xFF27358C),
                         height: gameHeight,
+                        child: GameWidget<FarmGame>(
+                          game: _farmGame,
+                          backgroundBuilder: (BuildContext context) =>
+                              Container(
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(Assets.gameBackground),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          loadingBuilder: (BuildContext context) =>
+                              const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                          errorBuilder: (BuildContext context, Object error) =>
+                              Center(
+                            child: Text('Error: $error'),
+                          ),
+                        ),
                       ),
                       // 농장으로 가기 버튼
                       Positioned(
                         right: 16,
                         bottom: 8,
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            context.pushNamed(Routes.farm.name);
+                          },
                           style: IconButton.styleFrom(
                             backgroundColor: doitColorTheme.background,
                           ),

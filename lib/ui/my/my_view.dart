@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../routes/routes.dart';
 import '../../theme/doit_color_theme.dart';
@@ -58,7 +58,6 @@ class _MyViewState extends ConsumerState<MyView> {
               // const SizedBox(
               //   height: 36,
               // ),
-              // 내가 도전한 목표
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -75,56 +74,97 @@ class _MyViewState extends ConsumerState<MyView> {
                 ],
               ),
               const SizedBox(height: 16),
-              Column(
-                children: <Widget>[
-                  GridView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4, // 한 줄에 4개
-                      childAspectRatio: 2 / 1, // 가로:세로 = 2:1
-                      crossAxisSpacing: gridItemSpacing, // 가로 간격
-                      mainAxisSpacing: gridItemRunSpacing, // 세로 간격
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                decoration: BoxDecoration(
+                  color: doitColorTheme.background,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: doitColorTheme.shadow1.withOpacity(0.2),
+                      blurRadius: 4,
                     ),
-                    itemCount: 12, // 4개씩 3줄 = 12개
-                    itemBuilder: (BuildContext context, int index) => Container(
-                      clipBehavior: Clip.hardEdge,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: doitColorTheme.gray20,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
+                  ],
+                ),
+                child: Column(
+                  children: <Widget>[
+                    GridView.builder(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4, // 한 줄에 4개
+                        childAspectRatio: 2 / 1, // 가로:세로 = 2:1
+                        crossAxisSpacing: gridItemSpacing, // 가로 간격
+                        mainAxisSpacing: gridItemRunSpacing, // 세로 간격
                       ),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: <Widget>[
-                          const Positioned(
-                            left: 12,
-                            child: Text(
-                              '12',
-                              style: DoitTypos.suitSB16,
-                            ),
+                      itemCount: 12, // 4개씩 3줄 = 12개
+                      itemBuilder: (BuildContext context, int index) =>
+                          Container(
+                        clipBehavior: Clip.hardEdge,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: doitColorTheme.gray20,
                           ),
-                          Positioned(
-                            left: 40,
-                            child: SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: Image.asset(Assets.allLuck),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: <Widget>[
+                            const Positioned(
+                              left: 12,
+                              child: Text(
+                                '12',
+                                style: DoitTypos.suitSB16,
+                              ),
+                            ),
+                            Positioned(
+                              left: 40,
+                              child: SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: Image.asset(Assets.allLuck),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        backgroundColor: doitColorTheme.main,
+                        foregroundColor: doitColorTheme.background,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        context.pushNamed(Routes.farm.name);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            '동물들 보러가기',
+                            style: DoitTypos.suitR14.copyWith(
+                              color: Colors.white,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                ],
+                    )
+                  ],
+                ),
               ),
+
               Divider(
-                height: 48,
-                thickness: 3,
+                height: 32,
+                thickness: 4,
                 color: doitColorTheme.gray20,
               ),
+
               const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[

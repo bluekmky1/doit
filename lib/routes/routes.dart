@@ -65,6 +65,12 @@ class Routes {
     path: '/goal/duration-setting',
   );
 
+  // 프로필 페이지
+  static const RouteInfo profile = RouteInfo(
+    name: '/home/my/profile',
+    path: 'profile',
+  );
+
   // 운세 페이지
   static const RouteInfo fortune = RouteInfo(
     name: '/home/fortune',
@@ -75,5 +81,11 @@ class Routes {
   static const RouteInfo my = RouteInfo(
     name: '/home/my',
     path: 'my',
+  );
+
+  // 농장 페이지
+  static const RouteInfo farm = RouteInfo(
+    name: '/home/farm',
+    path: 'farm',
   );
 }

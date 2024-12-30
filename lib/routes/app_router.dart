@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../ui/farm/farm_view.dart';
 import '../ui/fortune/fortune_view.dart';
 import '../ui/goal/views/new_goal_duration_setting_view.dart';
 import '../ui/goal/views/new_goal_setting_view.dart';
@@ -12,6 +13,7 @@ import '../ui/onboarding/views/goal_duration_setting_view.dart';
 import '../ui/onboarding/views/goal_setting_view.dart';
 import '../ui/onboarding/views/onboarding_start_view.dart';
 import '../ui/onboarding/views/user_profile_input_view.dart';
+import '../ui/profile/profile_view.dart';
 import '../ui/tutorial/tutorial_view.dart';
 import 'app_router_interceptor.dart';
 import 'redirect_notifier.dart';
@@ -148,6 +150,14 @@ class AppRouter {
               ),
           routes: <RouteBase>[
             GoRoute(
+              name: Routes.farm.name,
+              path: Routes.farm.path,
+              pageBuilder: (BuildContext context, GoRouterState state) =>
+                  const NoTransitionPage<dynamic>(
+                child: FarmView(),
+              ),
+            ),
+            GoRoute(
               name: Routes.fortune.name,
               path: Routes.fortune.path,
               pageBuilder: (BuildContext context, GoRouterState state) =>
@@ -162,6 +172,16 @@ class AppRouter {
                   const NoTransitionPage<dynamic>(
                 child: MyView(),
               ),
+              routes: <RouteBase>[
+                GoRoute(
+                  name: Routes.profile.name,
+                  path: Routes.profile.path,
+                  pageBuilder: (BuildContext context, GoRouterState state) =>
+                      const NoTransitionPage<dynamic>(
+                    child: ProfileView(),
+                  ),
+                ),
+              ],
             ),
           ]),
 

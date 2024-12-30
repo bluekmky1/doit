@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../routes/routes.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
 import '../../common/consts/assets.dart';
@@ -59,7 +61,9 @@ class MyAppBarWidget extends StatelessWidget {
               style: const ButtonStyle(
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              onPressed: () {},
+              onPressed: () {
+                context.goNamed(Routes.profile.name);
+              },
               icon: SvgPicture.asset(
                 Assets.edit,
                 colorFilter: ColorFilter.mode(
