@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/common/use_case/use_case_result.dart';
 import '../../../../core/loading_status.dart';
@@ -6,6 +7,7 @@ import '../../domain/todo/model/recommended_todo_model.dart';
 import '../../domain/todo/model/todo_model.dart';
 import '../../domain/todo/use_case/get_recommended_todo_list_use_case.dart';
 import '../../domain/todo/use_case/get_todo_list_use_case.dart';
+import '../../service/supabase_service.dart';
 import 'my_state.dart';
 
 final AutoDisposeStateNotifierProvider<MyViewModel, MyState>
@@ -15,18 +17,22 @@ final AutoDisposeStateNotifierProvider<MyViewModel, MyState>
     getTodoListUseCase: ref.watch(getTodoListUseCaseProvider),
     getRecommendedTodoListUseCase:
         ref.watch(getRecommendedTodoListUseCaseProvider),
+    supabaseClient: ref.watch(supabaseServiceProvider),
   ),
 );
 
 class MyViewModel extends StateNotifier<MyState> {
   final GetTodoListUseCase _getTodoListUseCase;
   final GetRecommendedTodoListUseCase _getRecommendedTodoListUseCase;
+  final SupabaseClient _supabaseClient;
   MyViewModel({
     required MyState state,
     required GetTodoListUseCase getTodoListUseCase,
     required GetRecommendedTodoListUseCase getRecommendedTodoListUseCase,
+    required SupabaseClient supabaseClient,
   })  : _getTodoListUseCase = getTodoListUseCase,
         _getRecommendedTodoListUseCase = getRecommendedTodoListUseCase,
+        _supabaseClient = supabaseClient,
         super(state);
 
   void init() {
@@ -94,5 +100,12 @@ class MyViewModel extends StateNotifier<MyState> {
           .map((TodoModel e) => e.id == id ? e.copyWith(isDone: !e.isDone) : e)
           .toList(),
     );
+  }
+
+  Future<void> signOut() async {
+    final Session? session = _supabaseClient.auth.currentSession;
+    if (session != null) {
+      await _supabaseClient.auth.signOut();
+    }
   }
 }

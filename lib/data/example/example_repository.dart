@@ -8,7 +8,7 @@ import 'example_remote_data_source.dart';
 
 final Provider<ExampleRepository> exampleRepositoryProvider =
     Provider<ExampleRepository>(
-  (ProviderRef<ExampleRepository> ref) =>
+  (Ref<ExampleRepository> ref) =>
       ExampleRepository(ref.watch(exampleRemoteDataSourceProvider)),
 );
 

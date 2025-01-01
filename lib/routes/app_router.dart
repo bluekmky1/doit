@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../ui/auth/sign_in_view.dart';
 import '../ui/farm/farm_view.dart';
 import '../ui/fortune/fortune_view.dart';
 import '../ui/goal/views/new_goal_duration_setting_view.dart';
@@ -64,7 +65,7 @@ class AppRouter {
       _appRouterInterceptor.redirect(context, state);
 
   late final GoRouter _router = GoRouter(
-    initialLocation: Routes.home.name,
+    initialLocation: Routes.signIn.name,
     debugLogDiagnostics: true,
     navigatorKey: rootNavigatorKey,
     refreshListenable: _refreshListenable,
@@ -75,6 +76,14 @@ class AppRouter {
     ),
     redirect: _redirect,
     routes: <RouteBase>[
+      GoRoute(
+        name: Routes.signIn.name,
+        path: Routes.signIn.path,
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            const NoTransitionPage<dynamic>(
+          child: SignInView(),
+        ),
+      ),
       GoRoute(
         name: Routes.onboardingStart.name,
         path: Routes.onboardingStart.path,

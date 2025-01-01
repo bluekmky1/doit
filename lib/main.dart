@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'routes/app_router.dart';
+import 'service/supabase_service.dart';
 import 'theme/doit_color_theme.dart';
 import 'theme/doit_colors.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MainApp()));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // .env 파일 로드
+  await dotenv.load();
+
+  // Supabase 초기화
+  await SupabaseService.initialize();
+
+  runApp(
+    const ProviderScope(
+      child: MainApp(),
+    ),
+  );
 }
 
 class MainApp extends ConsumerWidget {

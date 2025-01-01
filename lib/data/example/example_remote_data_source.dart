@@ -9,7 +9,7 @@ part 'generated/example_remote_data_source.g.dart';
 
 final Provider<ExampleRemoteDataSource> exampleRemoteDataSourceProvider =
     Provider<ExampleRemoteDataSource>(
-  (ProviderRef<ExampleRemoteDataSource> ref) =>
+  (Ref<ExampleRemoteDataSource> ref) =>
       ExampleRemoteDataSource(ref.read(dioServiceProvider)),
 );
 

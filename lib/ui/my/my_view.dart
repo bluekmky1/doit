@@ -41,23 +41,7 @@ class _MyViewState extends ConsumerState<MyView> {
           child: Column(
             children: <Widget>[
               // 앱바
-              MyAppBarWidget(doitColorTheme: doitColorTheme),
-              // 목표 달성 그래프
-              // const ElevatedCardWidget(
-              //   height: 220,
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: <Widget>[
-              //       Text(
-              //         '미션 달성 그래프',
-              //         style: DoitTypos.suitSB16,
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // const SizedBox(
-              //   height: 36,
-              // ),
+              const MyAppBarWidget(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[

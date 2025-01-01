@@ -7,10 +7,10 @@ class Routes {
   //   path: '/auth',
   // );
 
-  // static const RouteInfo signIn = RouteInfo(
-  //   name: '/auth/sign-in',
-  //   path: 'sign-in',
-  // );
+  static const RouteInfo signIn = RouteInfo(
+    name: '/sign-in',
+    path: '/sign-in',
+  );
 
   // static const RouteInfo signUp = RouteInfo(
   //   name: '/auth/sign-up',
