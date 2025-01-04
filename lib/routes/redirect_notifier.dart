@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../service/app/app_service.dart';
-import '../service/app/app_state.dart';
+import '../service/supabase/supabase_service.dart';
 
 final ChangeNotifierProvider<RedirectNotifier> redirectNotifierProvider =
     ChangeNotifierProvider<RedirectNotifier>(
@@ -16,8 +16,8 @@ class RedirectNotifier extends ChangeNotifier {
   RedirectNotifier({
     required Ref<Object?> ref,
   }) : _ref = ref {
-    _ref.listen(appServiceProvider.select((AppState value) => value.isSignedIn),
-        (bool? previous, bool next) {
+    _ref.listen(supabaseServiceProvider.select((SupabaseClient value) => value),
+        (SupabaseClient? previous, SupabaseClient next) {
       notifyListeners();
     });
   }

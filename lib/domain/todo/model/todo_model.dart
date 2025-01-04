@@ -1,44 +1,66 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../data/todo/entity/todo_entity.dart';
+
 class TodoModel extends Equatable {
-  final String id;
+  final String todoId;
+  final String animalId;
+  final String animalName;
   final String title;
-  final bool isDone;
-  final DateTime createdAt;
+  final bool isCompleted;
+  final DateTime dueDate;
+  final DateTime? completedAt;
 
   const TodoModel({
-    required this.id,
+    required this.todoId,
+    required this.animalId,
+    required this.animalName,
     required this.title,
-    required this.isDone,
-    required this.createdAt,
+    required this.isCompleted,
+    required this.dueDate,
+    required this.completedAt,
   });
 
-  // factory TodoModel.fromEntity({
-  //   required TodoEntity entity,
-  // }) =>
-  //     TodoModel(
-  //       id: entity.id,
-  //       title: entity.title,
-  //     );
-
-  TodoModel copyWith({
-    String? id,
-    String? title,
-    bool? isDone,
-    DateTime? createdAt,
+  factory TodoModel.fromEntity({
+    required TodoEntity entity,
   }) =>
       TodoModel(
-        id: id ?? this.id,
+        todoId: entity.todoId,
+        animalId: entity.animalId,
+        animalName: entity.animal.name,
+        title: entity.title,
+        isCompleted: entity.isCompleted,
+        dueDate: entity.dueDate,
+        completedAt: entity.completedAt,
+      );
+
+  TodoModel copyWith({
+    String? todoId,
+    String? animalId,
+    String? animalName,
+    String? title,
+    bool? isCompleted,
+    DateTime? dueDate,
+    DateTime? completedAt,
+  }) =>
+      TodoModel(
+        todoId: todoId ?? this.todoId,
+        animalId: animalId ?? this.animalId,
+        animalName: animalName ?? this.animalName,
         title: title ?? this.title,
-        isDone: isDone ?? this.isDone,
-        createdAt: createdAt ?? this.createdAt,
+        isCompleted: isCompleted ?? this.isCompleted,
+        dueDate: dueDate ?? this.dueDate,
+        completedAt: completedAt ?? this.completedAt,
       );
 
   @override
   List<Object?> get props => <Object?>[
-        id,
+        todoId,
+        animalId,
+        animalName,
         title,
-        isDone,
-        createdAt,
+        isCompleted,
+        dueDate,
+        completedAt,
       ];
 }

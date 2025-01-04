@@ -1,21 +1,11 @@
 import 'route_info.dart';
 
 class Routes {
-  // auth
-  // static const RouteInfo auth = RouteInfo(
-  //   name: '/auth',
-  //   path: '/auth',
-  // );
-
+  // 로그인 페이지
   static const RouteInfo signIn = RouteInfo(
     name: '/sign-in',
     path: '/sign-in',
   );
-
-  // static const RouteInfo signUp = RouteInfo(
-  //   name: '/auth/sign-up',
-  //   path: 'sign-up',
-  // );
 
   // 온보딩 시작 페이지
   static const RouteInfo onboardingStart = RouteInfo(
@@ -29,18 +19,6 @@ class Routes {
     path: '/onboarding/user-profile-input',
   );
 
-  // 목표 설정 온보딩
-  static const RouteInfo onboardingGoalSetting = RouteInfo(
-    name: '/onboarding/goal-setting',
-    path: '/onboarding/goal-setting',
-  );
-
-  // 목표 기간 설정 온보딩
-  static const RouteInfo onboardingGoalDurationSetting = RouteInfo(
-    name: '/onboarding/duration-setting',
-    path: '/onboarding/duration-setting',
-  );
-
   // 튜토리얼 페이지
   static const RouteInfo tutorial = RouteInfo(
     name: '/tutorial',
@@ -51,18 +29,6 @@ class Routes {
   static const RouteInfo home = RouteInfo(
     name: '/home',
     path: '/home',
-  );
-
-  // 목표 설정 페이지
-  static const RouteInfo goalSetting = RouteInfo(
-    name: '/goal/setting',
-    path: '/goal/setting',
-  );
-
-  // 목표 기간 설정 페이지
-  static const RouteInfo goalDurationSetting = RouteInfo(
-    name: '/goal/duration-setting',
-    path: '/goal/duration-setting',
   );
 
   // 프로필 페이지

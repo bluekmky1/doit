@@ -254,7 +254,7 @@ class _CompletedTodoCardWidget extends StatelessWidget {
             ),
           ),
 
-          // TODO: 월 별 농장으로 이동하는 버튼 추가 기획 필요
+          // TODOS(재훈): 월 별 농장으로 이동하는 버튼 추가 기획 필요
           // const SizedBox(height: 12),
           // TextButton(
           //     style: TextButton.styleFrom(

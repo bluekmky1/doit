@@ -6,13 +6,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../domain/todo/model/todo_model.dart';
+import '../../core/loading_status.dart';
 import '../../routes/routes.dart';
 import '../../theme/doit_color_theme.dart';
 import '../../theme/doit_typos.dart';
+import '../common/consts/animal_type.dart';
 import '../common/consts/assets.dart';
+import '../common/game/farm_game.dart';
 import '../common/widgets/bottom_navigation_bar_widget.dart';
-import '../farm/game/farm_game.dart';
 import 'home_state.dart';
 import 'home_view_model.dart';
 import 'widgets/calender_bar_widget.dart';
@@ -32,7 +33,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   late FarmGame _farmGame;
 
-  // 스크롤이 맨 위(0.99)까지 갔을 때 1으로 이동ㅎ
+  // 스크롤이 맨 위(0.99)까지 갔을 때 1으로 이동
   void _scrollListener() {
     if (mainAxisScrollController.offset <= 0.99) {
       mainAxisScrollController.jumpTo(1);
@@ -42,8 +43,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
   @override
   void initState() {
     super.initState();
-    mainAxisScrollController.addListener(_scrollListener);
     _farmGame = FarmGame();
+    mainAxisScrollController.addListener(_scrollListener);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(homeViewModelProvider.notifier).init();
     });
@@ -59,41 +60,37 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> lottiePaths = <String>[
-      Assets.noShadowMouseMove,
-      Assets.noShadowCowMove,
-      Assets.noShadowTigerMove,
-      Assets.noShadowRabbitMove,
-      Assets.noShadowDragonMove,
-      Assets.noShadowSnakeMove,
-      Assets.noShadowChickenMove,
-      Assets.noShadowPigMove,
-      Assets.noShadowSheepMove,
-      Assets.noShadowHorseMove,
-      Assets.noShadowDogMove,
-      Assets.noShadowMonkeyMove,
-    ];
-
     final HomeState state = ref.watch(homeViewModelProvider);
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
+
     final Size size = MediaQuery.of(context).size;
     final double gameHeight = MediaQuery.of(context).size.width / 375 * 218;
-    FarmGame.screenSize = Vector2(size.width, gameHeight);
+    _farmGame.viewSize = Vector2(size.width, gameHeight);
 
     ref.listen(
-        homeViewModelProvider.select((HomeState state) => state.todoList),
-        (List<TodoModel>? prev, List<TodoModel> next) {
-      if (prev != null && prev.length < next.length) {
+        homeViewModelProvider
+            .select((HomeState state) => state.addTodoLoadingStatus),
+        (LoadingStatus? prev, LoadingStatus next) {
+      final DateTime today = DateTime.now();
+      if (next == LoadingStatus.success &&
+          state.selectedDate == DateTime(today.year, today.month, today.day) &&
+          ref.read(homeViewModelProvider).todoList.length >
+              state.todoList.length) {
         // 랜덤한 위치에 새로운 MovableObject 추가
         final math.Random random = math.Random();
         final Vector2 position = Vector2(
           random.nextDouble() * FarmGame.screenSize.x,
           random.nextDouble() * FarmGame.screenSize.y,
         );
+
+        final AnimalType animalType = AnimalType.fromString(
+          ref.read(homeViewModelProvider).todoList.last.animalName,
+        );
+
         _farmGame.world.add(MovableObject(
           position: position,
-          lottiePath: lottiePaths[random.nextInt(lottiePaths.length)],
+          animalType: animalType,
         ));
       }
     });
@@ -174,9 +171,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 ],
               ),
             ),
-            // 투두 리스트 ----------------------------------
-            const GoalExistTodoWidget(),
-
+            // 투두 리스트
+            const TodoListWidget(),
             const SizedBox(height: 140),
           ],
         ),
@@ -185,19 +181,20 @@ class _HomeViewState extends ConsumerState<HomeView> {
   }
 }
 
-class GoalExistTodoWidget extends ConsumerStatefulWidget {
-  const GoalExistTodoWidget({
+class TodoListWidget extends ConsumerStatefulWidget {
+  const TodoListWidget({
     super.key,
   });
 
   @override
-  ConsumerState<GoalExistTodoWidget> createState() =>
-      _GoalExistTodoWidgetState();
+  ConsumerState<TodoListWidget> createState() => _TodoListWidgetState();
 }
 
-class _GoalExistTodoWidgetState extends ConsumerState<GoalExistTodoWidget> {
+class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
   final TextEditingController addTodoTextEditingController =
       TextEditingController();
+
+  final FocusNode _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -227,23 +224,25 @@ class _GoalExistTodoWidgetState extends ConsumerState<GoalExistTodoWidget> {
                 style: DoitTypos.suitSB16,
               ),
               const Spacer(),
-              IconButton(
-                constraints: const BoxConstraints(),
-                style: TextButton.styleFrom(
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  padding: EdgeInsets.zero,
-                ),
-                onPressed: () {
-                  viewModel.setIsAddingTodo(value: true);
-                },
-                icon: SvgPicture.asset(
-                  Assets.add,
-                  colorFilter: ColorFilter.mode(
-                    doitColorTheme.main,
-                    BlendMode.srcIn,
+              if (state.isNotTodoLoading)
+                IconButton(
+                  constraints: const BoxConstraints(),
+                  style: TextButton.styleFrom(
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    padding: EdgeInsets.zero,
+                  ),
+                  onPressed: () {
+                    viewModel.setIsAddingTodo(value: true);
+                    _focusNode.requestFocus();
+                  },
+                  icon: SvgPicture.asset(
+                    Assets.add,
+                    colorFilter: ColorFilter.mode(
+                      doitColorTheme.main,
+                      BlendMode.srcIn,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
@@ -267,8 +266,8 @@ class _GoalExistTodoWidgetState extends ConsumerState<GoalExistTodoWidget> {
                   child: TextField(
                     controller: addTodoTextEditingController,
                     autofocus: true,
+                    focusNode: _focusNode,
                     onTapOutside: (PointerDownEvent event) {
-                      FocusScope.of(context).unfocus();
                       viewModel.setIsAddingTodo(value: false);
                       if (addTodoTextEditingController.text.isNotEmpty) {
                         viewModel.addTodo(
@@ -278,7 +277,7 @@ class _GoalExistTodoWidgetState extends ConsumerState<GoalExistTodoWidget> {
                       addTodoTextEditingController.clear();
                     },
                     onSubmitted: (String value) {
-                      FocusScope.of(context).unfocus();
+                      // FocusScope.of(context).unfocus();
                       viewModel.setIsAddingTodo(value: false);
                       if (addTodoTextEditingController.text.isNotEmpty) {
                         viewModel.addTodo(
@@ -299,39 +298,55 @@ class _GoalExistTodoWidgetState extends ConsumerState<GoalExistTodoWidget> {
               ],
             ),
           ),
-        // 내가 추가한 할 일 리스트
-        Container(
-          decoration: BoxDecoration(
-            color: doitColorTheme.background,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: doitColorTheme.shadow2.withOpacity(0.2),
-                blurRadius: 16,
-              ),
-            ],
-          ),
-          margin: const EdgeInsets.symmetric(horizontal: 24),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+        if (state.isNotTodoLoading &&
+            (state.todoList.isEmpty && !state.isAddingTodo))
+          Column(
             children: <Widget>[
-              ...List<Widget>.generate(
-                state.todoList.length,
-                (int index) => Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    if (index != 0) const Divider(height: 12),
-                    TodoListItemWidget(
-                      model: state.todoList[index],
-                    ),
-                  ],
-                ),
+              const SizedBox(height: 10),
+              Image.asset(Assets.emptyDragon),
+              const SizedBox(height: 10),
+              const Text(
+                '등록한 할 일이 없어요\n'
+                '할 일을 추가해보세요!',
+                style: DoitTypos.suitR14,
+                textAlign: TextAlign.center,
               ),
             ],
           ),
-        ),
+        // 내가 추가한 할 일 리스트
+        if (state.todoList.isNotEmpty && state.isNotTodoLoading)
+          Container(
+            decoration: BoxDecoration(
+              color: doitColorTheme.background,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: doitColorTheme.shadow2.withOpacity(0.2),
+                  blurRadius: 16,
+                ),
+              ],
+            ),
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ...List<Widget>.generate(
+                  state.todoList.length,
+                  (int index) => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      if (index != 0) const Divider(height: 12),
+                      TodoListItemWidget(
+                        model: state.todoList[index],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }

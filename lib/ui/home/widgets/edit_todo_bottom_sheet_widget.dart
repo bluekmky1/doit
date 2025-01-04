@@ -107,7 +107,7 @@ class _EditTodoBottomSheetWidgetState
                   ),
                   onPressed: () {
                     viewModel.updateTodo(
-                      id: widget.model.id,
+                      id: widget.model.todoId,
                       title: _textEditingController.text,
                     );
                     context.pop();

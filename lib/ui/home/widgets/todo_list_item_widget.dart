@@ -50,7 +50,8 @@ class TodoListItemWidget extends ConsumerWidget {
           clipBehavior: Clip.hardEdge,
           margin: const EdgeInsets.only(left: 16),
           decoration: BoxDecoration(
-            color: model.isDone ? doitColorTheme.main : doitColorTheme.gray20,
+            color:
+                model.isCompleted ? doitColorTheme.main : doitColorTheme.gray20,
             borderRadius: BorderRadius.circular(100),
           ),
           child: Material(
@@ -60,7 +61,7 @@ class TodoListItemWidget extends ConsumerWidget {
                 doitColorTheme.main.withOpacity(0.2),
               ),
               onTap: () {
-                viewModel.toggleTodoDone(id: model.id);
+                viewModel.toggleTodoDone(id: model.todoId);
               },
               child: SvgPicture.asset(
                 Assets.done,
@@ -165,7 +166,7 @@ class TodoDetailModalWidget extends ConsumerWidget {
           TextButton(
             onPressed: () {
               context.pop();
-              viewModel.deleteTodo(id: model.id);
+              viewModel.deleteTodo(id: model.todoId);
             },
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(

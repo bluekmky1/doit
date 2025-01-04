@@ -1,5 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../core/common/use_case/use_case_result.dart';
+import '../../core/loading_status.dart';
+import '../../domain/user/model/user_data_model.dart';
+import '../../domain/user/use_case/post_user_data.dart';
+import '../../service/supabase/supabase_service.dart';
 import '../common/consts/am_pm.dart';
 import '../common/consts/gender.dart';
 import '../common/consts/lunar_solar.dart';
@@ -9,22 +15,70 @@ final AutoDisposeStateNotifierProvider<OnboardingViewModel, OnboardingState>
     onboardingViewModelProvider = StateNotifierProvider.autoDispose(
   (Ref ref) => OnboardingViewModel(
     state: const OnboardingState.init(),
+    supabaseClient: ref.read(supabaseServiceProvider),
+    postUserDataUseCase: ref.read(postUserDataUseCaseProvider),
   ),
 );
 
 class OnboardingViewModel extends StateNotifier<OnboardingState> {
+  final SupabaseClient _supabaseClient;
+  final PostUserDataUseCase _postUserDataUseCase;
+
   OnboardingViewModel({
     required OnboardingState state,
-  }) : super(state);
+    required SupabaseClient supabaseClient,
+    required PostUserDataUseCase postUserDataUseCase,
+  })  : _supabaseClient = supabaseClient,
+        _postUserDataUseCase = postUserDataUseCase,
+        super(state);
 
+  // 유저 데이터 저장
+  Future<void> saveUserData() async {
+    state = state.copyWith(
+      postUserDataLoadingStatus: LoadingStatus.loading,
+    );
+
+    if (_supabaseClient.auth.currentUser == null) {
+      return;
+    }
+    final UseCaseResult<void> result = await _postUserDataUseCase(
+      data: UserDataModel(
+        id: _supabaseClient.auth.currentUser!.id,
+        nickname: _supabaseClient.auth.currentUser!.userMetadata?['name'],
+        gender: state.gender.title,
+        lunarSolar: state.lunarSolar.title,
+        birthDate: DateTime(
+          int.parse(state.birthYear),
+          int.parse(state.birthMonth),
+          int.parse(state.birthDay),
+        ),
+        unknownBirthTime: state.isBirthDateUnknown,
+        consent: state.isAgreeTerms,
+      ),
+    );
+    switch (result) {
+      case SuccessUseCaseResult<void>():
+        state = state.copyWith(
+          postUserDataLoadingStatus: LoadingStatus.success,
+        );
+      case FailureUseCaseResult<void>():
+        state = state.copyWith(
+          postUserDataLoadingStatus: LoadingStatus.error,
+        );
+    }
+  }
+
+  // 성별 변경
   void changeGender({required Gender gender}) {
     state = state.copyWith(gender: gender);
   }
 
+  // 음력/양력 변경
   void changeLunarSolar({required LunarSolar lunarSolar}) {
     state = state.copyWith(lunarSolar: lunarSolar);
   }
 
+  // 생년 변경
   void changeBirthYear({required String birthYear}) {
     final int? year = int.tryParse(birthYear);
     if (year == null || year < 1800) {
@@ -37,6 +91,7 @@ class OnboardingViewModel extends StateNotifier<OnboardingState> {
     );
   }
 
+  // 생월 변경
   void changeBirthMonth({required String birthMonth}) {
     final int? month = int.tryParse(birthMonth);
     if (month == null || month < 1 || month > 12) {
@@ -49,6 +104,7 @@ class OnboardingViewModel extends StateNotifier<OnboardingState> {
     );
   }
 
+  // 생일 변경
   void changeBirthDay({required String birthDay}) {
     final int? day = int.tryParse(birthDay);
     if (day == null || day < 1) {
@@ -92,10 +148,12 @@ class OnboardingViewModel extends StateNotifier<OnboardingState> {
     );
   }
 
+  // 오전 오후 선택
   void changeAmPm({required AmPm amPm}) {
     state = state.copyWith(amPm: amPm);
   }
 
+  // 생시 변경
   void changeBirthHour({required String birthHour}) {
     final int? hour = int.tryParse(birthHour);
     if (hour == null || hour < 1 || hour > 12) {
@@ -108,6 +166,7 @@ class OnboardingViewModel extends StateNotifier<OnboardingState> {
     );
   }
 
+  // 생분 변경
   void changeBirthMinute({required String birthMinute}) {
     final int? minute = int.tryParse(birthMinute);
     if (minute == null || minute < 0 || minute > 59) {
@@ -120,57 +179,13 @@ class OnboardingViewModel extends StateNotifier<OnboardingState> {
     );
   }
 
+  // 생일 알 수 없음 여부 변경
   void changeIsBirthDateUnknown({required bool isBirthDateUnknown}) {
     state = state.copyWith(isBirthDateUnknown: isBirthDateUnknown);
   }
 
+  // 약관 동의 여부 변경
   void changeIsAgreeTerms({required bool isAgreeTerms}) {
     state = state.copyWith(isAgreeTerms: isAgreeTerms);
-  }
-
-  void selectGoalForUser({required String goalForUser}) {
-    if (state.goalForUser == goalForUser) {
-      state = state.copyWith(goalForUser: state.goalForUserInput);
-      return;
-    }
-    state = state.copyWith(goalForUser: goalForUser);
-  }
-
-  void changeGoalForUserInput({required String goalForUserInput}) {
-    if (state.recommendedGoal.contains(goalForUserInput)) {
-      state = state.copyWith(
-        goalForUser: goalForUserInput,
-        goalForUserInput: '',
-      );
-      return;
-    }
-    state = state.copyWith(
-      goalForUserInput: goalForUserInput,
-      goalForUser: goalForUserInput,
-    );
-  }
-
-  void changeGoalStartYear({required String startYear}) {
-    state = state.copyWith(startYear: startYear);
-  }
-
-  void changeGoalStartMonth({required String startMonth}) {
-    state = state.copyWith(startMonth: startMonth);
-  }
-
-  void changeGoalStartDay({required String startDay}) {
-    state = state.copyWith(startDay: startDay);
-  }
-
-  void changeGoalEndYear({required String endYear}) {
-    state = state.copyWith(endYear: endYear);
-  }
-
-  void changeGoalEndMonth({required String endMonth}) {
-    state = state.copyWith(endMonth: endMonth);
-  }
-
-  void changeGoalEndDay({required String endDay}) {
-    state = state.copyWith(endDay: endDay);
   }
 }

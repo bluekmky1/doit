@@ -6,24 +6,30 @@ import '../../../data/todo/entity/todo_entity.dart';
 import '../../../data/todo/todo_repository.dart';
 import '../model/todo_model.dart';
 
-final AutoDisposeProvider<GetTodoListUseCase> getTodoListUseCaseProvider =
-    Provider.autoDispose<GetTodoListUseCase>(
-  (Ref<GetTodoListUseCase> ref) => GetTodoListUseCase(
+final AutoDisposeProvider<GetTodoListWithDateUseCase>
+    getTodoListWithDateUseCaseProvider =
+    Provider.autoDispose<GetTodoListWithDateUseCase>(
+  (Ref<GetTodoListWithDateUseCase> ref) => GetTodoListWithDateUseCase(
     todoRepository: ref.read(todoRepositoryProvider),
   ),
 );
 
-class GetTodoListUseCase {
+class GetTodoListWithDateUseCase {
   final TodoRepository _todoRepository;
-  GetTodoListUseCase({
+  GetTodoListWithDateUseCase({
     required TodoRepository todoRepository,
   }) : _todoRepository = todoRepository;
 
   Future<UseCaseResult<List<TodoModel>>> call({
     required String userId,
+    required DateTime dueDate,
   }) async {
     final RepositoryResult<List<TodoEntity>> repositoryResult =
-        await _todoRepository.getTodoList(userId: userId);
+        await _todoRepository.getTodoListWithDate(
+      userId: userId,
+      dueDate: dueDate,
+    );
+
     return switch (repositoryResult) {
       SuccessRepositoryResult<List<TodoEntity>>() =>
         SuccessUseCaseResult<List<TodoModel>>(

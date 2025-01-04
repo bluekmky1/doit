@@ -1,12 +1,13 @@
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../routes/routes.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
 import '../../common/consts/assets.dart';
+import '../../common/game/farm_game.dart';
 import '../farm_state.dart';
 import '../farm_view_model.dart';
 
@@ -50,6 +51,10 @@ class _BottomMenuBarWidgetState extends ConsumerState<BottomMenuBarWidget> {
             unselectedAsset: Assets.closeMD,
             isSelected: true,
             onTap: () {
+              // TODO(jaehoon): 나중에 더 좋은 방법이 있다면 변경
+              final Size size = MediaQuery.of(context).size;
+              final double gameHeight = size.width / 375 * 218;
+              FarmGame.screenSize = Vector2(size.width, gameHeight);
               context.pop();
             },
           ),

@@ -1,37 +1,75 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/common/use_case/use_case_result.dart';
 import '../../../../core/loading_status.dart';
 import '../../domain/todo/model/todo_model.dart';
-import '../../domain/todo/use_case/get_todo_list_use_case.dart';
+import '../../domain/todo/use_case/add_todo_use_case.dart';
+import '../../domain/todo/use_case/delete_todo_use_case.dart';
+import '../../domain/todo/use_case/get_todo_list_with_date_use_case.dart';
+import '../../domain/todo/use_case/update_todo_completed_use_case.dart';
+import '../../domain/todo/use_case/update_todo_use_case.dart';
+import '../../service/supabase/supabase_service.dart';
 import 'home_state.dart';
 
 final AutoDisposeStateNotifierProvider<HomeViewModel, HomeState>
     homeViewModelProvider = StateNotifierProvider.autoDispose(
   (Ref ref) => HomeViewModel(
     state: HomeState.init(),
-    getTodoListUseCase: ref.watch(getTodoListUseCaseProvider),
+    getTodoListWithDateUseCase: ref.watch(getTodoListWithDateUseCaseProvider),
+    supabaseClient: ref.watch(supabaseServiceProvider),
+    addTodoUseCase: ref.watch(addTodoUseCaseProvider),
+    deleteTodoUseCase: ref.watch(deleteTodoUseCaseProvider),
+    updateTodoUseCase: ref.watch(updateTodoUseCaseProvider),
+    updateTodoCompletedUseCase: ref.watch(updateTodoCompletedUseCaseProvider),
   ),
 );
 
 class HomeViewModel extends StateNotifier<HomeState> {
-  final GetTodoListUseCase _getTodoListUseCase;
+  final GetTodoListWithDateUseCase _getTodoListWithDateUseCase;
+  final AddTodoUseCase _addTodoUseCase;
+  final DeleteTodoUseCase _deleteTodoUseCase;
+  final UpdateTodoUseCase _updateTodoUseCase;
+  final UpdateTodoCompletedUseCase _updateTodoCompletedUseCase;
+  final SupabaseClient _supabaseClient;
   HomeViewModel({
     required HomeState state,
-    required GetTodoListUseCase getTodoListUseCase,
-  })  : _getTodoListUseCase = getTodoListUseCase,
+    required GetTodoListWithDateUseCase getTodoListWithDateUseCase,
+    required SupabaseClient supabaseClient,
+    required AddTodoUseCase addTodoUseCase,
+    required DeleteTodoUseCase deleteTodoUseCase,
+    required UpdateTodoUseCase updateTodoUseCase,
+    required UpdateTodoCompletedUseCase updateTodoCompletedUseCase,
+  })  : _getTodoListWithDateUseCase = getTodoListWithDateUseCase,
+        _supabaseClient = supabaseClient,
+        _addTodoUseCase = addTodoUseCase,
+        _deleteTodoUseCase = deleteTodoUseCase,
+        _updateTodoUseCase = updateTodoUseCase,
+        _updateTodoCompletedUseCase = updateTodoCompletedUseCase,
         super(state);
 
   void init() {
-    getTodoList();
+    getTodoListWithDate(targetDate: state.selectedDate);
   }
 
-  Future<void> getTodoList() async {
+  Future<void> getTodoListWithDate({
+    required DateTime targetDate,
+  }) async {
     state = state.copyWith(
       getTodoListLoadingStatus: LoadingStatus.loading,
     );
 
-    final UseCaseResult<List<TodoModel>> result = await _getTodoListUseCase();
+    final DateTime dueDate = DateTime(
+      targetDate.year,
+      targetDate.month,
+      targetDate.day,
+    );
+
+    final UseCaseResult<List<TodoModel>> result =
+        await _getTodoListWithDateUseCase(
+      userId: _supabaseClient.auth.currentUser!.id,
+      dueDate: dueDate,
+    );
 
     switch (result) {
       case SuccessUseCaseResult<List<TodoModel>>():
@@ -46,45 +84,129 @@ class HomeViewModel extends StateNotifier<HomeState> {
     }
   }
 
-  // ref.read(homeViewModelProvider.notifier).toggleDone(id);
-
-  Future<void> toggleTodoDone({required String id}) async {
-    // await _toggleDoneUseCase(id);
+  Future<void> addTodo({
+    required String todo,
+  }) async {
     state = state.copyWith(
-      todoList: state.todoList
-          .map((TodoModel e) => e.id == id ? e.copyWith(isDone: !e.isDone) : e)
-          .toList(),
+      addTodoLoadingStatus: LoadingStatus.loading,
     );
+
+    final DateTime dueDate = DateTime(
+      state.selectedDate.year,
+      state.selectedDate.month,
+      state.selectedDate.day,
+    );
+
+    final UseCaseResult<TodoModel> result = await _addTodoUseCase(
+      userId: _supabaseClient.auth.currentUser!.id,
+      dueDate: dueDate,
+      title: todo,
+    );
+
+    switch (result) {
+      case SuccessUseCaseResult<TodoModel>():
+        state = state.copyWith(
+          todoList: <TodoModel>[...state.todoList, result.data],
+          addTodoLoadingStatus: LoadingStatus.success,
+        );
+      case FailureUseCaseResult<TodoModel>():
+        state = state.copyWith(
+          addTodoLoadingStatus: LoadingStatus.error,
+        );
+    }
   }
 
-  Future<void> addTodo({required String todo}) async {
-    // await _addTodoUseCase(todo);
+  Future<void> toggleTodoDone({required String id}) async {
+    final TodoModel todo =
+        state.todoList.firstWhere((TodoModel e) => e.todoId == id);
+    final bool newIsCompleted = !todo.isCompleted;
+    final DateTime today = DateTime.now();
+    final DateTime completedAt = DateTime(today.year, today.month, today.day);
 
-    final TodoModel todoModel = TodoModel(
-      id: todo,
-      title: todo,
-      isDone: false,
-      createdAt: DateTime.now(),
-    );
     state = state.copyWith(
-      todoList: <TodoModel>[...state.todoList, todoModel],
+      toggleTodoDoneLoadingStatus: LoadingStatus.loading,
+      todoList: state.todoList
+          .map(
+            (TodoModel e) =>
+                e.todoId == id ? e.copyWith(isCompleted: newIsCompleted) : e,
+          )
+          .toList(),
     );
+
+    final UseCaseResult<TodoModel> result = await _updateTodoCompletedUseCase(
+      todoId: id,
+      completed: newIsCompleted,
+      completedAt:
+          newIsCompleted ? completedAt : todo.completedAt ?? completedAt,
+    );
+
+    switch (result) {
+      case SuccessUseCaseResult<TodoModel>():
+        state =
+            state.copyWith(toggleTodoDoneLoadingStatus: LoadingStatus.success);
+      case FailureUseCaseResult<TodoModel>():
+        state = state.copyWith(
+          toggleTodoDoneLoadingStatus: LoadingStatus.error,
+          todoList: state.todoList
+              .map(
+                (TodoModel e) => e.todoId == id
+                    ? e.copyWith(isCompleted: todo.isCompleted)
+                    : e,
+              )
+              .toList(),
+        );
+    }
   }
 
   Future<void> deleteTodo({required String id}) async {
-    // await _deleteTodoUseCase(id);
     state = state.copyWith(
-      todoList: state.todoList.where((TodoModel e) => e.id != id).toList(),
+      deleteTodoLoadingStatus: LoadingStatus.loading,
     );
+
+    final UseCaseResult<void> result = await _deleteTodoUseCase(todoId: id);
+    switch (result) {
+      case SuccessUseCaseResult<void>():
+        state = state.copyWith(
+          deleteTodoLoadingStatus: LoadingStatus.success,
+          todoList:
+              state.todoList.where((TodoModel e) => e.todoId != id).toList(),
+        );
+      case FailureUseCaseResult<void>():
+        state = state.copyWith(
+          deleteTodoLoadingStatus: LoadingStatus.error,
+        );
+    }
   }
 
   Future<void> updateTodo({required String id, required String title}) async {
-    // await _updateTodoUseCase(id, title);
     state = state.copyWith(
-      todoList: state.todoList
-          .map((TodoModel e) => e.id == id ? e.copyWith(title: title) : e)
-          .toList(),
+      updateTodoLoadingStatus: LoadingStatus.loading,
     );
+
+    final UseCaseResult<void> result = await _updateTodoUseCase(
+      todoId: id,
+      title: title,
+    );
+
+    switch (result) {
+      case SuccessUseCaseResult<void>():
+        state = state.copyWith(
+          todoList: state.todoList
+              .map(
+                (TodoModel e) => e.todoId == id
+                    ? e.copyWith(
+                        title: title,
+                      )
+                    : e,
+              )
+              .toList(),
+          updateTodoLoadingStatus: LoadingStatus.success,
+        );
+      case FailureUseCaseResult<void>():
+        state = state.copyWith(
+          updateTodoLoadingStatus: LoadingStatus.error,
+        );
+    }
   }
 
   void setIsAddingTodo({required bool value}) {

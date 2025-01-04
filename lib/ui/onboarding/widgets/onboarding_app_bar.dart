@@ -7,10 +7,12 @@ import '../../../theme/doit_color_theme.dart';
 class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
   const OnboardingAppBar({
     required this.pageController,
+    required this.isFirstPage,
     super.key,
   });
 
   final PageController pageController;
+  final bool isFirstPage;
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +21,14 @@ class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       backgroundColor: doitColorTheme.background,
-      leading: IconButton(
-          onPressed: () {
-            context.pop();
-          },
-          icon: const Icon(Icons.arrow_back_ios_new_rounded)),
+      leading: isFirstPage
+          ? const SizedBox.shrink()
+          : IconButton(
+              onPressed: () {
+                context.pop();
+              },
+              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+            ),
       scrolledUnderElevation: 0,
       elevation: 0,
       actions: <Widget>[
@@ -31,7 +36,7 @@ class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
           padding: const EdgeInsets.only(right: 24),
           child: SmoothPageIndicator(
             controller: pageController,
-            count: 4,
+            count: 2,
             effect: ExpandingDotsEffect(
               dotColor: doitColorTheme.gray20,
               activeDotColor: doitColorTheme.main,

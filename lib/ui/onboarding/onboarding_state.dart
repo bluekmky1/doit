@@ -1,9 +1,12 @@
 import 'package:equatable/equatable.dart';
+import '../../core/loading_status.dart';
 import '../common/consts/am_pm.dart';
 import '../common/consts/gender.dart';
 import '../common/consts/lunar_solar.dart';
 
 class OnboardingState extends Equatable {
+  final LoadingStatus postUserDataLoadingStatus;
+
   final Gender gender;
   final LunarSolar lunarSolar;
   final String birthYear;
@@ -30,6 +33,7 @@ class OnboardingState extends Equatable {
   final String endDay;
 
   const OnboardingState({
+    required this.postUserDataLoadingStatus,
     required this.gender,
     required this.lunarSolar,
     required this.birthYear,
@@ -57,7 +61,8 @@ class OnboardingState extends Equatable {
   });
 
   const OnboardingState.init()
-      : gender = Gender.male,
+      : postUserDataLoadingStatus = LoadingStatus.none,
+        gender = Gender.male,
         lunarSolar = LunarSolar.solar,
         birthYear = '',
         birthYearError = '',
@@ -87,6 +92,7 @@ class OnboardingState extends Equatable {
         endDay = '';
 
   OnboardingState copyWith({
+    LoadingStatus? postUserDataLoadingStatus,
     Gender? gender,
     LunarSolar? lunarSolar,
     String? birthYear,
@@ -113,6 +119,8 @@ class OnboardingState extends Equatable {
     String? endDay,
   }) =>
       OnboardingState(
+        postUserDataLoadingStatus:
+            postUserDataLoadingStatus ?? this.postUserDataLoadingStatus,
         gender: gender ?? this.gender,
         lunarSolar: lunarSolar ?? this.lunarSolar,
         birthYear: birthYear ?? this.birthYear,
@@ -141,6 +149,7 @@ class OnboardingState extends Equatable {
 
   @override
   List<Object> get props => <Object>[
+        postUserDataLoadingStatus,
         gender,
         lunarSolar,
         birthYear,

@@ -1,30 +1,35 @@
 import 'package:equatable/equatable.dart';
 import '../../../../core/loading_status.dart';
-import '../../domain/todo/model/recommended_todo_model.dart';
 import '../../domain/todo/model/todo_model.dart';
 
 class HomeState extends Equatable {
   final LoadingStatus getGoalLoadingStatus;
   final LoadingStatus getTodoListLoadingStatus;
   final LoadingStatus getRecommendedTodoListLoadingStatus;
-
+  final LoadingStatus addTodoLoadingStatus;
+  final LoadingStatus deleteTodoLoadingStatus;
+  final LoadingStatus toggleTodoDoneLoadingStatus;
+  final LoadingStatus updateTodoLoadingStatus;
   final DateTime currentWeekStart;
   final DateTime selectedDate;
 
-  final String goalName;
   final List<TodoModel> todoList;
-  final List<RecommendedTodoModel> recommendedTodoList;
+  final List<TodoModel> todayCompletedTodoList;
+
   final bool isAddingTodo;
 
   const HomeState({
     required this.getGoalLoadingStatus,
     required this.getTodoListLoadingStatus,
     required this.getRecommendedTodoListLoadingStatus,
+    required this.addTodoLoadingStatus,
+    required this.deleteTodoLoadingStatus,
+    required this.toggleTodoDoneLoadingStatus,
+    required this.updateTodoLoadingStatus,
     required this.currentWeekStart,
     required this.selectedDate,
-    required this.goalName,
     required this.todoList,
-    required this.recommendedTodoList,
+    required this.todayCompletedTodoList,
     required this.isAddingTodo,
   });
 
@@ -32,23 +37,29 @@ class HomeState extends Equatable {
       : getGoalLoadingStatus = LoadingStatus.none,
         getTodoListLoadingStatus = LoadingStatus.none,
         getRecommendedTodoListLoadingStatus = LoadingStatus.none,
+        addTodoLoadingStatus = LoadingStatus.none,
+        deleteTodoLoadingStatus = LoadingStatus.none,
+        toggleTodoDoneLoadingStatus = LoadingStatus.none,
+        updateTodoLoadingStatus = LoadingStatus.none,
         currentWeekStart =
             DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1)),
         selectedDate = DateTime.now(),
-        goalName = 'AAA',
         todoList = const <TodoModel>[],
-        recommendedTodoList = const <RecommendedTodoModel>[],
+        todayCompletedTodoList = const <TodoModel>[],
         isAddingTodo = false;
 
   HomeState copyWith({
     LoadingStatus? getGoalLoadingStatus,
     LoadingStatus? getTodoListLoadingStatus,
     LoadingStatus? getRecommendedTodoListLoadingStatus,
+    LoadingStatus? addTodoLoadingStatus,
+    LoadingStatus? deleteTodoLoadingStatus,
+    LoadingStatus? toggleTodoDoneLoadingStatus,
+    LoadingStatus? updateTodoLoadingStatus,
     DateTime? currentWeekStart,
     DateTime? selectedDate,
-    String? goalName,
     List<TodoModel>? todoList,
-    List<RecommendedTodoModel>? recommendedTodoList,
+    List<TodoModel>? todayCompletedTodoList,
     bool? isAddingTodo,
   }) =>
       HomeState(
@@ -58,11 +69,18 @@ class HomeState extends Equatable {
         getRecommendedTodoListLoadingStatus:
             getRecommendedTodoListLoadingStatus ??
                 this.getRecommendedTodoListLoadingStatus,
+        addTodoLoadingStatus: addTodoLoadingStatus ?? this.addTodoLoadingStatus,
+        deleteTodoLoadingStatus:
+            deleteTodoLoadingStatus ?? this.deleteTodoLoadingStatus,
+        toggleTodoDoneLoadingStatus:
+            toggleTodoDoneLoadingStatus ?? this.toggleTodoDoneLoadingStatus,
+        updateTodoLoadingStatus:
+            updateTodoLoadingStatus ?? this.updateTodoLoadingStatus,
         currentWeekStart: currentWeekStart ?? this.currentWeekStart,
         selectedDate: selectedDate ?? this.selectedDate,
-        goalName: goalName ?? this.goalName,
         todoList: todoList ?? this.todoList,
-        recommendedTodoList: recommendedTodoList ?? this.recommendedTodoList,
+        todayCompletedTodoList:
+            todayCompletedTodoList ?? this.todayCompletedTodoList,
         isAddingTodo: isAddingTodo ?? this.isAddingTodo,
       );
 
@@ -71,11 +89,17 @@ class HomeState extends Equatable {
         getGoalLoadingStatus,
         getTodoListLoadingStatus,
         getRecommendedTodoListLoadingStatus,
+        addTodoLoadingStatus,
+        deleteTodoLoadingStatus,
+        toggleTodoDoneLoadingStatus,
+        updateTodoLoadingStatus,
         currentWeekStart,
         selectedDate,
-        goalName,
         todoList,
-        recommendedTodoList,
+        todayCompletedTodoList,
         isAddingTodo,
       ];
+
+  bool get isNotTodoLoading =>
+      getTodoListLoadingStatus != LoadingStatus.loading;
 }

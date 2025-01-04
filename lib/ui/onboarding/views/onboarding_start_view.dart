@@ -35,7 +35,7 @@ class _OnboardingStartViewState extends ConsumerState<OnboardingStartView>
     )..repeat();
 
     _offsetAnimation = Tween<Offset>(
-      begin: const Offset(0.4, 0.0),
+      begin: const Offset(0.3, 0.0),
       end: const Offset(-1.0, 0.0),
     ).animate(
       CurvedAnimation(
@@ -62,6 +62,7 @@ class _OnboardingStartViewState extends ConsumerState<OnboardingStartView>
     return Scaffold(
       appBar: OnboardingAppBar(
         pageController: PageController(),
+        isFirstPage: true,
       ),
       bottomNavigationBar: SizedBox(
         height: 64,

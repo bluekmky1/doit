@@ -1,20 +1,15 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../ui/auth/sign_in_view.dart';
 import '../ui/farm/farm_view.dart';
 import '../ui/fortune/fortune_view.dart';
-import '../ui/goal/views/new_goal_duration_setting_view.dart';
-import '../ui/goal/views/new_goal_setting_view.dart';
 import '../ui/home/home_view.dart';
 import '../ui/my/my_view.dart';
-import '../ui/onboarding/views/goal_duration_setting_view.dart';
-import '../ui/onboarding/views/goal_setting_view.dart';
 import '../ui/onboarding/views/onboarding_start_view.dart';
 import '../ui/onboarding/views/user_profile_input_view.dart';
 import '../ui/profile/profile_view.dart';
+import '../ui/sign_in/sign_in_view.dart';
 import '../ui/tutorial/tutorial_view.dart';
 import 'app_router_interceptor.dart';
 import 'redirect_notifier.dart';
@@ -26,6 +21,7 @@ final Provider<AppRouter> appRouterProvider =
           refreshListenable: ref.read(redirectNotifierProvider),
         ));
 
+// 페이지 이동 애니메이션 (fade)
 CustomTransitionPage<T> buildPageWithFadeTransition<T>({
   required BuildContext context,
   required GoRouterState state,
@@ -34,7 +30,6 @@ CustomTransitionPage<T> buildPageWithFadeTransition<T>({
     CustomTransitionPage<T>(
       key: state.pageKey,
       child: child,
-      // firebaseAnalytics
       name: state.name,
       transitionDuration: const Duration(milliseconds: 80),
       reverseTransitionDuration: const Duration(milliseconds: 80),
@@ -60,12 +55,12 @@ class AppRouter {
   final AppRouterInterceptor _appRouterInterceptor;
   final Listenable _refreshListenable;
 
-  // 라우트의 이동마다 호출됩니다.
+  // 라우트의 이동마다 호출되는 함수
   FutureOr<String?> _redirect(BuildContext context, GoRouterState state) =>
       _appRouterInterceptor.redirect(context, state);
 
   late final GoRouter _router = GoRouter(
-    initialLocation: Routes.signIn.name,
+    initialLocation: Routes.home.name,
     debugLogDiagnostics: true,
     navigatorKey: rootNavigatorKey,
     refreshListenable: _refreshListenable,
@@ -105,26 +100,6 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        name: Routes.onboardingGoalSetting.name,
-        path: Routes.onboardingGoalSetting.path,
-        pageBuilder: (BuildContext context, GoRouterState state) =>
-            buildPageWithFadeTransition<void>(
-          context: context,
-          state: state,
-          child: const GoalSettingView(),
-        ),
-      ),
-      GoRoute(
-        name: Routes.onboardingGoalDurationSetting.name,
-        path: Routes.onboardingGoalDurationSetting.path,
-        pageBuilder: (BuildContext context, GoRouterState state) =>
-            buildPageWithFadeTransition<void>(
-          context: context,
-          state: state,
-          child: const GoalDurationSettingView(),
-        ),
-      ),
-      GoRoute(
         name: Routes.tutorial.name,
         path: Routes.tutorial.path,
         pageBuilder: (BuildContext context, GoRouterState state) =>
@@ -132,22 +107,6 @@ class AppRouter {
           context: context,
           state: state,
           child: const TutorialView(),
-        ),
-      ),
-      GoRoute(
-        name: Routes.goalSetting.name,
-        path: Routes.goalSetting.path,
-        pageBuilder: (BuildContext context, GoRouterState state) =>
-            const NoTransitionPage<dynamic>(
-          child: NewGoalSettingView(),
-        ),
-      ),
-      GoRoute(
-        name: Routes.goalDurationSetting.name,
-        path: Routes.goalDurationSetting.path,
-        pageBuilder: (BuildContext context, GoRouterState state) =>
-            const NoTransitionPage<dynamic>(
-          child: NewGoalDurationSettingView(),
         ),
       ),
       GoRoute(

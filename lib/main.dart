@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'routes/app_router.dart';
-import 'service/supabase_service.dart';
+import 'service/supabase/supabase_service.dart';
 import 'theme/doit_color_theme.dart';
 import 'theme/doit_colors.dart';
 

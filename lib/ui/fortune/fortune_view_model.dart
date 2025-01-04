@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/common/use_case/use_case_result.dart';
-import '../../domain/todo/use_case/get_recommended_todo_list_use_case.dart';
 import '../../domain/todo/model/recommended_todo_model.dart';
+import '../../domain/todo/use_case/get_recommended_todo_list_use_case.dart';
 import '../common/consts/fortune_category.dart';
 import 'fortune_state.dart';
 

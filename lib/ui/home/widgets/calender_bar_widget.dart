@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../core/loading_status.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
 import '../../common/consts/assets.dart';
@@ -89,6 +90,8 @@ class _CalenderBarWidgetState extends ConsumerState<CalenderBarWidget> {
                     );
                     if (selectedDate != null) {
                       viewModel.setSelectedDate(date: selectedDate);
+                      await viewModel.getTodoListWithDate(
+                          targetDate: selectedDate);
 
                       final DateTime weekStart = state.currentWeekStart;
                       final DateTime weekEnd =
@@ -170,19 +173,35 @@ class _CalenderBarWidgetState extends ConsumerState<CalenderBarWidget> {
               itemBuilder: (BuildContext context, int index) {
                 final DateTime date =
                     state.currentWeekStart.add(Duration(days: index));
+                final bool isToday = date.day == DateTime.now().day &&
+                    date.month == DateTime.now().month &&
+                    date.year == DateTime.now().year;
+
+                final bool isSelected = date.day == state.selectedDate.day &&
+                    date.month == state.selectedDate.month &&
+                    date.year == state.selectedDate.year;
 
                 return GestureDetector(
                   onTap: () {
-                    viewModel.setSelectedDate(date: date);
+                    if (state.getTodoListLoadingStatus ==
+                        LoadingStatus.loading) {
+                      return;
+                    }
+                    viewModel
+                      ..setSelectedDate(date: date)
+                      ..getTodoListWithDate(targetDate: date);
                   },
                   child: Container(
                     width: 45,
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     decoration: BoxDecoration(
+                      border: isToday
+                          ? Border.all(
+                              color: doitColorTheme.main,
+                            )
+                          : null,
                       borderRadius: BorderRadius.circular(8),
-                      color: date.day == state.selectedDate.day &&
-                              date.month == state.selectedDate.month &&
-                              date.year == state.selectedDate.year
+                      color: isSelected
                           ? doitColorTheme.main.withOpacity(0.1)
                           : Colors.transparent,
                     ),

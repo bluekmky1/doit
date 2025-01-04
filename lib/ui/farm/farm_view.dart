@@ -1,15 +1,12 @@
 import 'dart:async';
-import 'dart:math' as math;
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../theme/doit_color_theme.dart';
-
 import '../common/consts/assets.dart';
+import '../common/game/farm_game.dart';
 import 'farm_state.dart';
 import 'farm_view_model.dart';
-import 'game/farm_game.dart';
 import 'widgets/animal_status_bar_widget.dart';
 import 'widgets/bottom_menu_bar_widget.dart';
 import 'widgets/clock_widget.dart';
@@ -23,8 +20,8 @@ class FarmView extends ConsumerStatefulWidget {
 
 class _FarmViewState extends ConsumerState<FarmView>
     with WidgetsBindingObserver {
-  late FarmGame _farmGame;
   Timer? _timer;
+  late FarmGame _farmGame;
 
   @override
   void initState() {
@@ -50,22 +47,6 @@ class _FarmViewState extends ConsumerState<FarmView>
     final bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     final FarmState state = ref.watch(farmViewModelProvider);
-    final DoitColorTheme doitColorTheme =
-        Theme.of(context).extension<DoitColorTheme>()!;
-    final List<String> lottiePaths = <String>[
-      Assets.noShadowMouseMove,
-      Assets.noShadowCowMove,
-      Assets.noShadowTigerMove,
-      Assets.noShadowRabbitMove,
-      Assets.noShadowDragonMove,
-      Assets.noShadowSnakeMove,
-      Assets.noShadowChickenMove,
-      Assets.noShadowPigMove,
-      Assets.noShadowSheepMove,
-      Assets.noShadowHorseMove,
-      Assets.noShadowDogMove,
-      Assets.noShadowMonkeyMove,
-    ];
 
     return SafeArea(
       child: Scaffold(

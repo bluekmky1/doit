@@ -7,7 +7,7 @@ import '../../domain/todo/model/recommended_todo_model.dart';
 import '../../domain/todo/model/todo_model.dart';
 import '../../domain/todo/use_case/get_recommended_todo_list_use_case.dart';
 import '../../domain/todo/use_case/get_todo_list_use_case.dart';
-import '../../service/supabase_service.dart';
+import '../../service/supabase/supabase_service.dart';
 import 'my_state.dart';
 
 final AutoDisposeStateNotifierProvider<MyViewModel, MyState>
@@ -45,7 +45,9 @@ class MyViewModel extends StateNotifier<MyState> {
       getTodoListLoadingStatus: LoadingStatus.loading,
     );
 
-    final UseCaseResult<List<TodoModel>> result = await _getTodoListUseCase();
+    final UseCaseResult<List<TodoModel>> result = await _getTodoListUseCase(
+      userId: _supabaseClient.auth.currentUser!.id,
+    );
 
     switch (result) {
       case SuccessUseCaseResult<List<TodoModel>>():
@@ -97,7 +99,8 @@ class MyViewModel extends StateNotifier<MyState> {
     // await _toggleDoneUseCase(id);
     state = state.copyWith(
       todoList: state.todoList
-          .map((TodoModel e) => e.id == id ? e.copyWith(isDone: !e.isDone) : e)
+          .map((TodoModel e) =>
+              e.todoId == id ? e.copyWith(isCompleted: !e.isCompleted) : e)
           .toList(),
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/loading_status.dart';
 import '../../../routes/routes.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
@@ -71,9 +72,20 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
 
+    ref.listen(
+      onboardingViewModelProvider
+          .select((OnboardingState state) => state.postUserDataLoadingStatus),
+      (LoadingStatus? previous, LoadingStatus next) {
+        if (next == LoadingStatus.success) {
+          context.pushNamed(Routes.tutorial.name);
+        }
+      },
+    );
+
     return Scaffold(
       appBar: OnboardingAppBar(
         pageController: PageController(initialPage: 1),
+        isFirstPage: false,
       ),
       bottomNavigationBar: SizedBox(
         height: 64,
@@ -93,9 +105,7 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
           ),
           onPressed: state.isAllFormValid
               ? state.isAgreeTerms
-                  ? () {
-                      context.pushNamed(Routes.onboardingGoalSetting.name);
-                    }
+                  ? viewModel.saveUserData
                   : () {
                       viewModel.changeIsAgreeTerms(
                         isAgreeTerms: true,
@@ -178,6 +188,7 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
                                   inputFormatters: <TextInputFormatter>[
                                     FilteringTextInputFormatter.digitsOnly,
                                   ],
+                                  keyboardType: TextInputType.number,
                                   errorText:
                                       state.birthYearError.isEmpty ? null : '',
                                   maxLength: 4,
@@ -195,6 +206,7 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
                                       child: OutlinedTextFieldWidget(
                                         controller: birthMonthInputController,
                                         hintText: 'MM',
+                                        keyboardType: TextInputType.number,
                                         errorText: state.birthMonthError.isEmpty
                                             ? null
                                             : '',
@@ -215,6 +227,7 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
                                       child: OutlinedTextFieldWidget(
                                         controller: birthDayInputController,
                                         hintText: 'DD',
+                                        keyboardType: TextInputType.number,
                                         errorText: state.birthDayError.isEmpty
                                             ? null
                                             : '',
@@ -274,6 +287,7 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
                                             controller:
                                                 birthHourInputController,
                                             hintText: 'HH',
+                                            keyboardType: TextInputType.number,
                                             errorText:
                                                 state.birthHourError.isEmpty
                                                     ? null
@@ -312,6 +326,7 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
                                                   .digitsOnly,
                                             ],
                                             hintText: 'MM',
+                                            keyboardType: TextInputType.number,
                                             enabled: !state.isBirthDateUnknown,
                                             errorText:
                                                 state.birthMinuteError.isEmpty
