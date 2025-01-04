@@ -44,6 +44,7 @@ flutter:
     - assets/
     - assets/icons/
     - assets/images/
+    - assets/images/horizental_mark/
     - assets/lotties/
     - assets/lotties/appear/
     - assets/lotties/move/
