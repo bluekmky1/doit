@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/loading_status.dart';
+import '../../domain/todo/model/todo_model.dart';
 import '../../routes/routes.dart';
 import '../../theme/doit_color_theme.dart';
 import '../../theme/doit_typos.dart';
@@ -58,9 +60,46 @@ class _HomeViewState extends ConsumerState<HomeView> {
     super.dispose();
   }
 
+  Vector2 _getRandomPosition() {
+    final math.Random random = math.Random();
+    return Vector2(
+      random.nextDouble() * FarmGame.screenSize.x,
+      random.nextDouble() * FarmGame.screenSize.y,
+    );
+  }
+
+  void _initAnimalsToGame() {
+    final HomeState state = ref.read(homeViewModelProvider);
+    for (final TodoModel todo
+        in state.todoList.where((TodoModel todo) => !todo.isCompleted)) {
+      _farmGame.world.add(
+        MovableObject(
+          id: todo.todoId,
+          position: _getRandomPosition(),
+          animalType: AnimalType.fromString(todo.animalName),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final HomeState state = ref.watch(homeViewModelProvider);
+    // 할 일 목록 로드 완료 시 게임 월드에 동물 추가
+    ref.listen(
+      homeViewModelProvider
+          .select((HomeState state) => state.getTodoListLoadingStatus),
+      (Object? prev, Object? next) {
+        if (next == LoadingStatus.success) {
+          // 게임 월드에 있는 모든 동물 제거
+          _farmGame.world
+              .removeWhere((Component component) => component is MovableObject);
+
+          // 게임 월드에 동물 추가
+          _initAnimalsToGame();
+        }
+      },
+    );
+
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
 
@@ -68,32 +107,73 @@ class _HomeViewState extends ConsumerState<HomeView> {
     final double gameHeight = MediaQuery.of(context).size.width / 375 * 218;
     _farmGame.viewSize = Vector2(size.width, gameHeight);
 
-    ref.listen(
+    // 선택된 날짜의 할 일 추가 시 게임 월드에 동물 추가
+    ref
+      ..listen(
         homeViewModelProvider
-            .select((HomeState state) => state.addTodoLoadingStatus),
+            .select((HomeState state) => state.lastAddedTodoId),
+        (String? prev, String next) {
+          final HomeState newState = ref.read(homeViewModelProvider);
+          final TodoModel addedTodo = newState.todoList.firstWhere(
+            (TodoModel todo) => todo.todoId == next,
+          );
+
+          if (next.isNotEmpty && addedTodo.dueDate == newState.selectedDate) {
+            _farmGame.world.add(MovableObject(
+              id: addedTodo.todoId,
+              position: _getRandomPosition(),
+              animalType: AnimalType.fromString(
+                addedTodo.animalName,
+              ),
+            ));
+          }
+        },
+      )
+
+      // 선택된 날짜의 할 일 제거 시 게임 월드에 있는 동물 제거
+      ..listen(
+        homeViewModelProvider
+            .select((HomeState state) => state.lastDeletedTodoId),
+        (String? prev, String next) {
+          _farmGame.world.removeWhere((Component component) =>
+              component is MovableObject && component.id == next);
+        },
+      )
+
+      // 할 일 완료 상태 변경 시 게임 월드의 동물 추가/제거
+      ..listen(
+        homeViewModelProvider
+            .select((HomeState state) => state.toggleTodoDoneLoadingStatus),
         (LoadingStatus? prev, LoadingStatus next) {
-      final DateTime today = DateTime.now();
-      if (next == LoadingStatus.success &&
-          state.selectedDate == DateTime(today.year, today.month, today.day) &&
-          ref.read(homeViewModelProvider).todoList.length >
-              state.todoList.length) {
-        // 랜덤한 위치에 새로운 MovableObject 추가
-        final math.Random random = math.Random();
-        final Vector2 position = Vector2(
-          random.nextDouble() * FarmGame.screenSize.x,
-          random.nextDouble() * FarmGame.screenSize.y,
-        );
+          if (next == LoadingStatus.success) {
+            final HomeState newState = ref.read(homeViewModelProvider);
+            final TodoModel updatedTodo = newState.todoList.firstWhere(
+              (TodoModel todo) => todo.todoId == newState.lastToggledTodoId,
+            );
+            if (updatedTodo.isCompleted) {
+              // 완료된 경우: 동물 제거
+              _farmGame.world.removeWhere((Component component) =>
+                  component is MovableObject &&
+                  component.id == updatedTodo.todoId);
+            } else {
+              // 완료 취소된 경우: 동물이 없을 때만 추가
 
-        final AnimalType animalType = AnimalType.fromString(
-          ref.read(homeViewModelProvider).todoList.last.animalName,
-        );
-
-        _farmGame.world.add(MovableObject(
-          position: position,
-          animalType: animalType,
-        ));
-      }
-    });
+              final bool animalExists = _farmGame.world.children.any(
+                  (Component component) =>
+                      component is MovableObject &&
+                      component.id == updatedTodo.todoId);
+              if (!animalExists &&
+                  updatedTodo.dueDate == newState.selectedDate) {
+                _farmGame.world.add(MovableObject(
+                  id: updatedTodo.todoId,
+                  position: _getRandomPosition(),
+                  animalType: AnimalType.fromString(updatedTodo.animalName),
+                ));
+              }
+            }
+          }
+        },
+      );
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -271,7 +351,7 @@ class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
                       viewModel.setIsAddingTodo(value: false);
                       if (addTodoTextEditingController.text.isNotEmpty) {
                         viewModel.addTodo(
-                          todo: addTodoTextEditingController.text,
+                          todo: addTodoTextEditingController.text.trim(),
                         );
                       }
                       addTodoTextEditingController.clear();
@@ -281,7 +361,7 @@ class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
                       viewModel.setIsAddingTodo(value: false);
                       if (addTodoTextEditingController.text.isNotEmpty) {
                         viewModel.addTodo(
-                          todo: addTodoTextEditingController.text,
+                          todo: addTodoTextEditingController.text.trim(),
                         );
                       }
                       addTodoTextEditingController.clear();

@@ -52,6 +52,8 @@ class HomeViewModel extends StateNotifier<HomeState> {
     getTodoListWithDate(targetDate: state.selectedDate);
   }
 
+  // 할 일 목록 조회
+  // TODO(jaehoon): 추후 할 일 목록 조회 시 일주일 단위로 조회하도록 변경
   Future<void> getTodoListWithDate({
     required DateTime targetDate,
   }) async {
@@ -107,6 +109,7 @@ class HomeViewModel extends StateNotifier<HomeState> {
       case SuccessUseCaseResult<TodoModel>():
         state = state.copyWith(
           todoList: <TodoModel>[...state.todoList, result.data],
+          lastAddedTodoId: result.data.todoId,
           addTodoLoadingStatus: LoadingStatus.success,
         );
       case FailureUseCaseResult<TodoModel>():
@@ -117,42 +120,43 @@ class HomeViewModel extends StateNotifier<HomeState> {
   }
 
   Future<void> toggleTodoDone({required String id}) async {
-    final TodoModel todo =
-        state.todoList.firstWhere((TodoModel e) => e.todoId == id);
-    final bool newIsCompleted = !todo.isCompleted;
-    final DateTime today = DateTime.now();
-    final DateTime completedAt = DateTime(today.year, today.month, today.day);
+    final TodoModel targetTodo = state.todoList.firstWhere(
+      (TodoModel e) => e.todoId == id,
+    );
+    final bool newCompletedStatus = !targetTodo.isCompleted;
 
     state = state.copyWith(
       toggleTodoDoneLoadingStatus: LoadingStatus.loading,
       todoList: state.todoList
-          .map(
-            (TodoModel e) =>
-                e.todoId == id ? e.copyWith(isCompleted: newIsCompleted) : e,
-          )
+          .map((TodoModel e) =>
+              e.todoId == id ? e.copyWith(isCompleted: newCompletedStatus) : e)
           .toList(),
+      lastToggledTodoId: id,
     );
+    final DateTime completedAt = DateTime.now();
 
-    final UseCaseResult<TodoModel> result = await _updateTodoCompletedUseCase(
+    final UseCaseResult<void> result = await _updateTodoCompletedUseCase(
       todoId: id,
-      completed: newIsCompleted,
-      completedAt:
-          newIsCompleted ? completedAt : todo.completedAt ?? completedAt,
+      completed: newCompletedStatus,
+      completedAt: DateTime(
+        completedAt.year,
+        completedAt.month,
+        completedAt.day,
+      ),
     );
 
     switch (result) {
-      case SuccessUseCaseResult<TodoModel>():
-        state =
-            state.copyWith(toggleTodoDoneLoadingStatus: LoadingStatus.success);
-      case FailureUseCaseResult<TodoModel>():
+      case SuccessUseCaseResult<void>():
+        state = state.copyWith(
+          toggleTodoDoneLoadingStatus: LoadingStatus.success,
+        );
+      case FailureUseCaseResult<void>():
         state = state.copyWith(
           toggleTodoDoneLoadingStatus: LoadingStatus.error,
           todoList: state.todoList
-              .map(
-                (TodoModel e) => e.todoId == id
-                    ? e.copyWith(isCompleted: todo.isCompleted)
-                    : e,
-              )
+              .map((TodoModel e) => e.todoId == id
+                  ? e.copyWith(isCompleted: targetTodo.isCompleted)
+                  : e)
               .toList(),
         );
     }
@@ -170,6 +174,7 @@ class HomeViewModel extends StateNotifier<HomeState> {
           deleteTodoLoadingStatus: LoadingStatus.success,
           todoList:
               state.todoList.where((TodoModel e) => e.todoId != id).toList(),
+          lastDeletedTodoId: id,
         );
       case FailureUseCaseResult<void>():
         state = state.copyWith(
@@ -229,8 +234,14 @@ class HomeViewModel extends StateNotifier<HomeState> {
   }
 
   void setSelectedDate({required DateTime date}) {
+    final DateTime formattedDate = DateTime(
+      date.year,
+      date.month,
+      date.day,
+    );
+
     state = state.copyWith(
-      selectedDate: date,
+      selectedDate: formattedDate,
     );
   }
 

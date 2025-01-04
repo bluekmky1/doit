@@ -14,9 +14,12 @@ class HomeState extends Equatable {
   final DateTime selectedDate;
 
   final List<TodoModel> todoList;
-  final List<TodoModel> todayCompletedTodoList;
 
   final bool isAddingTodo;
+
+  final String lastToggledTodoId;
+  final String lastDeletedTodoId;
+  final String lastAddedTodoId;
 
   const HomeState({
     required this.getGoalLoadingStatus,
@@ -29,8 +32,10 @@ class HomeState extends Equatable {
     required this.currentWeekStart,
     required this.selectedDate,
     required this.todoList,
-    required this.todayCompletedTodoList,
     required this.isAddingTodo,
+    required this.lastToggledTodoId,
+    required this.lastDeletedTodoId,
+    required this.lastAddedTodoId,
   });
 
   HomeState.init()
@@ -43,10 +48,13 @@ class HomeState extends Equatable {
         updateTodoLoadingStatus = LoadingStatus.none,
         currentWeekStart =
             DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1)),
-        selectedDate = DateTime.now(),
+        selectedDate = DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day),
         todoList = const <TodoModel>[],
-        todayCompletedTodoList = const <TodoModel>[],
-        isAddingTodo = false;
+        isAddingTodo = false,
+        lastToggledTodoId = '',
+        lastDeletedTodoId = '',
+        lastAddedTodoId = '';
 
   HomeState copyWith({
     LoadingStatus? getGoalLoadingStatus,
@@ -59,8 +67,10 @@ class HomeState extends Equatable {
     DateTime? currentWeekStart,
     DateTime? selectedDate,
     List<TodoModel>? todoList,
-    List<TodoModel>? todayCompletedTodoList,
     bool? isAddingTodo,
+    String? lastToggledTodoId,
+    String? lastDeletedTodoId,
+    String? lastAddedTodoId,
   }) =>
       HomeState(
         getGoalLoadingStatus: getGoalLoadingStatus ?? this.getGoalLoadingStatus,
@@ -79,9 +89,10 @@ class HomeState extends Equatable {
         currentWeekStart: currentWeekStart ?? this.currentWeekStart,
         selectedDate: selectedDate ?? this.selectedDate,
         todoList: todoList ?? this.todoList,
-        todayCompletedTodoList:
-            todayCompletedTodoList ?? this.todayCompletedTodoList,
         isAddingTodo: isAddingTodo ?? this.isAddingTodo,
+        lastToggledTodoId: lastToggledTodoId ?? this.lastToggledTodoId,
+        lastDeletedTodoId: lastDeletedTodoId ?? this.lastDeletedTodoId,
+        lastAddedTodoId: lastAddedTodoId ?? this.lastAddedTodoId,
       );
 
   @override
@@ -96,8 +107,10 @@ class HomeState extends Equatable {
         currentWeekStart,
         selectedDate,
         todoList,
-        todayCompletedTodoList,
         isAddingTodo,
+        lastToggledTodoId,
+        lastDeletedTodoId,
+        lastAddedTodoId,
       ];
 
   bool get isNotTodoLoading =>

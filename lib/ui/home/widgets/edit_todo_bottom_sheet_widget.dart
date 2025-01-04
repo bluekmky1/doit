@@ -86,7 +86,9 @@ class _EditTodoBottomSheetWidgetState
               hintStyle: DoitTypos.suitR14.copyWith(
                 color: doitColorTheme.gray40,
               ),
-              onChanged: (String value) {},
+              onChanged: (String value) {
+                setState(() {});
+              },
             ),
           ),
           const SizedBox(
@@ -102,16 +104,22 @@ class _EditTodoBottomSheetWidgetState
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(0),
                     ),
-                    backgroundColor: doitColorTheme.main,
-                    foregroundColor: doitColorTheme.background,
+                    backgroundColor: _textEditingController.text.trim().isEmpty
+                        ? doitColorTheme.gray40
+                        : doitColorTheme.main,
+                    foregroundColor: _textEditingController.text.trim().isEmpty
+                        ? doitColorTheme.gray80
+                        : doitColorTheme.background,
                   ),
-                  onPressed: () {
-                    viewModel.updateTodo(
-                      id: widget.model.todoId,
-                      title: _textEditingController.text,
-                    );
-                    context.pop();
-                  },
+                  onPressed: _textEditingController.text.trim().isEmpty
+                      ? null
+                      : () {
+                          viewModel.updateTodo(
+                            id: widget.model.todoId,
+                            title: _textEditingController.text.trim(),
+                          );
+                          context.pop();
+                        },
                   child: const Text(
                     '수정하기',
                     style: DoitTypos.suitSB20,

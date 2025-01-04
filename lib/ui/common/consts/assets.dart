@@ -71,67 +71,31 @@ class Assets {
   static const String study = 'assets/images/study.png';
   static const String workPlace = 'assets/images/work_place.png';
 
-//   //프레임
-//   static const String chickenFrame = 'assets/frame/chicken_frame.svg';
-//   static const String cowFrame = 'assets/frame/cow_frame.svg';
-//   static const String dogFrame = 'assets/frame/dog_frame.svg';
-//   static const String dragonFrame = 'assets/frame/dragon_frame.svg';
-//   static const String horseFrame = 'assets/frame/horse_frame.svg';
-//   static const String monkeyFrame = 'assets/frame/monkey_frame.svg';
-//   static const String mouseFrame = 'assets/frame/mouse_frame.svg';
-//   static const String pigFrame = 'assets/frame/pig_frame.svg';
-//   static const String rabbitFrame = 'assets/frame/rabbit_frame.svg';
-//   static const String sheepFrame = 'assets/frame/sheep_frame.svg';
-//   static const String snakeFrame = 'assets/frame/snake_frame.svg';
-//   static const String tigerFrame = 'assets/frame/tiger_frame.svg';
-//   static const String transparentChickenFrame =
-//       'assets/frame/transparent_chicken_frame.svg';
-//   static const String transparentCowFrame =
-//       'assets/frame/transparent_cow_frame.svg';
-//   static const String transparentDogFrame =
-//       'assets/frame/transparent_dog_frame.svg';
-//   static const String transparentDragonFrame =
-//       'assets/frame/transparent_dragon_frame.svg';
-//   static const String transparentHorseFrame =
-//       'assets/frame/transparent_horse_frame.svg';
-//   static const String transparentMonkeyFrame =
-//       'assets/frame/transparent_monkey_frame.svg';
-//   static const String transparentMouseFrame =
-//       'assets/frame/transparent_mouse_frame.svg';
-//   static const String transparentPigFrame =
-//       'assets/frame/transparent_pig_frame.svg';
-//   static const String transparentRabbitFrame =
-//       'assets/frame/transparent_rabbit_frame.svg';
-//   static const String transparentSheepFrame =
-//       'assets/frame/transparent_sheep_frame.svg';
-//   static const String transparentSnakeFrame =
-//       'assets/frame/transparent_snake_frame.svg';
-//   static const String transparentTigerFrame =
-//       'assets/frame/transparent_tiger_frame.svg';
-//   static const String landscapeChickenFrame =
-//       'assets/frame/landscape_chicken_frame.svg';
-//   static const String landscapeCowFrame =
-//       'assets/frame/landscape_cow_frame.svg';
-//   static const String landscapeDogFrame =
-//       'assets/frame/landscape_dog_frame.svg';
-//   static const String landscapeDragonFrame =
-//       'assets/frame/landscape_dragon_frame.svg';
-//   static const String landscapeHorseFrame =
-//       'assets/frame/landscape_horse_frame.svg';
-//   static const String landscapeMonkeyFrame =
-//       'assets/frame/landscape_monkey_frame.svg';
-//   static const String landscapeMouseFrame =
-//       'assets/frame/landscape_mouse_frame.svg';
-//   static const String landscapePigFrame =
-//       'assets/frame/landscape_pig_frame.svg';
-//   static const String landscapeRabbitFrame =
-//       'assets/frame/landscape_rabbit_frame.svg';
-//   static const String landscapeSheepFrame =
-//       'assets/frame/landscape_sheep_frame.svg';
-//   static const String landscapeSnakeFrame =
-//       'assets/frame/landscape_snake_frame.svg';
-//   static const String landscapeTigerFrame =
-//       'assets/frame/landscape_tiger_frame.svg';
+//프레임
+  static const String chickenHorizontalMark =
+      'assets/images/horizental_mark/chicken.png';
+  static const String cowHorizontalMark =
+      'assets/images/horizental_mark/cow.png';
+  static const String dogHorizontalMark =
+      'assets/images/horizental_mark/dog.png';
+  static const String dragonHorizontalMark =
+      'assets/images/horizental_mark/dragon.png';
+  static const String horseHorizontalMark =
+      'assets/images/horizental_mark/horse.png';
+  static const String monkeyHorizontalMark =
+      'assets/images/horizental_mark/monkey.png';
+  static const String mouseHorizontalMark =
+      'assets/images/horizental_mark/mouse.png';
+  static const String pigHorizontalMark =
+      'assets/images/horizental_mark/pig.png';
+  static const String rabbitHorizontalMark =
+      'assets/images/horizental_mark/rabbit.png';
+  static const String sheepHorizontalMark =
+      'assets/images/horizental_mark/sheep.png';
+  static const String snakeHorizontalMark =
+      'assets/images/horizental_mark/snake.png';
+  static const String tigerHorizontalMark =
+      'assets/images/horizental_mark/tiger.png';
 
   //로고
   static const String kakaoLogin = 'assets/images/kakao_login_large_wide.png';

@@ -210,4 +210,36 @@ class TodoRepository extends Repository {
       );
     }
   }
+
+  // 기간 내 할일 목록 조회
+  Future<RepositoryResult<List<TodoEntity>>> getTodoListWithPeriod({
+    required String userId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    try {
+      return SuccessRepositoryResult<List<TodoEntity>>(
+        data: await _todoRemoteDataSource.getTodoListWithPeriod(
+          userId: userId,
+          startDate: startDate,
+          endDate: endDate,
+        ),
+      );
+    } on PostgrestException catch (e) {
+      return FailureRepositoryResult<List<TodoEntity>>(
+        error: e,
+        messages: <String>['데이터를 조회하는 과정에 오류가 있습니다: ${e.message}'],
+      );
+    } on AuthException catch (e) {
+      return FailureRepositoryResult<List<TodoEntity>>(
+        error: e,
+        messages: <String>['인증 오류가 발생했습니다: ${e.message}'],
+      );
+    } on Exception catch (e) {
+      return FailureRepositoryResult<List<TodoEntity>>(
+        error: e,
+        messages: <String>['예상치 못한 오류가 발생했습니다'],
+      );
+    }
+  }
 }

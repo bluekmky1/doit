@@ -85,6 +85,27 @@ class TodoRemoteDataSource {
     return todoList.map(TodoEntity.fromJson).toList();
   }
 
+  // 기간 내 할일 목록 조회
+  Future<List<TodoEntity>> getTodoListWithPeriod({
+    required String userId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    final PostgrestList todoList = await _supabaseClient
+        .from('todo')
+        .select('''
+          *,
+          animal:animal_id(            
+            name            
+          )
+          ''')
+        .eq('user_id', userId)
+        .gte('due_date', startDate)
+        .lte('due_date', endDate);
+
+    return todoList.map(TodoEntity.fromJson).toList();
+  }
+
   // 모든 할일 목록 조회
   Future<List<TodoEntity>> getTodoList({
     required String userId,

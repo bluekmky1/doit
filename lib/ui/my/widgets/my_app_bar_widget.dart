@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../routes/routes.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
+import '../../../util/date_time_format_helper.dart';
 import '../../common/consts/assets.dart';
 import '../../common/widgets/text_chip_widget.dart';
+import '../my_state.dart';
 import '../my_view_model.dart';
 
 class MyAppBarWidget extends ConsumerWidget {
@@ -19,6 +21,7 @@ class MyAppBarWidget extends ConsumerWidget {
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
 
+    final MyState state = ref.watch(myViewModelProvider);
     final MyViewModel viewModel = ref.read(myViewModelProvider.notifier);
 
     return Padding(
@@ -30,7 +33,7 @@ class MyAppBarWidget extends ConsumerWidget {
             children: <Widget>[
               const SizedBox(width: 4),
               Text(
-                '마재훈',
+                state.userName,
                 style: DoitTypos.suitSB20.copyWith(
                   color: doitColorTheme.main,
                 ),
@@ -61,16 +64,25 @@ class MyAppBarWidget extends ConsumerWidget {
                       children: <Widget>[
                         SvgPicture.asset(
                           Assets.edit,
+                          width: 20,
+                          height: 20,
                           colorFilter: ColorFilter.mode(
                             doitColorTheme.gray80,
                             BlendMode.srcIn,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '프로필 수정',
+                          style: DoitTypos.suitR12.copyWith(
+                            color: doitColorTheme.gray80,
                           ),
                         ),
                       ],
                     ),
                   ),
                   PopupMenuItem<String>(
-                    padding: EdgeInsets.zero,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     onTap: () async {
                       await viewModel.signOut();
 
@@ -83,12 +95,19 @@ class MyAppBarWidget extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         SvgPicture.asset(
-                          width: 24,
-                          height: 24,
+                          width: 20,
+                          height: 20,
                           Assets.logout,
                           colorFilter: ColorFilter.mode(
-                            doitColorTheme.gray80,
+                            doitColorTheme.error,
                             BlendMode.srcIn,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '로그아웃',
+                          style: DoitTypos.suitR12.copyWith(
+                            color: doitColorTheme.error,
                           ),
                         ),
                       ],
@@ -100,28 +119,41 @@ class MyAppBarWidget extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 8),
-          const Row(
+          Row(
             children: <Widget>[
               Wrap(
                 spacing: 8,
                 children: <Widget>[
                   TextChipWidget(
-                    title: '2000.05.23',
-                    padding: EdgeInsetsDirectional.symmetric(
+                    title: state.lunarSolar,
+                    padding: const EdgeInsetsDirectional.symmetric(
                       horizontal: 8,
                       vertical: 2,
                     ),
                   ),
                   TextChipWidget(
-                    title: '09:30 생',
-                    padding: EdgeInsetsDirectional.symmetric(
+                    title: DateTimeFormatter.getFullDate(
+                      state.birthDate,
+                    ),
+                    padding: const EdgeInsetsDirectional.symmetric(
                       horizontal: 8,
                       vertical: 2,
                     ),
                   ),
                   TextChipWidget(
-                    title: '남성',
-                    padding: EdgeInsetsDirectional.symmetric(
+                    title: state.unknownBirthTime
+                        ? '태어난 시간 모름'
+                        : DateTimeFormatter.getSimpleTimeString(
+                            state.birthDate,
+                          ),
+                    padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                  ),
+                  TextChipWidget(
+                    title: state.gender,
+                    padding: const EdgeInsetsDirectional.symmetric(
                       horizontal: 8,
                       vertical: 2,
                     ),

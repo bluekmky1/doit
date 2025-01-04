@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../domain/animal/model/animal_marker_model.dart';
 import '../../routes/routes.dart';
 import '../../theme/doit_color_theme.dart';
 import '../../theme/doit_typos.dart';
-import '../common/consts/assets.dart';
+import '../common/consts/animal_type.dart';
 import '../common/widgets/accordion_card_widget.dart';
 import '../common/widgets/bottom_navigation_bar_widget.dart';
 import '../common/widgets/text_chip_widget.dart';
+import 'my_state.dart';
+import 'my_view_model.dart';
 import 'widgets/my_app_bar_widget.dart';
 
 class MyView extends ConsumerStatefulWidget {
@@ -20,12 +23,20 @@ class MyView extends ConsumerStatefulWidget {
 
 class _MyViewState extends ConsumerState<MyView> {
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(myViewModelProvider.notifier).init();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double gridItemSpacing = screenWidth / 375 * 12;
-    final double gridItemRunSpacing = screenWidth / 375 * 16;
+
+    final MyState state = ref.watch(myViewModelProvider);
 
     return Scaffold(
       floatingActionButton: BottomNavigationBarWidget(
@@ -49,79 +60,17 @@ class _MyViewState extends ConsumerState<MyView> {
                     '이번달에 모은 동물들',
                     style: DoitTypos.suitSB16,
                   ),
-                  Text(
-                    '48마리',
-                    style: DoitTypos.suitSB16.copyWith(
-                      color: doitColorTheme.main,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                decoration: BoxDecoration(
-                  color: doitColorTheme.background,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: doitColorTheme.shadow1.withOpacity(0.2),
-                      blurRadius: 4,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: <Widget>[
-                    GridView.builder(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4, // 한 줄에 4개
-                        childAspectRatio: 2 / 1, // 가로:세로 = 2:1
-                        crossAxisSpacing: gridItemSpacing, // 가로 간격
-                        mainAxisSpacing: gridItemRunSpacing, // 세로 간격
-                      ),
-                      itemCount: 12, // 4개씩 3줄 = 12개
-                      itemBuilder: (BuildContext context, int index) =>
-                          Container(
-                        clipBehavior: Clip.hardEdge,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: doitColorTheme.gray20,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: <Widget>[
-                            const Positioned(
-                              left: 12,
-                              child: Text(
-                                '12',
-                                style: DoitTypos.suitSB16,
-                              ),
-                            ),
-                            Positioned(
-                              left: 40,
-                              child: SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: Image.asset(Assets.allLuck),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextButton(
+                  SizedBox(
+                    height: 32,
+                    child: TextButton(
                       style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                        ),
                         backgroundColor: doitColorTheme.main,
                         foregroundColor: doitColorTheme.background,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(3.61),
                         ),
                       ),
                       onPressed: () {
@@ -131,42 +80,22 @@ class _MyViewState extends ConsumerState<MyView> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '동물들 보러가기',
+                            '보러가기',
                             style: DoitTypos.suitR14.copyWith(
                               color: Colors.white,
                             ),
                           ),
                         ],
                       ),
-                    )
-                  ],
-                ),
-              ),
-
-              Divider(
-                height: 32,
-                thickness: 4,
-                color: doitColorTheme.gray20,
-              ),
-
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    '이전에 모은 동물들',
-                    style: DoitTypos.suitSB16,
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              ...List<Widget>.generate(
-                3,
-                (int index) => const Padding(
-                  padding: EdgeInsets.only(bottom: 16),
-                  child: _CompletedTodoCardWidget(),
-                ),
+              _CompletedTodoCardWidget(
+                count: state.completedTodoCount.toString(),
+                animalMarkerList: state.animalMarkerList,
               ),
-
               const SizedBox(height: 140),
             ],
           ),
@@ -177,10 +106,20 @@ class _MyViewState extends ConsumerState<MyView> {
 }
 
 class _CompletedTodoCardWidget extends StatelessWidget {
-  const _CompletedTodoCardWidget();
+  const _CompletedTodoCardWidget({
+    required this.count,
+    required this.animalMarkerList,
+  });
+
+  final String count;
+  final List<AnimalMarkerModel> animalMarkerList;
 
   @override
   Widget build(BuildContext context) {
+    final DateTime now = DateTime.now();
+    final String year = now.year.toString();
+    final String month = now.month.toString();
+
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
 
@@ -194,16 +133,17 @@ class _CompletedTodoCardWidget extends StatelessWidget {
           Row(
             children: <Widget>[
               Text(
-                '2024년 01월',
+                '$year년 $month월',
                 style: DoitTypos.suitR14.copyWith(
                   color: doitColorTheme.gray60,
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(left: 12),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
                 child: TextChipWidget(
-                  title: '완료한 할 일 74개',
-                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  title: '$count마리',
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
               ),
             ],
@@ -231,25 +171,35 @@ class _CompletedTodoCardWidget extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: <Widget>[
-                  const Positioned(
-                    left: 12,
-                    child: Text(
-                      '12',
-                      style: DoitTypos.suitSB16,
+              child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) =>
+                    Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    Positioned(
+                      left: animalMarkerList[index].count.toString().length > 3
+                          ? 4
+                          : 12,
+                      child: Text(animalMarkerList[index].count.toString(),
+                          style:
+                              animalMarkerList[index].count.toString().length >
+                                      3
+                                  ? DoitTypos.suitSB12
+                                  : DoitTypos.suitSB16),
                     ),
-                  ),
-                  Positioned(
-                    left: 40,
-                    child: SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: Image.asset(Assets.allLuck),
+                    Positioned(
+                      left: 34,
+                      child: SizedBox(
+                        height: constraints.maxHeight * 1.0,
+                        child: Image.asset(
+                          AnimalType.fromString(animalMarkerList[index].name)
+                              .horizontalMarkPath,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

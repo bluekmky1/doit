@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/rendering.dart';
 // import 'package:go_router/go_router.dart';
 
 import '../../routes/routes.dart';
@@ -33,75 +36,111 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
         currentRouteName: Routes.fortune.name,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const FortuneAppBarWidget(),
-            const IconCardListWidget(),
-            const FortuneScoreGageWidget(
-              title: '총운',
-              score: 80,
-            ),
-            const FortuneCardWidget(
-              // shortFortune: '전력질주하기 좋은날',
-              fullFortune:
-                  '''힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날''',
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 30),
-              child: Text(
-                '시간대 별 운세',
-                style: DoitTypos.suitR12,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 35),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  CircularGraphWidget(
-                    percentage: 84,
-                    gradiantStart: doitColorTheme.gradient2Stop0,
-                    gradiantEnd: doitColorTheme.gradient2Stop100,
-                    timeTitle: '낮',
+      body: Stack(
+        children: <Widget>[
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const FortuneAppBarWidget(),
+                const IconCardListWidget(),
+                const FortuneScoreGageWidget(
+                  title: '총운',
+                  score: 80,
+                ),
+                const FortuneCardWidget(
+                  // shortFortune: '전력질주하기 좋은날',
+                  fullFortune:
+                      '''힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날''',
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 30),
+                  child: Text(
+                    '시간대 별 운세',
+                    style: DoitTypos.suitR12,
                   ),
-                  CircularGraphWidget(
-                    percentage: 84,
-                    gradiantStart: doitColorTheme.gradient1Stop42,
-                    gradiantEnd:
-                        doitColorTheme.gradient1Stop100.withOpacity(0.42),
-                    timeTitle: '오후',
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 35),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      CircularGraphWidget(
+                        percentage: 84,
+                        gradiantStart: doitColorTheme.gradient2Stop0,
+                        gradiantEnd: doitColorTheme.gradient2Stop100,
+                        timeTitle: '낮',
+                      ),
+                      CircularGraphWidget(
+                        percentage: 84,
+                        gradiantStart: doitColorTheme.gradient1Stop42,
+                        gradiantEnd:
+                            doitColorTheme.gradient1Stop100.withOpacity(0.42),
+                        timeTitle: '오후',
+                      ),
+                      CircularGraphWidget(
+                        percentage: 84,
+                        gradiantStart: doitColorTheme.gradient3Stop0,
+                        gradiantEnd: doitColorTheme.gradient3Stop100,
+                        timeTitle: '밤',
+                      ),
+                    ],
                   ),
-                  CircularGraphWidget(
-                    percentage: 84,
-                    gradiantStart: doitColorTheme.gradient3Stop0,
-                    gradiantEnd: doitColorTheme.gradient3Stop100,
-                    timeTitle: '밤',
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    children: <Widget>[
+                      SvgPicture.asset(
+                        Assets.fortuneColored,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        '오늘의 운세 기반 추천 미션',
+                        style: DoitTypos.suitSB16,
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const CardSliderWidget(),
+                const SizedBox(height: 120),
+              ],
             ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: <Widget>[
-                  SvgPicture.asset(
-                    Assets.fortuneColored,
-                  ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    '오늘의 운세 기반 추천 미션',
-                    style: DoitTypos.suitSB16,
-                  ),
-                ],
-              ),
+          ),
+          BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 6.5,
+              sigmaY: 6.5,
             ),
-            const CardSliderWidget(),
-            const SizedBox(height: 120),
-          ],
-        ),
+            child: Container(
+              color: Colors.white.withOpacity(0.3),
+              height: MediaQuery.of(context).size.height,
+            ),
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SvgPicture.asset(
+                  Assets.warning,
+                  width: 100,
+                  height: 100,
+                  colorFilter: ColorFilter.mode(
+                    doitColorTheme.main,
+                    BlendMode.srcIn,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  '운세 페이지는 아직 준비중입니다\n' '빠르게 준비해서 업데이트 하겠습니다!',
+                  style: DoitTypos.suitSB16,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

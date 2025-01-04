@@ -181,10 +181,13 @@ class _CalenderBarWidgetState extends ConsumerState<CalenderBarWidget> {
                     date.month == state.selectedDate.month &&
                     date.year == state.selectedDate.year;
 
+                final bool canNotTap =
+                    state.getTodoListLoadingStatus == LoadingStatus.loading ||
+                        isSelected;
+
                 return GestureDetector(
                   onTap: () {
-                    if (state.getTodoListLoadingStatus ==
-                        LoadingStatus.loading) {
+                    if (canNotTap) {
                       return;
                     }
                     viewModel
