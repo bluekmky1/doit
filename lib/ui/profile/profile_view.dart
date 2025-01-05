@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../routes/routes.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
 
@@ -239,6 +238,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                   inputFormatters: <TextInputFormatter>[
                                     FilteringTextInputFormatter.digitsOnly,
                                   ],
+                                  keyboardType: TextInputType.number,
                                   errorText:
                                       state.birthYearError.isEmpty ? null : '',
                                   maxLength: 4,
@@ -263,6 +263,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                           FilteringTextInputFormatter
                                               .digitsOnly,
                                         ],
+                                        keyboardType: TextInputType.number,
                                         maxLength: 2,
                                         onChanged: (String value) {
                                           viewModel.changeBirthMonth(
@@ -283,6 +284,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                           FilteringTextInputFormatter
                                               .digitsOnly,
                                         ],
+                                        keyboardType: TextInputType.number,
                                         maxLength: 2,
                                         onChanged: (String value) {
                                           viewModel.changeBirthDay(
@@ -345,6 +347,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                               FilteringTextInputFormatter
                                                   .digitsOnly,
                                             ],
+                                            keyboardType: TextInputType.number,
                                             maxLength: 2,
                                             onChanged: (String value) {
                                               viewModel.changeBirthHour(
@@ -373,6 +376,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                                   .digitsOnly,
                                             ],
                                             hintText: 'MM',
+                                            keyboardType: TextInputType.number,
                                             enabled: !state.isBirthDateUnknown,
                                             errorText:
                                                 state.birthMinuteError.isEmpty
