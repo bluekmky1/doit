@@ -1,5 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../core/common/use_case/use_case_result.dart';
+import '../../core/loading_status.dart';
+import '../../domain/user/model/user_data_model.dart';
+import '../../domain/user/use_case/update_user_data.dart';
+import '../../service/supabase/supabase_service.dart';
 import '../common/consts/am_pm.dart';
 import '../common/consts/gender.dart';
 import '../common/consts/lunar_solar.dart';
@@ -9,13 +15,72 @@ final AutoDisposeStateNotifierProvider<ProfileViewModel, ProfileState>
     profileViewModelProvider = StateNotifierProvider.autoDispose(
   (Ref ref) => ProfileViewModel(
     state: const ProfileState.init(),
+    updateUserDataUseCase: ref.read(updateUserDataUseCaseProvider),
+    supabaseClient: ref.read(supabaseServiceProvider),
   ),
 );
 
 class ProfileViewModel extends StateNotifier<ProfileState> {
   ProfileViewModel({
     required ProfileState state,
-  }) : super(state);
+    required UpdateUserDataUseCase updateUserDataUseCase,
+    required SupabaseClient supabaseClient,
+  })  : _updateUserDataUseCase = updateUserDataUseCase,
+        _supabaseClient = supabaseClient,
+        super(state);
+
+  final UpdateUserDataUseCase _updateUserDataUseCase;
+  final SupabaseClient _supabaseClient;
+
+  Future<void> saveProfile() async {
+    state = state.copyWith(updateProfileLoadingStatus: LoadingStatus.loading);
+
+    final String? userId = _supabaseClient.auth.currentUser?.id;
+    if (userId == null) {
+      return;
+    }
+    final UserDataModel profile = UserDataModel(
+      id: userId,
+      nickname: state.userName,
+      gender: state.gender.title,
+      lunarSolar: state.lunarSolar.title,
+      birthDate: state.isBirthDateUnknown
+          ? DateTime(
+              int.parse(state.birthYear),
+              int.parse(state.birthMonth),
+              int.parse(state.birthDay),
+            )
+          : DateTime(
+              int.parse(state.birthYear),
+              int.parse(state.birthMonth),
+              int.parse(state.birthDay),
+              int.parse(state.birthHour),
+              int.parse(state.birthMinute),
+            ),
+      unknownBirthTime: state.isBirthDateUnknown,
+      consent: true,
+    );
+
+    final UseCaseResult<void> result = await _updateUserDataUseCase(
+      data: profile,
+    );
+
+    switch (result) {
+      case SuccessUseCaseResult<void>():
+        state = state.copyWith(
+          updateProfileLoadingStatus: LoadingStatus.success,
+        );
+
+      case FailureUseCaseResult<void>():
+        state = state.copyWith(
+          updateProfileLoadingStatus: LoadingStatus.error,
+        );
+    }
+  }
+
+  void changeUserName({required String userName}) {
+    state = state.copyWith(userName: userName);
+  }
 
   void changeGender({required Gender gender}) {
     state = state.copyWith(gender: gender);

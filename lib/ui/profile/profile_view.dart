@@ -8,11 +8,14 @@ import '../../../routes/routes.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
 
+import '../../core/loading_status.dart';
 import '../common/consts/am_pm.dart';
 import '../common/consts/assets.dart';
 import '../common/consts/gender.dart';
 import '../common/consts/lunar_solar.dart';
 import '../common/widgets/outlined_text_field_widget.dart';
+import '../my/my_state.dart';
+import '../my/my_view_model.dart';
 import 'profile_state.dart';
 import 'profile_view_model.dart';
 
@@ -41,12 +44,50 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   @override
   void initState() {
     super.initState();
-    final ProfileState state = ref.read(profileViewModelProvider);
-    birthYearInputController.text = state.birthYear;
-    birthMonthInputController.text = state.birthMonth;
-    birthDayInputController.text = state.birthDay;
-    birthHourInputController.text = state.birthHour;
-    birthMinuteInputController.text = state.birthMinute;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final MyState initState = ref.read(myViewModelProvider);
+      ref.read(profileViewModelProvider.notifier).changeUserName(
+            userName: initState.userName,
+          );
+      ref.read(profileViewModelProvider.notifier).changeGender(
+            gender: Gender.fromString(initState.gender),
+          );
+      ref.read(profileViewModelProvider.notifier).changeLunarSolar(
+            lunarSolar: LunarSolar.fromString(initState.lunarSolar),
+          );
+      ref.read(profileViewModelProvider.notifier).changeAmPm(
+            amPm: AmPm.fromString(initState.birthDate.hour < 13 ? 'am' : 'pm'),
+          );
+      ref.read(profileViewModelProvider.notifier).changeBirthYear(
+            birthYear: initState.birthDate.year.toString(),
+          );
+      ref.read(profileViewModelProvider.notifier).changeBirthMonth(
+            birthMonth: initState.birthDate.month.toString(),
+          );
+      ref.read(profileViewModelProvider.notifier).changeBirthDay(
+            birthDay: initState.birthDate.day.toString(),
+          );
+
+      birthYearInputController.text = initState.birthDate.year.toString();
+      birthMonthInputController.text = initState.birthDate.month.toString();
+      birthDayInputController.text = initState.birthDate.day.toString();
+      if (initState.unknownBirthTime) {
+        birthHourInputController.text = '';
+        birthMinuteInputController.text = '';
+        ref.read(profileViewModelProvider.notifier).changeIsBirthDateUnknown(
+              isBirthDateUnknown: true,
+            );
+      } else {
+        ref.read(profileViewModelProvider.notifier).changeBirthHour(
+              birthHour: initState.birthDate.hour.toString(),
+            );
+        ref.read(profileViewModelProvider.notifier).changeBirthMinute(
+              birthMinute: initState.birthDate.minute.toString(),
+            );
+        birthHourInputController.text = initState.birthDate.hour.toString();
+        birthMinuteInputController.text = initState.birthDate.minute.toString();
+      }
+    });
   }
 
   @override
@@ -70,10 +111,44 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
 
+    ref.listen(profileViewModelProvider,
+        (ProfileState? previous, ProfileState next) {
+      if (next.updateProfileLoadingStatus == LoadingStatus.success) {
+        ref.read(myViewModelProvider.notifier).getUserData();
+        context.pop();
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 56,
         backgroundColor: doitColorTheme.background,
         scrolledUnderElevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: IconButton(
+            onPressed: () {
+              context.pop();
+            },
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: doitColorTheme.gray80,
+            ),
+          ),
+        ),
+        titleSpacing: 10,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: Text(
+            '프로필 수정',
+            style: DoitTypos.suitSB20.copyWith(
+              fontWeight: FontWeight.w800,
+              fontSize: 28,
+              height: 1.4,
+              color: doitColorTheme.main,
+            ),
+          ),
+        ),
       ),
       bottomNavigationBar: SizedBox(
         height: 64,
@@ -91,11 +166,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             ),
             padding: EdgeInsets.zero,
           ),
-          onPressed: state.isAllFormValid
-              ? () {
-                  context.goNamed(Routes.my.name);
-                }
-              : null,
+          onPressed: state.isAllFormValid ? viewModel.saveProfile : null,
           child: Text(
             '입력완료',
             style: DoitTypos.suitR20.copyWith(
@@ -119,7 +190,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        const SizedBox(height: 160),
+                        const SizedBox(height: 40),
                         const Text(
                           '성별',
                           style: DoitTypos.suitSB16,
@@ -226,7 +297,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 37),
+                        const SizedBox(height: 24),
                         const Text(
                           '태어난 시간',
                           style: DoitTypos.suitSB16,
@@ -379,7 +450,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
-                height: 125,
+                height: 16,
                 decoration: BoxDecoration(
                   color: doitColorTheme.background,
                   borderRadius: const BorderRadius.vertical(
@@ -387,36 +458,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   ),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
-                      color: doitColorTheme.shadow2.withOpacity(0.2),
+                      color: doitColorTheme.shadow2.withOpacity(0.3),
                       blurRadius: 16,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            '정보를 입력해주세요',
-                            style: DoitTypos.suitSB20.copyWith(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 28,
-                              height: 1.4,
-                              color: doitColorTheme.main,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            '입력 정보를 기반으로\n'
-                            '운세와 맞춤 목표를 추천드릴게요!',
-                            style: DoitTypos.suitR16,
-                          ),
-                          const SizedBox(height: 24),
-                        ],
-                      ),
                     ),
                   ],
                 ),

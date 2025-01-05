@@ -1,9 +1,12 @@
 import 'package:equatable/equatable.dart';
+import '../../core/loading_status.dart';
 import '../common/consts/am_pm.dart';
 import '../common/consts/gender.dart';
 import '../common/consts/lunar_solar.dart';
 
 class ProfileState extends Equatable {
+  final LoadingStatus updateProfileLoadingStatus;
+  final String userName;
   final Gender gender;
   final LunarSolar lunarSolar;
   final String birthYear;
@@ -20,6 +23,8 @@ class ProfileState extends Equatable {
   final bool isBirthDateUnknown;
 
   const ProfileState({
+    required this.userName,
+    required this.updateProfileLoadingStatus,
     required this.gender,
     required this.lunarSolar,
     required this.birthYear,
@@ -37,7 +42,9 @@ class ProfileState extends Equatable {
   });
 
   const ProfileState.init()
-      : gender = Gender.male,
+      : updateProfileLoadingStatus = LoadingStatus.none,
+        userName = '',
+        gender = Gender.male,
         lunarSolar = LunarSolar.solar,
         birthYear = '',
         birthYearError = '',
@@ -53,6 +60,8 @@ class ProfileState extends Equatable {
         isBirthDateUnknown = false;
 
   ProfileState copyWith({
+    LoadingStatus? updateProfileLoadingStatus,
+    String? userName,
     Gender? gender,
     LunarSolar? lunarSolar,
     String? birthYear,
@@ -69,6 +78,9 @@ class ProfileState extends Equatable {
     bool? isBirthDateUnknown,
   }) =>
       ProfileState(
+        updateProfileLoadingStatus:
+            updateProfileLoadingStatus ?? this.updateProfileLoadingStatus,
+        userName: userName ?? this.userName,
         gender: gender ?? this.gender,
         lunarSolar: lunarSolar ?? this.lunarSolar,
         birthYear: birthYear ?? this.birthYear,
@@ -87,6 +99,8 @@ class ProfileState extends Equatable {
 
   @override
   List<Object> get props => <Object>[
+        updateProfileLoadingStatus,
+        userName,
         gender,
         lunarSolar,
         birthYear,
@@ -106,10 +120,11 @@ class ProfileState extends Equatable {
   bool get isAllFormValid =>
       birthYearError.isEmpty &&
       birthYear.isNotEmpty &&
+      userName.isNotEmpty &&
       birthMonthError.isEmpty &&
       birthMonth.isNotEmpty &&
       birthDayError.isEmpty &&
       birthDay.isNotEmpty &&
       (isBirthDateUnknown ||
-          (birthHourError.isNotEmpty && birthMinuteError.isNotEmpty));
+          (birthHourError.isEmpty && birthMinuteError.isEmpty));
 }
