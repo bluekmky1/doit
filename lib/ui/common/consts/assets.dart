@@ -97,6 +97,29 @@ class Assets {
   static const String tigerHorizontalMark =
       'assets/images/horizental_mark/tiger.png';
 
+  // 세로 마크
+  static const String mouseVerticalMark =
+      'assets/images/vertical_mark/mouse.png';
+  static const String cowVerticalMark = 'assets/images/vertical_mark/cow.png';
+  static const String tigerVerticalMark =
+      'assets/images/vertical_mark/tiger.png';
+  static const String rabbitVerticalMark =
+      'assets/images/vertical_mark/rabbit.png';
+  static const String dragonVerticalMark =
+      'assets/images/vertical_mark/dragon.png';
+  static const String snakeVerticalMark =
+      'assets/images/vertical_mark/snake.png';
+  static const String horseVerticalMark =
+      'assets/images/vertical_mark/horse.png';
+  static const String sheepVerticalMark =
+      'assets/images/vertical_mark/sheep.png';
+  static const String monkeyVerticalMark =
+      'assets/images/vertical_mark/monkey.png';
+  static const String chickenVerticalMark =
+      'assets/images/vertical_mark/chicken.png';
+  static const String dogVerticalMark = 'assets/images/vertical_mark/dog.png';
+  static const String pigVerticalMark = 'assets/images/vertical_mark/pig.png';
+
   //로고
   static const String kakaoLogin = 'assets/images/kakao_login_large_wide.png';
   static const String loginBackground = 'assets/images/login_background.png';

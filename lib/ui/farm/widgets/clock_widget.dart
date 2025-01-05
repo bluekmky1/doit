@@ -25,7 +25,7 @@ class ClockWidget extends ConsumerWidget {
         builder: (BuildContext context) => Column(
           children: <Widget>[
             Text(
-              DateFormat('yyyy-MM-dd').format(DateTime.now()),
+              DateFormat('yyyy.MM.dd').format(DateTime.now()),
               style: DoitTypos.tenadaEB20.copyWith(
                 color: doitColorTheme.background,
                 height: 0.4,

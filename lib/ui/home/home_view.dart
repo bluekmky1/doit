@@ -231,19 +231,19 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         ),
                       ),
                       // 농장으로 가기 버튼
-                      Positioned(
-                        right: 16,
-                        bottom: 8,
-                        child: IconButton(
-                          onPressed: () {
-                            context.pushNamed(Routes.farm.name);
-                          },
-                          style: IconButton.styleFrom(
-                            backgroundColor: doitColorTheme.background,
-                          ),
-                          icon: SvgPicture.asset(Assets.pawColored),
-                        ),
-                      ),
+                      // Positioned(
+                      //   right: 16,
+                      //   bottom: 8,
+                      //   child: IconButton(
+                      //     onPressed: () {
+                      //       context.pushNamed(Routes.farm.name);
+                      //     },
+                      //     style: IconButton.styleFrom(
+                      //       backgroundColor: doitColorTheme.background,
+                      //     ),
+                      //     icon: SvgPicture.asset(Assets.pawColored),
+                      //   ),
+                      // ),
                     ],
                   ),
                   // 캘린더 바

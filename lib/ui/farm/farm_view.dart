@@ -1,8 +1,14 @@
 import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/loading_status.dart';
+import '../../domain/animal/model/animal_marker_model.dart';
+import '../common/consts/animal_type.dart';
 import '../common/consts/assets.dart';
 import '../common/game/farm_game.dart';
 import 'farm_state.dart';
@@ -26,12 +32,24 @@ class _FarmViewState extends ConsumerState<FarmView>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(farmViewModelProvider.notifier).getThisMonthTodoList();
+    });
     _farmGame = FarmGame();
+
+    SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+      DeviceOrientation.portraitUp,
+    ]);
     super.dispose();
   }
 
@@ -42,11 +60,44 @@ class _FarmViewState extends ConsumerState<FarmView>
     FarmGame.screenSize = Vector2(size.width, size.height);
   }
 
+  Vector2 _getRandomPosition() {
+    final math.Random random = math.Random();
+    return Vector2(
+      random.nextDouble() * FarmGame.screenSize.x,
+      random.nextDouble() * FarmGame.screenSize.y,
+    );
+  }
+
+  void _initAnimalsToGame() {
+    final FarmState state = ref.read(farmViewModelProvider);
+    for (final AnimalMarkerModel animal in state.animalList) {
+      final AnimalType animalType = AnimalType.fromString(animal.name);
+      for (int i = 0; i < animal.count; i++) {
+        _farmGame.world.add(
+          MovableObject(
+            id: '${animal.name}_$i',
+            position: _getRandomPosition(),
+            animalType: animalType,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     final FarmState state = ref.watch(farmViewModelProvider);
+
+    ref.listen(
+        farmViewModelProvider
+            .select((FarmState state) => state.getTodoListLoadingStatus),
+        (LoadingStatus? prev, LoadingStatus next) {
+      if (next == LoadingStatus.success) {
+        _initAnimalsToGame();
+      }
+    });
 
     return SafeArea(
       child: Scaffold(
@@ -94,14 +145,7 @@ class _FarmViewState extends ConsumerState<FarmView>
                   offset: isLandscape
                       ? Offset(0.0, state.isAnimalButtonSelected ? 0.0 : -1.0)
                       : Offset(state.isAnimalButtonSelected ? 0.0 : -1.0, 0.0),
-                  child: AnimalStatusBarWidget(
-                    data: List<AnimalStatus>.generate(
-                        12,
-                        (int index) => AnimalStatus(
-                              count: '100',
-                              animalAssetPath: Assets.allLuck,
-                            )),
-                  ),
+                  child: const AnimalStatusBarWidget(),
                 ),
               ),
             ),
