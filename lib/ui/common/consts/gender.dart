@@ -7,4 +7,10 @@ enum Gender {
   });
 
   final String title;
+
+  static Gender fromString(String name) => switch (name.toLowerCase()) {
+        '남성' => Gender.male,
+        '여성' => Gender.female,
+        _ => throw ArgumentError('Unknown gender: $name'),
+      };
 }
