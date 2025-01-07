@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/loading_status.dart';
 import '../../domain/animal/model/animal_marker_model.dart';
 import '../../routes/routes.dart';
 import '../../theme/doit_color_theme.dart';
@@ -52,7 +53,25 @@ class _MyViewState extends ConsumerState<MyView> {
           child: Column(
             children: <Widget>[
               // 앱바
-              const MyAppBarWidget(),
+
+              if (state.getUserDataLoadingStatus == LoadingStatus.success)
+                const MyAppBarWidget()
+              else
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 52, 0, 72),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 12,
+                        height: 12,
+                        child: CircularProgressIndicator(
+                          color: doitColorTheme.main,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -92,11 +111,13 @@ class _MyViewState extends ConsumerState<MyView> {
                 ],
               ),
               const SizedBox(height: 16),
-              _CompletedTodoCardWidget(
-                count: state.completedTodoCount.toString(),
-                animalMarkerList: state.animalMarkerList,
-              ),
-              const SizedBox(height: 140),
+              if (state.getUserDataLoadingStatus == LoadingStatus.success)
+                _CompletedTodoCardWidget(
+                  count: state.completedTodoCount.toString(),
+                  animalMarkerList: state.animalMarkerList,
+                )
+              else
+                const SizedBox(height: 140),
             ],
           ),
         ),
