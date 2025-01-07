@@ -48,3 +48,5 @@ app.*.map.json
 # key.properties
 key.jks
 
+# FVM Version Cache
+.fvm/
