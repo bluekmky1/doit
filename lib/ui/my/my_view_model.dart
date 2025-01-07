@@ -5,7 +5,7 @@ import '../../../../core/common/use_case/use_case_result.dart';
 import '../../../../core/loading_status.dart';
 import '../../domain/animal/model/animal_marker_model.dart';
 import '../../domain/todo/model/todo_model.dart';
-import '../../domain/todo/use_case/get_todo_list_with_period_use_case copy.dart';
+import '../../domain/todo/use_case/get_todo_list_with_period_use_case.dart';
 import '../../domain/user/model/user_data_model.dart';
 import '../../domain/user/use_case/get_user_data.dart';
 import '../../service/supabase/supabase_service.dart';

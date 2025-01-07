@@ -44,3 +44,9 @@ app.*.map.json
 
 # Environment variables
 .env
+
+# key.properties
+key.jks
+
+# FVM Version Cache
+.fvm/
