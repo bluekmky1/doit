@@ -84,6 +84,11 @@ class _CalenderBarWidgetState extends ConsumerState<CalenderBarWidget> {
                               primary: doitColorTheme.main,
                               onSurface: doitColorTheme.gray80,
                             ),
+                            datePickerTheme: DatePickerThemeData(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
                             textButtonTheme: TextButtonThemeData(
                               style: TextButton.styleFrom(
                                 foregroundColor: doitColorTheme.main,
