@@ -5,10 +5,12 @@ import '../../../theme/doit_typos.dart';
 import '../../common/widgets/elevated_card_widget.dart';
 
 class FortuneCardWidget extends StatelessWidget {
+  final String? title;
   final String? shortFortune;
   final String fullFortune;
   const FortuneCardWidget({
     required this.fullFortune,
+    this.title,
     this.shortFortune,
     super.key,
   });
@@ -37,7 +39,7 @@ class FortuneCardWidget extends StatelessWidget {
               ),
             Text(
               fullFortune,
-              style: DoitTypos.suitR12.copyWith(
+              style: DoitTypos.suitR14.copyWith(
                 color: doitColorTheme.gray80,
                 leadingDistribution: TextLeadingDistribution.even,
               ),

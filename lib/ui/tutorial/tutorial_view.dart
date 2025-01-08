@@ -36,6 +36,7 @@ class _TutorialViewState extends ConsumerState<TutorialView> {
     return Scaffold(
       backgroundColor: doitColorTheme.background,
       appBar: AppBar(
+        leading: const SizedBox.shrink(),
         scrolledUnderElevation: 0.0,
         backgroundColor: doitColorTheme.background,
         actions: <Widget>[

@@ -44,83 +44,87 @@ class _MyViewState extends ConsumerState<MyView> {
         currentRouteName: Routes.my.name,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(
-          decelerationRate: ScrollDecelerationRate.fast,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: <Widget>[
-              // 앱바
-
-              if (state.getUserDataLoadingStatus == LoadingStatus.success)
-                const MyAppBarWidget()
-              else
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 52, 0, 72),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 12,
-                        height: 12,
-                        child: CircularProgressIndicator(
-                          color: doitColorTheme.main,
-                          strokeWidth: 2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Stack(
+        children: <Widget>[
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(
+              decelerationRate: ScrollDecelerationRate.fast,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
                 children: <Widget>[
-                  const Text(
-                    '이번달에 모은 동물들',
-                    style: DoitTypos.suitSB16,
-                  ),
-                  SizedBox(
-                    height: 32,
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                        ),
-                        backgroundColor: doitColorTheme.main,
-                        foregroundColor: doitColorTheme.background,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(3.61),
-                        ),
-                      ),
-                      onPressed: () {
-                        context.pushNamed(Routes.farm.name);
-                      },
+                  // 앱바
+
+                  if (state.getUserDataLoadingStatus == LoadingStatus.success)
+                    const MyAppBarWidget()
+                  else
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 52, 0, 72),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Text(
-                            '보러가기',
-                            style: DoitTypos.suitR14.copyWith(
-                              color: Colors.white,
+                          SizedBox(
+                            width: 12,
+                            height: 12,
+                            child: CircularProgressIndicator(
+                              color: doitColorTheme.main,
+                              strokeWidth: 2,
                             ),
                           ),
                         ],
                       ),
                     ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      const Text(
+                        '이번달에 모은 동물들',
+                        style: DoitTypos.suitSB16,
+                      ),
+                      SizedBox(
+                        height: 32,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                            ),
+                            backgroundColor: doitColorTheme.main,
+                            foregroundColor: doitColorTheme.background,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(3.61),
+                            ),
+                          ),
+                          onPressed: () {
+                            context.pushNamed(Routes.farm.name);
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                '보러가기',
+                                style: DoitTypos.suitR14.copyWith(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 16),
+                  if (state.getUserDataLoadingStatus == LoadingStatus.success)
+                    _CompletedTodoCardWidget(
+                      count: state.completedTodoCount.toString(),
+                      animalMarkerList: state.animalMarkerList,
+                    )
+                  else
+                    const SizedBox(height: 140),
                 ],
               ),
-              const SizedBox(height: 16),
-              if (state.getUserDataLoadingStatus == LoadingStatus.success)
-                _CompletedTodoCardWidget(
-                  count: state.completedTodoCount.toString(),
-                  animalMarkerList: state.animalMarkerList,
-                )
-              else
-                const SizedBox(height: 140),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -4,13 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../core/loading_status.dart';
 import '../../routes/routes.dart';
 import '../../theme/doit_color_theme.dart';
 import '../../theme/doit_typos.dart';
 import '../common/consts/assets.dart';
+import '../common/consts/fortune_category.dart';
 import '../common/widgets/bottom_navigation_bar_widget.dart';
-import 'widgets/card_slider_widget.dart';
-import 'widgets/circular_graph_widget.dart';
+import 'fortune_state.dart';
+import 'fortune_view_model.dart';
 import 'widgets/fortune_app_bar_widget.dart';
 import 'widgets/fortune_card_widget.dart';
 import 'widgets/fortune_score_gage_widget.dart';
@@ -25,7 +27,25 @@ class FortuneView extends ConsumerStatefulWidget {
 
 class _FortuneViewState extends ConsumerState<FortuneView> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(fortuneViewModelProvider.notifier).getUserData();
+      ref.read(fortuneViewModelProvider.notifier).getFortune();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final FortuneState state = ref.watch(fortuneViewModelProvider);
+
+    ref.listen(
+        fortuneViewModelProvider
+            .select((FortuneState state) => state.getFortuneLoadingStatus),
+        (LoadingStatus? previous, LoadingStatus next) {
+      if (next == LoadingStatus.error) {}
+    });
+
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
 
@@ -42,102 +62,77 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
               children: <Widget>[
                 const FortuneAppBarWidget(),
                 const IconCardListWidget(),
-                const FortuneScoreGageWidget(
-                  title: '총운',
-                  score: 80,
+                FortuneScoreGageWidget(
+                  title: state.selectedFortuneCategory.title,
+                  score: state.selectedFortuneScore,
                 ),
-                const FortuneCardWidget(
-                  // shortFortune: '전력질주하기 좋은날',
-                  fullFortune:
-                      '''힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날''',
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 30),
-                  child: Text(
-                    '시간대 별 운세',
-                    style: DoitTypos.suitR12,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 35),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      CircularGraphWidget(
-                        percentage: 84,
-                        gradiantStart: doitColorTheme.gradient2Stop0,
-                        gradiantEnd: doitColorTheme.gradient2Stop100,
-                        timeTitle: '낮',
-                      ),
-                      CircularGraphWidget(
-                        percentage: 84,
-                        gradiantStart: doitColorTheme.gradient1Stop42,
-                        gradiantEnd:
-                            doitColorTheme.gradient1Stop100.withOpacity(0.42),
-                        timeTitle: '오후',
-                      ),
-                      CircularGraphWidget(
-                        percentage: 84,
-                        gradiantStart: doitColorTheme.gradient3Stop0,
-                        gradiantEnd: doitColorTheme.gradient3Stop100,
-                        timeTitle: '밤',
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Row(
-                    children: <Widget>[
-                      SvgPicture.asset(
-                        Assets.fortuneColored,
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        '오늘의 운세 기반 추천 미션',
-                        style: DoitTypos.suitSB16,
-                      ),
-                    ],
-                  ),
-                ),
-                const CardSliderWidget(),
-                const SizedBox(height: 120),
-              ],
-            ),
-          ),
-          BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: 6.5,
-              sigmaY: 6.5,
-            ),
-            child: Container(
-              color: Colors.white.withOpacity(0.3),
-              height: MediaQuery.of(context).size.height,
-            ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SvgPicture.asset(
-                  Assets.warning,
-                  width: 100,
-                  height: 100,
-                  colorFilter: ColorFilter.mode(
-                    doitColorTheme.main,
-                    BlendMode.srcIn,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  '운세 페이지는 아직 준비중입니다\n' '빠르게 준비해서 업데이트 하겠습니다!',
-                  style: DoitTypos.suitSB16,
-                  textAlign: TextAlign.center,
+                FortuneCardWidget(
+                  shortFortune:
+                      state.selectedFortuneCategory == FortuneCategory.total
+                          ? state.fortuneSummary
+                          : null,
+                  fullFortune: state.selectedFortuneCategoryContent,
                 ),
               ],
             ),
-          )
+          ),
+          if (state.getFortuneLoadingStatus != LoadingStatus.success ||
+              !state.isTodayFortune)
+            BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 6.5,
+                sigmaY: 6.5,
+              ),
+              child: Container(
+                color: Colors.white.withOpacity(0.3),
+                height: MediaQuery.of(context).size.height,
+              ),
+            ),
+          if (state.getFortuneLoadingStatus == LoadingStatus.loading)
+            Center(
+              child: CircularProgressIndicator(
+                color: doitColorTheme.main,
+              ),
+            ),
+          if (state.getFortuneLoadingStatus == LoadingStatus.success &&
+              !state.isTodayFortune)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SvgPicture.asset(
+                    Assets.fortuneColored,
+                    width: 100,
+                    height: 100,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    '오늘의 특별한 운세가 도착했어요!',
+                    style: DoitTypos.suitSB16,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: doitColorTheme.main,
+                      foregroundColor: doitColorTheme.background,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      ref
+                          .read(fortuneViewModelProvider.notifier)
+                          .createFortune();
+                    },
+                    child: const Text(
+                      '운세 받아오기',
+                      style: DoitTypos.suitSB16,
+                    ),
+                  ),
+                ],
+              ),
+            )
         ],
       ),
     );
