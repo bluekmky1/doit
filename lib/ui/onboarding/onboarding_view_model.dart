@@ -94,6 +94,7 @@ class OnboardingViewModel extends StateNotifier<OnboardingState> {
       birthDate: formattedBirthDate,
       birthTime: formattedBirthTime,
       gender: state.gender.title,
+      createdAt: DateTime.now(),
     );
 
     switch (result) {

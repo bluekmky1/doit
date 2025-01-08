@@ -24,6 +24,7 @@ class CreateFortuneUseCase {
     required String birthDate,
     required String birthTime,
     required String gender,
+    required DateTime createdAt,
   }) async {
     final RepositoryResult<FortuneResponseEntity> result =
         await _fortuneRepository.createFortune(
@@ -31,6 +32,7 @@ class CreateFortuneUseCase {
       birthDate: birthDate,
       birthTime: birthTime,
       gender: gender,
+      createdAt: createdAt,
     );
     return switch (result) {
       SuccessRepositoryResult<FortuneResponseEntity>() =>

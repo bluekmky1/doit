@@ -83,6 +83,7 @@ class FortuneViewModel extends StateNotifier<FortuneState> {
       birthDate: state.birthDate,
       birthTime: state.birthTime,
       gender: state.gender,
+      createdAt: DateTime.now(),
     );
 
     switch (result) {

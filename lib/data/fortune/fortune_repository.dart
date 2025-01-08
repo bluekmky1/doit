@@ -25,6 +25,7 @@ class FortuneRepository extends Repository {
     required String birthDate,
     required String birthTime,
     required String gender,
+    required DateTime createdAt,
   }) async {
     try {
       return SuccessRepositoryResult<FortuneResponseEntity>(
@@ -34,6 +35,7 @@ class FortuneRepository extends Repository {
             birthDate: birthDate,
             birthTime: birthTime,
             gender: gender,
+            createdAt: createdAt,
           ),
         ),
       );

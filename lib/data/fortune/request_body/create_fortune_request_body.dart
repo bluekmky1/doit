@@ -10,12 +10,14 @@ class CreateFortuneRequestBody {
   final String birthDate;
   final String birthTime;
   final String gender;
+  final DateTime? createdAt;
 
   CreateFortuneRequestBody({
     required this.userId,
     required this.birthDate,
     required this.birthTime,
     required this.gender,
+    this.createdAt,
   });
 
   factory CreateFortuneRequestBody.fromJson(Map<String, dynamic> json) =>
