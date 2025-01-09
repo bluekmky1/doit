@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +27,17 @@ class FortuneView extends ConsumerStatefulWidget {
 }
 
 class _FortuneViewState extends ConsumerState<FortuneView> {
+  final List<String> loadingMessages = <String>[
+    '사주를 분석하고 있어요...',
+    '운세를 살펴보는 중이에요...',
+    '오늘의 운세를 풀이하고 있어요...',
+    '조금만 더 기다려주세요...',
+    '거의 다 왔어요!',
+  ];
+
+  int currentMessageIndex = 0;
+  Timer? messageTimer;
+
   @override
   void initState() {
     super.initState();
@@ -36,18 +48,52 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
   }
 
   @override
+  void dispose() {
+    messageTimer?.cancel();
+    super.dispose();
+  }
+
+  void startLoadingMessages() {
+    messageTimer?.cancel();
+    currentMessageIndex = 0;
+    messageTimer = Timer.periodic(
+      const Duration(milliseconds: 2500),
+      (Timer timer) {
+        if (mounted) {
+          setState(() {
+            currentMessageIndex =
+                (currentMessageIndex + 1) % loadingMessages.length;
+          });
+        }
+      },
+    );
+  }
+
+  void stopLoadingMessages() {
+    messageTimer?.cancel();
+    messageTimer = null;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final FortuneState state = ref.watch(fortuneViewModelProvider);
 
-    ref.listen(
-        fortuneViewModelProvider
-            .select((FortuneState state) => state.getFortuneLoadingStatus),
-        (LoadingStatus? previous, LoadingStatus next) {
-      if (next == LoadingStatus.error) {}
-    });
-
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
+
+    // createFortuneLoadingStatus 상태 변화 감지
+    ref.listen(
+      fortuneViewModelProvider
+          .select((FortuneState state) => state.createFortuneLoadingStatus),
+      (LoadingStatus? previous, LoadingStatus next) {
+        if (next == LoadingStatus.loading) {
+          startLoadingMessages();
+        } else {
+          stopLoadingMessages();
+          currentMessageIndex = 0;
+        }
+      },
+    );
 
     return Scaffold(
       floatingActionButton: BottomNavigationBarWidget(
@@ -76,6 +122,7 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
               ],
             ),
           ),
+          // 운세 조회 중 OR 운세 조회 실패 OR 조회를 성공했더라도 오늘의 운세가 아니라면 블러 효과
           if (state.getFortuneLoadingStatus != LoadingStatus.success ||
               !state.isTodayFortune)
             BackdropFilter(
@@ -88,14 +135,54 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
                 height: MediaQuery.of(context).size.height,
               ),
             ),
+
+          // 운세 조회 중 로딩 인디케이터
           if (state.getFortuneLoadingStatus == LoadingStatus.loading)
             Center(
-              child: CircularProgressIndicator(
-                color: doitColorTheme.main,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  CircularProgressIndicator(
+                    color: doitColorTheme.main,
+                  ),
+                  const SizedBox(height: 20),
+                  if (state.createFortuneLoadingStatus == LoadingStatus.loading)
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      child: Text(
+                        loadingMessages[currentMessageIndex],
+                        key: ValueKey<String>(
+                            loadingMessages[currentMessageIndex]),
+                        style: DoitTypos.suitSB16,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                ],
               ),
             ),
-          if (state.getFortuneLoadingStatus == LoadingStatus.success &&
-              !state.isTodayFortune)
+          // 운세 생성 실패 시 오류 메시지
+          if (state.createFortuneLoadingStatus == LoadingStatus.error)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SvgPicture.asset(
+                    Assets.warning,
+                    width: 100,
+                    height: 100,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    '운세를 불러오는데 실패했어요!\n관리자에게 문의해주세요.',
+                    style: DoitTypos.suitSB16,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+
+          // 운세 조회 실패 시 생성 버튼 활성화
+          if (state.getFortuneLoadingStatus == LoadingStatus.error)
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -107,7 +194,7 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    '오늘의 특별한 운세가 도착했어요!',
+                    '오늘의 특별한 운세를 확인해보세요!',
                     style: DoitTypos.suitSB16,
                     textAlign: TextAlign.center,
                   ),

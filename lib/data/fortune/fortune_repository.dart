@@ -68,7 +68,6 @@ class FortuneRepository extends Repository {
         ),
       );
     } on PostgrestException catch (e) {
-      print(e);
       return FailureRepositoryResult<FortuneResponseEntity>(
         messages: <String>['데이터를 조회하는  과정에 오류가 있습니다: ${e.message}'],
       );

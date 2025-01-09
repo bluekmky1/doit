@@ -13,6 +13,7 @@ CreateFortuneRequestBody _$CreateFortuneRequestBodyFromJson(
       birthDate: json['birth_date'] as String,
       birthTime: json['birth_time'] as String,
       gender: json['gender'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
     );
 
 Map<String, dynamic> _$CreateFortuneRequestBodyToJson(
@@ -22,4 +23,5 @@ Map<String, dynamic> _$CreateFortuneRequestBodyToJson(
       'birth_date': instance.birthDate,
       'birth_time': instance.birthTime,
       'gender': instance.gender,
+      'created_at': instance.createdAt.toIso8601String(),
     };

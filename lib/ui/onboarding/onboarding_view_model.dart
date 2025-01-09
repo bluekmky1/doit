@@ -3,11 +3,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/common/use_case/use_case_result.dart';
 import '../../core/loading_status.dart';
-import '../../domain/fortune/create_fortune_use_case.dart';
 import '../../domain/user/model/user_data_model.dart';
 import '../../domain/user/use_case/post_user_data.dart';
 import '../../service/supabase/supabase_service.dart';
-import '../../util/date_time_format_helper.dart';
 import '../common/consts/am_pm.dart';
 import '../common/consts/gender.dart';
 import '../common/consts/lunar_solar.dart';
@@ -19,23 +17,19 @@ final AutoDisposeStateNotifierProvider<OnboardingViewModel, OnboardingState>
     state: const OnboardingState.init(),
     supabaseClient: ref.read(supabaseServiceProvider),
     postUserDataUseCase: ref.read(postUserDataUseCaseProvider),
-    createFortuneUseCase: ref.read(createFortuneUseCaseProvider),
   ),
 );
 
 class OnboardingViewModel extends StateNotifier<OnboardingState> {
   final SupabaseClient _supabaseClient;
   final PostUserDataUseCase _postUserDataUseCase;
-  final CreateFortuneUseCase _createFortuneUseCase;
 
   OnboardingViewModel({
     required OnboardingState state,
     required SupabaseClient supabaseClient,
     required PostUserDataUseCase postUserDataUseCase,
-    required CreateFortuneUseCase createFortuneUseCase,
   })  : _supabaseClient = supabaseClient,
         _postUserDataUseCase = postUserDataUseCase,
-        _createFortuneUseCase = createFortuneUseCase,
         super(state);
 
   // 유저 데이터 저장
@@ -53,11 +47,21 @@ class OnboardingViewModel extends StateNotifier<OnboardingState> {
         nickname: _supabaseClient.auth.currentUser!.userMetadata?['name'],
         gender: state.gender.title,
         lunarSolar: state.lunarSolar.title,
-        birthDate: DateTime(
-          int.parse(state.birthYear),
-          int.parse(state.birthMonth),
-          int.parse(state.birthDay),
-        ),
+        birthDate: state.isBirthDateUnknown
+            // 태어난 날짜를 모르는 경우
+            ? DateTime(
+                int.parse(state.birthYear),
+                int.parse(state.birthMonth),
+                int.parse(state.birthDay),
+              )
+            // 태어난 시간을 아는 경우
+            : DateTime(
+                int.parse(state.birthYear),
+                int.parse(state.birthMonth),
+                int.parse(state.birthDay),
+                int.parse(state.birthHour),
+                int.parse(state.birthMinute),
+              ),
         unknownBirthTime: state.isBirthDateUnknown,
         consent: state.isAgreeTerms,
       ),
@@ -70,41 +74,6 @@ class OnboardingViewModel extends StateNotifier<OnboardingState> {
       case FailureUseCaseResult<void>():
         state = state.copyWith(
           postUserDataLoadingStatus: LoadingStatus.error,
-        );
-    }
-  }
-
-  Future<void> createFortune() async {
-    state = state.copyWith(
-      createFortuneLoadingStatus: LoadingStatus.loading,
-    );
-
-    final DateTime birthDate = DateTime(
-      int.parse(state.birthYear),
-      int.parse(state.birthMonth),
-      int.parse(state.birthDay),
-    );
-    final String formattedBirthDate = '${state.lunarSolar.title} '
-        '${DateTimeFormatter.getFullDate(birthDate)}';
-    final String formattedBirthTime =
-        DateTimeFormatter.getTimeString(birthDate);
-
-    final UseCaseResult<void> result = await _createFortuneUseCase(
-      userId: _supabaseClient.auth.currentUser!.id,
-      birthDate: formattedBirthDate,
-      birthTime: formattedBirthTime,
-      gender: state.gender.title,
-      createdAt: DateTime.now(),
-    );
-
-    switch (result) {
-      case SuccessUseCaseResult<void>():
-        state = state.copyWith(
-          createFortuneLoadingStatus: LoadingStatus.success,
-        );
-      case FailureUseCaseResult<void>():
-        state = state.copyWith(
-          createFortuneLoadingStatus: LoadingStatus.error,
         );
     }
   }

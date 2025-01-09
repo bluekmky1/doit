@@ -74,25 +74,15 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
 
-    ref
-      ..listen(
-        onboardingViewModelProvider
-            .select((OnboardingState state) => state.postUserDataLoadingStatus),
-        (LoadingStatus? previous, LoadingStatus next) {
-          if (next == LoadingStatus.success) {
-            viewModel.createFortune();
-          }
-        },
-      )
-      ..listen(
-        onboardingViewModelProvider.select(
-            (OnboardingState state) => state.createFortuneLoadingStatus),
-        (LoadingStatus? previous, LoadingStatus next) {
-          if (next == LoadingStatus.success) {
-            context.pushNamed(Routes.home.name);
-          }
-        },
-      );
+    ref.listen(
+      onboardingViewModelProvider
+          .select((OnboardingState state) => state.postUserDataLoadingStatus),
+      (LoadingStatus? previous, LoadingStatus next) {
+        if (next == LoadingStatus.success) {
+          context.pushNamed(Routes.home.name);
+        }
+      },
+    );
 
     return Scaffold(
       appBar: state.createFortuneLoadingStatus == LoadingStatus.loading

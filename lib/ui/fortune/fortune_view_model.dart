@@ -90,9 +90,10 @@ class FortuneViewModel extends StateNotifier<FortuneState> {
       case SuccessUseCaseResult<FortuneModel>():
         state = state.copyWith(
           createFortuneLoadingStatus: LoadingStatus.success,
-          getFortuneLoadingStatus: LoadingStatus.loading,
+          getFortuneLoadingStatus: LoadingStatus.success,
           fortuneSummary: result.data.summary,
           fortuneDetails: result.data.details,
+          fortuneCreatedAt: result.data.createdAt,
         );
       case FailureUseCaseResult<FortuneModel>():
         state = state.copyWith(
