@@ -181,8 +181,11 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
               ),
             ),
 
-          // 운세 조회 실패 시 생성 버튼 활성화
-          if (state.getFortuneLoadingStatus == LoadingStatus.error)
+          // 운세 조회 실패 시 생성 버튼 활성화 또는 오늘의 운세가 아닐 경우 로딩중이 아닐 때는 숨김
+          if (state.getFortuneLoadingStatus != LoadingStatus.loading &&
+              state.getFortuneLoadingStatus != LoadingStatus.none &&
+              (state.getFortuneLoadingStatus == LoadingStatus.error ||
+                  !state.isTodayFortune))
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
