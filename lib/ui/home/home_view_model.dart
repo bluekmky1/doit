@@ -226,6 +226,22 @@ class HomeViewModel extends StateNotifier<HomeState> {
     );
   }
 
+  void moveToToday() {
+    final DateTime today = DateTime.now();
+    final DateTime selectedDate = DateTime(today.year, today.month, today.day);
+
+    setSelectedDate(date: selectedDate);
+
+    final DateTime weekStart = state.currentWeekStart;
+    final DateTime weekEnd = weekStart.add(const Duration(days: 6));
+
+    if (selectedDate.isBefore(weekStart) || selectedDate.isAfter(weekEnd)) {
+      final int diff = selectedDate.weekday - 1;
+      final DateTime newWeekStart = selectedDate.subtract(Duration(days: diff));
+      setCurrentWeekStart(date: newWeekStart);
+    }
+  }
+
   void moveToPreviousWeek() {
     state = state.copyWith(
       currentWeekStart:

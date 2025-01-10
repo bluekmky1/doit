@@ -157,8 +157,26 @@ class _CalenderBarWidgetState extends ConsumerState<CalenderBarWidget> {
                       color: doitColorTheme.gray60,
                     ),
                   ),
-                  const SizedBox(
-                    width: 16,
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      foregroundColor: doitColorTheme.main,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed: () async {
+                      final DateTime today = DateTime.now();
+                      viewModel.moveToToday();
+                      await viewModel.getTodoListWithDate(
+                        targetDate:
+                            DateTime(today.year, today.month, today.day),
+                      );
+                    },
+                    child: Text(
+                      'Today',
+                      style: DoitTypos.suitR14.copyWith(
+                        color: doitColorTheme.main,
+                      ),
+                    ),
                   ),
                   IconButton(
                     onPressed: viewModel.moveToNextWeek,
