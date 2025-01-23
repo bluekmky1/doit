@@ -36,8 +36,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   // 스크롤이 맨 위(0.99)까지 갔을 때 1으로 이동
   void _scrollListener() {
-    if (mainAxisScrollController.offset <= 0.99) {
-      mainAxisScrollController.jumpTo(1);
+    if (mainAxisScrollController.offset <= 0.000009) {
+      mainAxisScrollController.jumpTo(0.000009);
     }
   }
 
@@ -184,6 +184,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
         controller: mainAxisScrollController,
         physics: const BouncingScrollPhysics(
           decelerationRate: ScrollDecelerationRate.fast,
+          parent: AlwaysScrollableScrollPhysics(),
         ),
         child: Column(
           children: <Widget>[
@@ -276,6 +277,17 @@ class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
   final FocusNode _focusNode = FocusNode();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final HomeState state = ref.watch(homeViewModelProvider);
     final HomeViewModel viewModel = ref.read(homeViewModelProvider.notifier);
@@ -313,6 +325,16 @@ class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
                   onPressed: () {
                     viewModel.setIsAddingTodo(value: true);
                     _focusNode.requestFocus();
+
+                    Future<void>.delayed(const Duration(milliseconds: 400), () {
+                      if (context.mounted) {
+                        Scrollable.ensureVisible(
+                          context,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      }
+                    });
                   },
                   icon: SvgPicture.asset(
                     Assets.add,
@@ -426,6 +448,8 @@ class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
               ],
             ),
           ),
+
+        SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
       ],
     );
   }

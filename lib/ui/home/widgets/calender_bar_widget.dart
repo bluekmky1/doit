@@ -166,10 +166,13 @@ class _CalenderBarWidgetState extends ConsumerState<CalenderBarWidget> {
                     onPressed: () async {
                       final DateTime today = DateTime.now();
                       viewModel.moveToToday();
-                      await viewModel.getTodoListWithDate(
-                        targetDate:
-                            DateTime(today.year, today.month, today.day),
-                      );
+                      if (state.selectedDate !=
+                          DateTime(today.year, today.month, today.day)) {
+                        await viewModel.getTodoListWithDate(
+                          targetDate:
+                              DateTime(today.year, today.month, today.day),
+                        );
+                      }
                     },
                     child: Text(
                       'Today',
