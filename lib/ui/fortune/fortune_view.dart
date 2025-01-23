@@ -1,5 +1,5 @@
-import 'dart:ui';
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -119,6 +119,29 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
                           : null,
                   fullFortune: state.selectedFortuneCategoryContent,
                 ),
+                const SizedBox(height: 32),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(
+                //     horizontal: 23.5,
+                //   ),
+                //   child: Row(
+                //     children: <Widget>[
+                //       SizedBox(
+                //         child: SvgPicture.asset(
+                //           Assets.fortuneColored,
+                //           width: 24,
+                //           height: 24,
+                //         ),
+                //       ),
+                //       const SizedBox(width: 8),
+                //       const Text(
+                //         '추천 할 일 목록',
+                //         style: DoitTypos.suitSB16,
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // const CardSliderWidget(),
               ],
             ),
           ),

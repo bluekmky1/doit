@@ -18,8 +18,32 @@
 // }
 
 // class _CardSliderWidgetState extends ConsumerState<CardSliderWidget> {
-//   final PageController cardCarouselController =
-//       PageController(viewportFraction: 300 / 375);
+//   final PageController cardCarouselController = PageController();
+
+//   final DateTime today = DateTime.now();
+//   final List<RecommendedTodoModel> recommendedTodoList = <RecommendedTodoModel>[
+//     RecommendedTodoModel(
+//       id: '1',
+//       createdAt: DateTime(2025, 1, 11),
+//       title: '할일 1',
+//       fortune: '연애운',
+//       isDone: false,
+//     ),
+//     RecommendedTodoModel(
+//       id: '2',
+//       createdAt: DateTime(2025, 1, 11),
+//       title: '할일 2',
+//       fortune: '금전운',
+//       isDone: false,
+//     ),
+//     RecommendedTodoModel(
+//       id: '3',
+//       createdAt: DateTime(2025, 1, 11),
+//       title: '할일 3',
+//       fortune: '학업운',
+//       isDone: false,
+//     ),
+//   ];
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -35,16 +59,16 @@
 //           child: PageView.builder(
 //             physics: const ClampingScrollPhysics(),
 //             controller: cardCarouselController,
-//             itemCount: state.recommendedTodoList.length,
+//             itemCount: recommendedTodoList.length,
 //             itemBuilder: (BuildContext context, int index) => _AnimatedCard(
-//               model: state.recommendedTodoList[index],
+//               model: recommendedTodoList[index],
 //             ),
 //           ),
 //         ),
-//         if (state.recommendedTodoList.isNotEmpty)
+//         if (recommendedTodoList.isNotEmpty)
 //           SmoothPageIndicator(
 //             controller: cardCarouselController,
-//             count: state.recommendedTodoList.length,
+//             count: recommendedTodoList.length,
 //             effect: ExpandingDotsEffect(
 //               dotColor: doitColorTheme.gray20,
 //               activeDotColor: doitColorTheme.main,
@@ -72,7 +96,8 @@
 //         Theme.of(context).extension<DoitColorTheme>()!;
 
 //     return Container(
-//       margin: const EdgeInsets.only(right: 16, bottom: 16, top: 16),
+//       margin:
+//           const EdgeInsets.only(left: 23.5, right: 23.5, bottom: 16, top: 16),
 //       padding: const EdgeInsets.fromLTRB(20, 16, 16, 0),
 //       decoration: BoxDecoration(
 //         color: doitColorTheme.background,
@@ -153,13 +178,14 @@
 //                   height: 53,
 //                   decoration: BoxDecoration(
 //                     borderRadius: BorderRadius.circular(100),
-//                     color: model.isDone
-//                         ? doitColorTheme.main
-//                         : doitColorTheme.gray20,
+//                     color: doitColorTheme.main,
 //                   ),
 //                   child: Material(
 //                     color: Colors.transparent,
 //                     child: InkWell(
+//                       overlayColor: WidgetStateProperty.all(
+//                         doitColorTheme.background.withOpacity(0.2),
+//                       ),
 //                       splashColor: doitColorTheme.main.withOpacity(0.2),
 //                       onTap: () {},
 //                       child: SvgPicture.asset(
