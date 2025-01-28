@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../core/loading_status.dart';
 import '../../domain/animal/model/animal_marker_model.dart';
@@ -53,73 +54,81 @@ class _MyViewState extends ConsumerState<MyView> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   // 앱바
+                  const MyAppBarWidget(),
 
-                  if (state.getUserDataLoadingStatus == LoadingStatus.success)
-                    const MyAppBarWidget()
-                  else
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 52, 0, 72),
-                      child: Row(
-                        children: <Widget>[
-                          SizedBox(
-                            width: 12,
-                            height: 12,
-                            child: CircularProgressIndicator(
-                              color: doitColorTheme.main,
-                              strokeWidth: 2,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      const Text(
-                        '이번달에 모은 동물들',
-                        style: DoitTypos.suitSB16,
-                      ),
-                      SizedBox(
-                        height: 32,
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                            ),
-                            backgroundColor: doitColorTheme.main,
-                            foregroundColor: doitColorTheme.background,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(3.61),
-                            ),
-                          ),
-                          onPressed: () {
-                            context.pushNamed(Routes.farm.name);
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                '보러가기',
-                                style: DoitTypos.suitR14.copyWith(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
+                  if (state.getUserDataLoadingStatus == LoadingStatus.loading)
+                    Shimmer.fromColors(
+                      baseColor: doitColorTheme.gray10,
+                      highlightColor: doitColorTheme.gray20,
+                      child: Container(
+                        width: 120,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: doitColorTheme.gray20,
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                    ],
-                  ),
+                    )
+                  else
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const Text(
+                          '이번달에 모은 동물들',
+                          style: DoitTypos.suitSB16,
+                        ),
+                        SizedBox(
+                          height: 32,
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              backgroundColor: doitColorTheme.main,
+                              foregroundColor: doitColorTheme.background,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(3.61),
+                              ),
+                            ),
+                            onPressed: () {
+                              context.pushNamed(Routes.farm.name);
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  '보러가기',
+                                  style: DoitTypos.suitR14.copyWith(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   const SizedBox(height: 16),
-                  if (state.getUserDataLoadingStatus == LoadingStatus.success)
+                  if (state.getUserDataLoadingStatus == LoadingStatus.loading)
+                    Shimmer.fromColors(
+                      baseColor: doitColorTheme.gray10,
+                      highlightColor: doitColorTheme.gray20,
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: doitColorTheme.gray20,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    )
+                  else
                     _CompletedTodoCardWidget(
                       count: state.completedTodoCount.toString(),
                       animalMarkerList: state.animalMarkerList,
                     )
-                  else
-                    const SizedBox(height: 140),
                 ],
               ),
             ),
