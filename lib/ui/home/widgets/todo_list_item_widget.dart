@@ -38,15 +38,15 @@ class TodoListItemWidget extends ConsumerWidget {
                 );
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(model.title),
               ),
             ),
           ),
         ),
         Container(
-          width: 24,
-          height: 24,
+          width: 20,
+          height: 20,
           clipBehavior: Clip.hardEdge,
           margin: const EdgeInsets.only(left: 16),
           decoration: BoxDecoration(

@@ -18,6 +18,7 @@ import '../common/widgets/bottom_navigation_bar_widget.dart';
 import 'home_state.dart';
 import 'home_view_model.dart';
 import 'widgets/calender_bar_widget.dart';
+import 'widgets/routine_list_item_widget.dart';
 import 'widgets/todo_list_item_widget.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -253,10 +254,89 @@ class _HomeViewState extends ConsumerState<HomeView> {
             ),
             // 투두 리스트
             const TodoListWidget(),
+            // 루틴 리스트
+            const RoutineListWidget(),
+
             const SizedBox(height: 140),
           ],
         ),
       ),
+    );
+  }
+}
+
+class RoutineListWidget extends ConsumerStatefulWidget {
+  const RoutineListWidget({
+    super.key,
+  });
+
+  @override
+  ConsumerState<RoutineListWidget> createState() => _RoutineListWidgetState();
+}
+
+class _RoutineListWidgetState extends ConsumerState<RoutineListWidget> {
+  @override
+  Widget build(BuildContext context) {
+    final DoitColorTheme doitColorTheme =
+        Theme.of(context).extension<DoitColorTheme>()!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+          child: Row(
+            children: <Widget>[
+              SizedBox(
+                width: 36,
+                height: 36,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: SvgPicture.asset(
+                    Assets.goal,
+                    colorFilter:
+                        ColorFilter.mode(doitColorTheme.main, BlendMode.srcIn),
+                  ),
+                ),
+              ),
+              const Text(
+                '루틴 목록',
+                style: DoitTypos.suitSB16,
+              ),
+            ],
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: doitColorTheme.background,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: doitColorTheme.shadow2.withOpacity(0.2),
+                blurRadius: 16,
+              ),
+            ],
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ...List<Widget>.generate(
+                3,
+                (int index) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    if (index != 0) const Divider(height: 12),
+                    const RoutineListItemWidget(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -428,7 +508,7 @@ class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
               ],
             ),
             margin: const EdgeInsets.symmetric(horizontal: 24),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
