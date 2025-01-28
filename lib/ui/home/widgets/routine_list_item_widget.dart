@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../domain/routine/model/routine_model.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../common/consts/assets.dart';
 
