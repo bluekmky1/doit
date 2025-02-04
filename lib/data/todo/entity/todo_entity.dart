@@ -9,6 +9,7 @@ class TodoEntity {
   final String todoId;
   final String userId;
   final String animalId;
+  final String? routineId;
   final TodoAnimalEntity animal;
   final String title;
   final bool isCompleted;
@@ -19,6 +20,7 @@ class TodoEntity {
     required this.todoId,
     required this.userId,
     required this.animalId,
+    required this.routineId,
     required this.animal,
     required this.title,
     required this.isCompleted,
