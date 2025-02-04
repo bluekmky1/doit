@@ -56,8 +56,8 @@ class HomeState extends Equatable {
         todoList = const <TodoModel>[],
         routineList = const <RoutineModel>[
           RoutineModel(
-            id: '1',
-            title: '루틴 1',
+            id: 'ce0aa6fb-599a-4dd2-92b2-1030e6e19e7d',
+            title: '테스트 루틴',
           ),
           RoutineModel(
             id: '2',
