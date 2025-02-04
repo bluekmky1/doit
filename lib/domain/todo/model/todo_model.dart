@@ -7,6 +7,7 @@ class TodoModel extends Equatable {
   final String animalId;
   final String animalName;
   final String title;
+  final String routineId;
   final bool isCompleted;
   final DateTime dueDate;
   final DateTime? completedAt;
@@ -16,6 +17,7 @@ class TodoModel extends Equatable {
     required this.animalId,
     required this.animalName,
     required this.title,
+    required this.routineId,
     required this.isCompleted,
     required this.dueDate,
     required this.completedAt,
@@ -29,6 +31,7 @@ class TodoModel extends Equatable {
         animalId: entity.animalId,
         animalName: entity.animal.name,
         title: entity.title,
+        routineId: entity.routineId ?? '',
         isCompleted: entity.isCompleted,
         dueDate: entity.dueDate,
         completedAt: entity.completedAt,
@@ -39,6 +42,7 @@ class TodoModel extends Equatable {
     String? animalId,
     String? animalName,
     String? title,
+    String? routineId,
     bool? isCompleted,
     DateTime? dueDate,
     DateTime? completedAt,
@@ -48,6 +52,7 @@ class TodoModel extends Equatable {
         animalId: animalId ?? this.animalId,
         animalName: animalName ?? this.animalName,
         title: title ?? this.title,
+        routineId: routineId ?? this.routineId,
         isCompleted: isCompleted ?? this.isCompleted,
         dueDate: dueDate ?? this.dueDate,
         completedAt: completedAt ?? this.completedAt,
@@ -59,6 +64,7 @@ class TodoModel extends Equatable {
         animalId,
         animalName,
         title,
+        routineId,
         isCompleted,
         dueDate,
         completedAt,
