@@ -185,7 +185,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: SingleChildScrollView(
         controller: mainAxisScrollController,
+        // 스크롤 애니메이션 설정
         physics: const BouncingScrollPhysics(
+          // 스크롤 감속 속도 설정
           decelerationRate: ScrollDecelerationRate.fast,
           parent: AlwaysScrollableScrollPhysics(),
         ),
@@ -240,10 +242,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 ],
               ),
             ),
-            // 투두 리스트
-            const TodoListWidget(),
-            // 루틴 리스트
-            const RoutineListWidget(),
+            // 투두 리스트 섹션
+            const TodoListSection(),
+            // 루틴 리스트 섹션
+            const RoutineListSection(),
 
             SizedBox(
               height: state.isAddingTodo
@@ -257,148 +259,53 @@ class _HomeViewState extends ConsumerState<HomeView> {
   }
 }
 
-class TodoListWidget extends ConsumerStatefulWidget {
-  const TodoListWidget({
+class TodoListSection extends ConsumerStatefulWidget {
+  const TodoListSection({
     super.key,
   });
 
   @override
-  ConsumerState<TodoListWidget> createState() => _TodoListWidgetState();
+  ConsumerState<TodoListSection> createState() => _TodoListSectionState();
 }
 
-class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
+class _TodoListSectionState extends ConsumerState<TodoListSection> {
   final TextEditingController addTodoTextEditingController =
       TextEditingController();
 
   final FocusNode _focusNode = FocusNode();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final HomeState state = ref.watch(homeViewModelProvider);
-    final HomeViewModel viewModel = ref.read(homeViewModelProvider.notifier);
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
 
     return Column(
       children: <Widget>[
-        //  내가 추가한 할 일
+        // 할 일 목록 헤더
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
-          child: Row(
-            children: <Widget>[
-              SizedBox(
-                child: SvgPicture.asset(
-                  Assets.done,
-                  width: 36,
-                  height: 36,
-                  colorFilter:
-                      ColorFilter.mode(doitColorTheme.main, BlendMode.srcIn),
-                ),
-              ),
-              const Text(
-                '할 일 목록',
-                style: DoitTypos.suitSB16,
-              ),
-              const Spacer(),
-              if (state.isNotTodoLoading)
-                IconButton(
-                  constraints: const BoxConstraints(),
-                  style: TextButton.styleFrom(
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    padding: EdgeInsets.zero,
-                  ),
-                  onPressed: () {
-                    viewModel.setIsAddingTodo(value: true);
-                    _focusNode.requestFocus();
-
-                    Future<void>.delayed(const Duration(milliseconds: 400), () {
-                      if (context.mounted) {
-                        Scrollable.ensureVisible(
-                          context,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      }
-                    });
-                  },
-                  icon: SvgPicture.asset(
-                    Assets.add,
-                    colorFilter: ColorFilter.mode(
-                      doitColorTheme.main,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-            ],
-          ),
+          child: TodoListHeader(focusNode: _focusNode),
         ),
+        // 할 일 추가 폼
         if (state.isAddingTodo)
-          Container(
-            margin: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
-            decoration: BoxDecoration(
-              color: doitColorTheme.background,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: doitColorTheme.shadow2.withOpacity(0.2),
-                  blurRadius: 16,
-                ),
-              ],
-            ),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextField(
-                    controller: addTodoTextEditingController,
-                    autofocus: true,
-                    focusNode: _focusNode,
-                    onTapOutside: (PointerDownEvent event) {
-                      viewModel.setIsAddingTodo(value: false);
-                      if (addTodoTextEditingController.text.isNotEmpty) {
-                        viewModel.addTodo(
-                          todo: addTodoTextEditingController.text.trim(),
-                        );
-                      }
-                      addTodoTextEditingController.clear();
-                    },
-                    onSubmitted: (String value) {
-                      viewModel.setIsAddingTodo(value: false);
-                      if (addTodoTextEditingController.text.isNotEmpty) {
-                        viewModel.addTodo(
-                          todo: addTodoTextEditingController.text.trim(),
-                        );
-                      }
-                      addTodoTextEditingController.clear();
-                    },
-                    decoration: const InputDecoration.collapsed(
-                      hintText: '여기에 할 일을 적어보세요!',
-                      hintStyle: DoitTypos.suitR14,
-                    ),
-                    cursorHeight: 20,
-                    style: DoitTypos.suitR14,
-                    cursorColor: doitColorTheme.main,
-                  ),
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+            child: AddTodoForm(
+              addTodoTextEditingController: addTodoTextEditingController,
+              focusNode: _focusNode,
             ),
           ),
+        // 비어 있는 공간
+        // 할 일 목록이 비어있고 할 일 추가 폼이 없을 때 빈 공간 표시
+        // 루틴 목록이 비어있을 때 빈 공간 표시
         if (state.isNotTodoLoading &&
             (state.todoList.isEmpty && !state.isAddingTodo) &&
             state.routineList.isEmpty)
-          const EmptySpace(),
+          const EmptyTodoSpace(),
+
         // 내가 추가한 할 일 리스트
+        // 할 일 목록이 비어있지 않고 할 일 목록 로드 완료 시 할 일 목록 리스트 표시
         if (state.todoList.isNotEmpty && state.isNotTodoLoading)
           Container(
             decoration: BoxDecoration(
@@ -437,8 +344,144 @@ class _TodoListWidgetState extends ConsumerState<TodoListWidget> {
   }
 }
 
-class EmptySpace extends StatelessWidget {
-  const EmptySpace({
+class AddTodoForm extends ConsumerWidget {
+  const AddTodoForm({
+    required this.addTodoTextEditingController,
+    required FocusNode focusNode,
+    super.key,
+  }) : _focusNode = focusNode;
+
+  final TextEditingController addTodoTextEditingController;
+  final FocusNode _focusNode;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final HomeViewModel viewModel = ref.read(homeViewModelProvider.notifier);
+    final DoitColorTheme doitColorTheme =
+        Theme.of(context).extension<DoitColorTheme>()!;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 20,
+      ),
+      decoration: BoxDecoration(
+        color: doitColorTheme.background,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: doitColorTheme.shadow2.withOpacity(0.2),
+            blurRadius: 16,
+          ),
+        ],
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: TextField(
+              controller: addTodoTextEditingController,
+              autofocus: true,
+              focusNode: _focusNode,
+              onTapOutside: (_) {
+                viewModel.setIsAddingTodo(value: false);
+                if (addTodoTextEditingController.text.isNotEmpty) {
+                  viewModel.addTodo(
+                    todo: addTodoTextEditingController.text.trim(),
+                  );
+                }
+                addTodoTextEditingController.clear();
+              },
+              onSubmitted: (_) {
+                viewModel.setIsAddingTodo(value: false);
+                if (addTodoTextEditingController.text.isNotEmpty) {
+                  viewModel.addTodo(
+                    todo: addTodoTextEditingController.text.trim(),
+                  );
+                }
+                addTodoTextEditingController.clear();
+              },
+              decoration: const InputDecoration.collapsed(
+                hintText: '여기에 할 일을 적어보세요!',
+                hintStyle: DoitTypos.suitR14,
+              ),
+              cursorHeight: 20,
+              style: DoitTypos.suitR14,
+              cursorColor: doitColorTheme.main,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TodoListHeader extends ConsumerWidget {
+  const TodoListHeader({
+    required FocusNode focusNode,
+    super.key,
+  }) : _focusNode = focusNode;
+
+  final FocusNode _focusNode;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final DoitColorTheme doitColorTheme =
+        Theme.of(context).extension<DoitColorTheme>()!;
+    final HomeState state = ref.watch(homeViewModelProvider);
+    final HomeViewModel viewModel = ref.read(homeViewModelProvider.notifier);
+
+    return Row(
+      children: <Widget>[
+        SizedBox(
+          child: SvgPicture.asset(
+            Assets.done,
+            width: 36,
+            height: 36,
+            colorFilter: ColorFilter.mode(doitColorTheme.main, BlendMode.srcIn),
+          ),
+        ),
+        const Text(
+          '할 일 목록',
+          style: DoitTypos.suitSB16,
+        ),
+        const Spacer(),
+        if (state.isNotTodoLoading)
+          // 할 일 추가 버튼
+          IconButton(
+            constraints: const BoxConstraints(),
+            style: TextButton.styleFrom(
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              padding: EdgeInsets.zero,
+            ),
+            onPressed: () {
+              viewModel.setIsAddingTodo(value: true);
+              _focusNode.requestFocus();
+
+              Future<void>.delayed(const Duration(milliseconds: 400), () {
+                if (context.mounted) {
+                  Scrollable.ensureVisible(
+                    context,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              });
+            },
+            icon: SvgPicture.asset(
+              Assets.add,
+              colorFilter: ColorFilter.mode(
+                doitColorTheme.main,
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class EmptyTodoSpace extends StatelessWidget {
+  const EmptyTodoSpace({
     super.key,
   });
 
@@ -458,16 +501,16 @@ class EmptySpace extends StatelessWidget {
       );
 }
 
-class RoutineListWidget extends ConsumerStatefulWidget {
-  const RoutineListWidget({
+class RoutineListSection extends ConsumerStatefulWidget {
+  const RoutineListSection({
     super.key,
   });
 
   @override
-  ConsumerState<RoutineListWidget> createState() => _RoutineListWidgetState();
+  ConsumerState<RoutineListSection> createState() => _RoutineListSectionState();
 }
 
-class _RoutineListWidgetState extends ConsumerState<RoutineListWidget> {
+class _RoutineListSectionState extends ConsumerState<RoutineListSection> {
   @override
   Widget build(BuildContext context) {
     final DoitColorTheme doitColorTheme =
@@ -475,13 +518,14 @@ class _RoutineListWidgetState extends ConsumerState<RoutineListWidget> {
 
     final HomeState state = ref.watch(homeViewModelProvider);
 
-    return Padding(
-      padding: EdgeInsets.only(
-        top: state.todoList.isEmpty ? 0 : 16,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        if (state.todoList.isNotEmpty) const SizedBox(height: 16),
+
+        // 루틴 리스트 로드 완료 시 루틴 리스트 컨테이너 표시
+        if (state.getRoutineListLoadingStatus != LoadingStatus.success &&
+            state.getTodoListLoadingStatus == LoadingStatus.success)
           Container(
             decoration: BoxDecoration(
               color: doitColorTheme.background,
@@ -501,19 +545,35 @@ class _RoutineListWidgetState extends ConsumerState<RoutineListWidget> {
               children: <Widget>[
                 ...List<Widget>.generate(
                   state.routineList.length,
-                  (int index) => Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      if (index != 0) const Divider(height: 12),
-                      const RoutineListItemWidget(),
-                    ],
-                  ),
+                  (int index) {
+                    final Map<String, TodoModel> todoMap = <String, TodoModel>{
+                      for (final TodoModel todo in state.todoList)
+                        todo.routineId: todo
+                    };
+
+                    // Map에서 직접 검색
+                    final TodoModel? todayTodo =
+                        todoMap[state.routineList[index].id];
+
+                    // todayTodo가 있는 경우 표시하지 않음
+                    if (todayTodo != null) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        const RoutineListItemWidget(),
+                        if (index != state.routineList.length - 1)
+                          const Divider(height: 12),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
           ),
-        ],
-      ),
+      ],
     );
   }
 }
