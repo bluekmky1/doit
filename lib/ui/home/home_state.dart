@@ -1,19 +1,21 @@
 import 'package:equatable/equatable.dart';
 import '../../../../core/loading_status.dart';
+import '../../domain/routine/model/routine_model.dart';
 import '../../domain/todo/model/todo_model.dart';
 
 class HomeState extends Equatable {
   final LoadingStatus getGoalLoadingStatus;
   final LoadingStatus getTodoListLoadingStatus;
-  final LoadingStatus getRecommendedTodoListLoadingStatus;
   final LoadingStatus addTodoLoadingStatus;
   final LoadingStatus deleteTodoLoadingStatus;
   final LoadingStatus toggleTodoDoneLoadingStatus;
   final LoadingStatus updateTodoLoadingStatus;
+  final LoadingStatus getRoutineListLoadingStatus;
   final DateTime currentWeekStart;
   final DateTime selectedDate;
 
   final List<TodoModel> todoList;
+  final List<RoutineModel> routineList;
 
   final bool isAddingTodo;
 
@@ -24,7 +26,7 @@ class HomeState extends Equatable {
   const HomeState({
     required this.getGoalLoadingStatus,
     required this.getTodoListLoadingStatus,
-    required this.getRecommendedTodoListLoadingStatus,
+    required this.getRoutineListLoadingStatus,
     required this.addTodoLoadingStatus,
     required this.deleteTodoLoadingStatus,
     required this.toggleTodoDoneLoadingStatus,
@@ -32,6 +34,7 @@ class HomeState extends Equatable {
     required this.currentWeekStart,
     required this.selectedDate,
     required this.todoList,
+    required this.routineList,
     required this.isAddingTodo,
     required this.lastToggledTodoId,
     required this.lastDeletedTodoId,
@@ -41,7 +44,7 @@ class HomeState extends Equatable {
   HomeState.init()
       : getGoalLoadingStatus = LoadingStatus.none,
         getTodoListLoadingStatus = LoadingStatus.none,
-        getRecommendedTodoListLoadingStatus = LoadingStatus.none,
+        getRoutineListLoadingStatus = LoadingStatus.none,
         addTodoLoadingStatus = LoadingStatus.none,
         deleteTodoLoadingStatus = LoadingStatus.none,
         toggleTodoDoneLoadingStatus = LoadingStatus.none,
@@ -51,6 +54,20 @@ class HomeState extends Equatable {
         selectedDate = DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day),
         todoList = const <TodoModel>[],
+        routineList = const <RoutineModel>[
+          RoutineModel(
+            id: '1',
+            title: '루틴 1',
+          ),
+          RoutineModel(
+            id: '2',
+            title: '루틴 2',
+          ),
+          RoutineModel(
+            id: '3',
+            title: '루틴 3',
+          ),
+        ],
         isAddingTodo = false,
         lastToggledTodoId = '',
         lastDeletedTodoId = '',
@@ -59,7 +76,7 @@ class HomeState extends Equatable {
   HomeState copyWith({
     LoadingStatus? getGoalLoadingStatus,
     LoadingStatus? getTodoListLoadingStatus,
-    LoadingStatus? getRecommendedTodoListLoadingStatus,
+    LoadingStatus? getRoutineListLoadingStatus,
     LoadingStatus? addTodoLoadingStatus,
     LoadingStatus? deleteTodoLoadingStatus,
     LoadingStatus? toggleTodoDoneLoadingStatus,
@@ -67,6 +84,7 @@ class HomeState extends Equatable {
     DateTime? currentWeekStart,
     DateTime? selectedDate,
     List<TodoModel>? todoList,
+    List<RoutineModel>? routineList,
     bool? isAddingTodo,
     String? lastToggledTodoId,
     String? lastDeletedTodoId,
@@ -76,9 +94,8 @@ class HomeState extends Equatable {
         getGoalLoadingStatus: getGoalLoadingStatus ?? this.getGoalLoadingStatus,
         getTodoListLoadingStatus:
             getTodoListLoadingStatus ?? this.getTodoListLoadingStatus,
-        getRecommendedTodoListLoadingStatus:
-            getRecommendedTodoListLoadingStatus ??
-                this.getRecommendedTodoListLoadingStatus,
+        getRoutineListLoadingStatus:
+            getRoutineListLoadingStatus ?? this.getRoutineListLoadingStatus,
         addTodoLoadingStatus: addTodoLoadingStatus ?? this.addTodoLoadingStatus,
         deleteTodoLoadingStatus:
             deleteTodoLoadingStatus ?? this.deleteTodoLoadingStatus,
@@ -89,6 +106,7 @@ class HomeState extends Equatable {
         currentWeekStart: currentWeekStart ?? this.currentWeekStart,
         selectedDate: selectedDate ?? this.selectedDate,
         todoList: todoList ?? this.todoList,
+        routineList: routineList ?? this.routineList,
         isAddingTodo: isAddingTodo ?? this.isAddingTodo,
         lastToggledTodoId: lastToggledTodoId ?? this.lastToggledTodoId,
         lastDeletedTodoId: lastDeletedTodoId ?? this.lastDeletedTodoId,
@@ -99,7 +117,7 @@ class HomeState extends Equatable {
   List<Object> get props => <Object>[
         getGoalLoadingStatus,
         getTodoListLoadingStatus,
-        getRecommendedTodoListLoadingStatus,
+        getRoutineListLoadingStatus,
         addTodoLoadingStatus,
         deleteTodoLoadingStatus,
         toggleTodoDoneLoadingStatus,
@@ -107,6 +125,7 @@ class HomeState extends Equatable {
         currentWeekStart,
         selectedDate,
         todoList,
+        routineList,
         isAddingTodo,
         lastToggledTodoId,
         lastDeletedTodoId,
