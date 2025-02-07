@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../domain/todo/model/todo_model.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
-import '../../common/widgets/outlined_text_field_widget.dart';
 import '../home_view_model.dart';
 
 class EditTodoBottomSheetWidget extends ConsumerStatefulWidget {
@@ -41,95 +40,95 @@ class _EditTodoBottomSheetWidgetState
 
     final HomeViewModel viewModel = ref.read(homeViewModelProvider.notifier);
 
-    return Container(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      decoration: BoxDecoration(
-        color: doitColorTheme.background,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Row(
-              children: <Widget>[
-                const Text(
-                  '할 일 수정하기',
-                  style: DoitTypos.suitSB16,
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () {
-                    context.pop();
-                  },
-                  style: IconButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  constraints: const BoxConstraints(),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        const Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            16,
+            24,
+            0,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: OutlinedTextFieldWidget(
-              controller: _textEditingController,
-              height: 52,
-              hintText: '할 일을 꼭 입력해주세요!',
-              textAlign: TextAlign.left,
-              hintStyle: DoitTypos.suitR14.copyWith(
-                color: doitColorTheme.gray40,
-              ),
-              onChanged: (String value) {
-                setState(() {});
-              },
-            ),
-          ),
-          const SizedBox(
-            height: 24,
-          ),
-          Row(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Expanded(
-                  child: SizedBox(
-                height: 64,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(0),
-                    ),
-                    backgroundColor: _textEditingController.text.trim().isEmpty
-                        ? doitColorTheme.gray40
-                        : doitColorTheme.main,
-                    foregroundColor: _textEditingController.text.trim().isEmpty
-                        ? doitColorTheme.gray80
-                        : doitColorTheme.background,
-                  ),
-                  onPressed: _textEditingController.text.trim().isEmpty
-                      ? null
-                      : () {
-                          viewModel.updateTodo(
-                            id: widget.model.todoId,
-                            title: _textEditingController.text.trim(),
-                          );
-                          context.pop();
-                        },
-                  child: const Text(
-                    '수정하기',
-                    style: DoitTypos.suitSB20,
-                  ),
+              Text(
+                '할 일 수정하기',
+                style: DoitTypos.suitSB20,
+              ),
+              CloseButton(
+                style: ButtonStyle(
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-              )),
+              ),
             ],
           ),
-        ],
-      ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            24,
+            0,
+            24,
+            16,
+          ),
+          child: TextField(
+            onChanged: (String value) {
+              setState(() {});
+            },
+            controller: _textEditingController,
+            cursorColor: doitColorTheme.main,
+            minLines: 1,
+            maxLines: 2,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: '이곳에 할 일을 입력해주세요',
+              hintStyle: DoitTypos.suitSB16.copyWith(
+                color: doitColorTheme.gray40,
+              ),
+            ),
+          ),
+        ),
+        TextButton(
+          style: TextButton.styleFrom(
+            backgroundColor: _textEditingController.text.trim().isEmpty
+                ? doitColorTheme.gray40
+                : doitColorTheme.main,
+            foregroundColor: _textEditingController.text.trim().isEmpty
+                ? doitColorTheme.gray80
+                : doitColorTheme.background,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+          ),
+          onPressed: _textEditingController.text.trim().isEmpty
+              ? null
+              : () {
+                  viewModel.updateTodo(
+                    id: widget.model.todoId,
+                    title: _textEditingController.text.trim(),
+                  );
+                  context.pop();
+                },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                '수정하기',
+                style: DoitTypos.suitSB16.copyWith(fontSize: 18),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).viewInsets.bottom,
+        ),
+      ],
     );
   }
 }

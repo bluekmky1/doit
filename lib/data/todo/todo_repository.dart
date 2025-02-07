@@ -6,6 +6,7 @@ import '../../core/common/repository/repository.dart';
 import '../../core/common/repository/repository_result.dart';
 import 'entity/todo_entity.dart';
 import 'request_body/add_todo_request_body.dart';
+import 'request_body/add_todo_with_routine_request_body.dart';
 import 'request_body/update_todo_completed_request_body.dart';
 import 'request_body/update_todo_request_body.dart';
 import 'todo_remote_data_source.dart';
@@ -31,6 +32,42 @@ class TodoRepository extends Repository {
       return SuccessRepositoryResult<TodoEntity>(
         data: await _todoRemoteDataSource.addTodo(
           body: AddTodoRequestBody(
+            userId: userId,
+            title: title,
+            dueDate: dueDate,
+          ),
+        ),
+      );
+    } on PostgrestException catch (e) {
+      return FailureRepositoryResult<TodoEntity>(
+        error: e,
+        messages: <String>['데이터를 저장하는 과정에 오류가 있습니다: ${e.message}'],
+      );
+    } on AuthException catch (e) {
+      return FailureRepositoryResult<TodoEntity>(
+        error: e,
+        messages: <String>['인증 오류가 발생했습니다: ${e.message}'],
+      );
+    } on Exception catch (e) {
+      return FailureRepositoryResult<TodoEntity>(
+        error: e,
+        messages: <String>['예상치 못한 오류가 발생했습니다'],
+      );
+    }
+  }
+
+  // 루틴으로 할일 추가
+  Future<RepositoryResult<TodoEntity>> addTodoWithRoutine({
+    required String routineId,
+    required String userId,
+    required String title,
+    required DateTime dueDate,
+  }) async {
+    try {
+      return SuccessRepositoryResult<TodoEntity>(
+        data: await _todoRemoteDataSource.addTodoWithRoutine(
+          body: AddTodoWithRoutineRequestBody(
+            routineId: routineId,
             userId: userId,
             title: title,
             dueDate: dueDate,

@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../service/supabase/supabase_service.dart';
 import 'entity/todo_entity.dart';
 import 'request_body/add_todo_request_body.dart';
+import 'request_body/add_todo_with_routine_request_body.dart';
 import 'request_body/update_todo_completed_request_body.dart';
 import 'request_body/update_todo_request_body.dart';
 
@@ -21,6 +22,21 @@ class TodoRemoteDataSource {
   // 할일 추가
   Future<TodoEntity> addTodo({
     required AddTodoRequestBody body,
+  }) async {
+    final PostgrestMap response =
+        await _supabaseClient.from('todo').insert(body.toJson()).select('''
+          *,
+          animal:animal_id(
+            name            
+          )
+          ''').single();
+
+    return TodoEntity.fromJson(response);
+  }
+
+  // 루틴으로 할 일 추가
+  Future<TodoEntity> addTodoWithRoutine({
+    required AddTodoWithRoutineRequestBody body,
   }) async {
     final PostgrestMap response =
         await _supabaseClient.from('todo').insert(body.toJson()).select('''

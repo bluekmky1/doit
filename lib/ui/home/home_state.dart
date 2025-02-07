@@ -54,20 +54,7 @@ class HomeState extends Equatable {
         selectedDate = DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day),
         todoList = const <TodoModel>[],
-        routineList = const <RoutineModel>[
-          RoutineModel(
-            id: 'ce0aa6fb-599a-4dd2-92b2-1030e6e19e7d',
-            title: '테스트 루틴',
-          ),
-          RoutineModel(
-            id: '2',
-            title: '루틴 2',
-          ),
-          RoutineModel(
-            id: '3',
-            title: '루틴 3',
-          ),
-        ],
+        routineList = const <RoutineModel>[],
         isAddingTodo = false,
         lastToggledTodoId = '',
         lastDeletedTodoId = '',

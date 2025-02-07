@@ -27,20 +27,17 @@ class TodoListItemWidget extends ConsumerWidget {
     return Row(
       children: <Widget>[
         Expanded(
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      TodoDetailModalWidget(model: model),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(model.title),
-              ),
+          child: GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) =>
+                    TodoDetailModalWidget(model: model),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(model.title),
             ),
           ),
         ),
@@ -128,6 +125,13 @@ class TodoDetailModalWidget extends ConsumerWidget {
               context.pop();
               showModalBottomSheet(
                 context: context,
+                backgroundColor: doitColorTheme.background,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                ),
                 builder: (BuildContext context) =>
                     EditTodoBottomSheetWidget(model: model),
               );

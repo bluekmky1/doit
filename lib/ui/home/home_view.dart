@@ -521,10 +521,11 @@ class _RoutineListSectionState extends ConsumerState<RoutineListSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
+        // 투두 리스트가 있을 경우
         if (state.todoList.isNotEmpty) const SizedBox(height: 16),
 
         // 루틴 리스트 로드 완료 시 루틴 리스트 컨테이너 표시
-        if (state.getRoutineListLoadingStatus != LoadingStatus.success &&
+        if (state.getRoutineListLoadingStatus == LoadingStatus.success &&
             state.getTodoListLoadingStatus == LoadingStatus.success)
           Container(
             decoration: BoxDecoration(
@@ -532,7 +533,7 @@ class _RoutineListSectionState extends ConsumerState<RoutineListSection> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: doitColorTheme.shadow2.withOpacity(0.2),
+                  color: doitColorTheme.shadow2.withOpacity(0.15),
                   blurRadius: 16,
                 ),
               ],
@@ -546,26 +547,43 @@ class _RoutineListSectionState extends ConsumerState<RoutineListSection> {
                 ...List<Widget>.generate(
                   state.routineList.length,
                   (int index) {
-                    final Map<String, TodoModel> todoMap = <String, TodoModel>{
-                      for (final TodoModel todo in state.todoList)
-                        todo.routineId: todo
-                    };
+                    // 먼저 보여질 루틴들의 인덱스를 찾습니다
+                    final List<int> visibleIndices = List<int>.generate(
+                      state.routineList.length,
+                      (int index) => index,
+                    ).where((int index) {
+                      final String routineId = state.routineList[index].id;
+                      return !state.todoList
+                          .any((TodoModel todo) => todo.routineId == routineId);
+                    }).toList();
+                    // 현재 루틴의 ID로 todo 검색
+                    final String currentRoutineId = state.routineList[index].id;
+                    final bool hasTodo = state.todoList.any(
+                      (TodoModel todo) => todo.routineId == currentRoutineId,
+                    );
 
-                    // Map에서 직접 검색
-                    final TodoModel? todayTodo =
-                        todoMap[state.routineList[index].id];
-
-                    // todayTodo가 있는 경우 표시하지 않음
-                    if (todayTodo != null) {
+                    // 투두가 있는 경우 표시하지 않음
+                    if (hasTodo) {
                       return const SizedBox.shrink();
                     }
+
+                    // 현재 보이는 루틴들 중에서 이 루틴의 위치를 찾음
+                    final int currentVisibleIndex =
+                        visibleIndices.indexOf(index);
+                    final bool showDivider = currentVisibleIndex != -1 &&
+                        currentVisibleIndex < visibleIndices.length - 1;
 
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        const RoutineListItemWidget(),
-                        if (index != state.routineList.length - 1)
-                          const Divider(height: 12),
+                        RoutineListItemWidget(
+                          id: state.routineList[index].id,
+                          title: state.routineList[index].title,
+                        ),
+                        if (showDivider)
+                          const Divider(
+                            height: 12,
+                          ),
                       ],
                     );
                   },

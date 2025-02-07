@@ -9,6 +9,7 @@ import '../ui/my/my_view.dart';
 import '../ui/onboarding/views/onboarding_start_view.dart';
 import '../ui/onboarding/views/user_profile_input_view.dart';
 import '../ui/profile/profile_view.dart';
+import '../ui/routine/routine_view.dart';
 import '../ui/sign_in/sign_in_view.dart';
 import '../ui/tutorial/tutorial_view.dart';
 import 'app_router_interceptor.dart';
@@ -149,6 +150,14 @@ class AppRouter {
                     child: ProfileView(),
                   ),
                 ),
+                GoRoute(
+                  name: Routes.routine.name,
+                  path: Routes.routine.path,
+                  pageBuilder: (BuildContext context, GoRouterState state) =>
+                      const NoTransitionPage<dynamic>(
+                    child: RoutineView(),
+                  ),
+                )
               ],
             ),
           ]),
