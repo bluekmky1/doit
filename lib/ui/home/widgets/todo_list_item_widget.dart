@@ -126,6 +126,8 @@ class TodoDetailModalWidget extends ConsumerWidget {
               showModalBottomSheet(
                 context: context,
                 backgroundColor: doitColorTheme.background,
+                useSafeArea: true,
+                isScrollControlled: true,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(16),

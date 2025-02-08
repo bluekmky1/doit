@@ -80,6 +80,8 @@ class _RoutineViewState extends ConsumerState<RoutineView> {
             onPressed: () {
               showModalBottomSheet(
                 context: context,
+                useSafeArea: true,
+                isScrollControlled: true,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(16),
