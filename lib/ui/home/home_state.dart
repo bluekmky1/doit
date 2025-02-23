@@ -11,6 +11,7 @@ class HomeState extends Equatable {
   final LoadingStatus toggleTodoDoneLoadingStatus;
   final LoadingStatus updateTodoLoadingStatus;
   final LoadingStatus getRoutineListLoadingStatus;
+  final LoadingStatus deleteRecommendTodoFromTodoListLoadingStatus;
   final DateTime currentWeekStart;
   final DateTime selectedDate;
 
@@ -31,6 +32,7 @@ class HomeState extends Equatable {
     required this.deleteTodoLoadingStatus,
     required this.toggleTodoDoneLoadingStatus,
     required this.updateTodoLoadingStatus,
+    required this.deleteRecommendTodoFromTodoListLoadingStatus,
     required this.currentWeekStart,
     required this.selectedDate,
     required this.todoList,
@@ -49,6 +51,7 @@ class HomeState extends Equatable {
         deleteTodoLoadingStatus = LoadingStatus.none,
         toggleTodoDoneLoadingStatus = LoadingStatus.none,
         updateTodoLoadingStatus = LoadingStatus.none,
+        deleteRecommendTodoFromTodoListLoadingStatus = LoadingStatus.none,
         currentWeekStart =
             DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1)),
         selectedDate = DateTime(
@@ -68,6 +71,7 @@ class HomeState extends Equatable {
     LoadingStatus? deleteTodoLoadingStatus,
     LoadingStatus? toggleTodoDoneLoadingStatus,
     LoadingStatus? updateTodoLoadingStatus,
+    LoadingStatus? deleteRecommendTodoFromTodoListLoadingStatus,
     DateTime? currentWeekStart,
     DateTime? selectedDate,
     List<TodoModel>? todoList,
@@ -90,6 +94,9 @@ class HomeState extends Equatable {
             toggleTodoDoneLoadingStatus ?? this.toggleTodoDoneLoadingStatus,
         updateTodoLoadingStatus:
             updateTodoLoadingStatus ?? this.updateTodoLoadingStatus,
+        deleteRecommendTodoFromTodoListLoadingStatus:
+            deleteRecommendTodoFromTodoListLoadingStatus ??
+                this.deleteRecommendTodoFromTodoListLoadingStatus,
         currentWeekStart: currentWeekStart ?? this.currentWeekStart,
         selectedDate: selectedDate ?? this.selectedDate,
         todoList: todoList ?? this.todoList,
@@ -109,6 +116,7 @@ class HomeState extends Equatable {
         deleteTodoLoadingStatus,
         toggleTodoDoneLoadingStatus,
         updateTodoLoadingStatus,
+        deleteRecommendTodoFromTodoListLoadingStatus,
         currentWeekStart,
         selectedDate,
         todoList,

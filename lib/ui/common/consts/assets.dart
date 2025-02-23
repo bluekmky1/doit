@@ -236,9 +236,3 @@ class Assets {
   static const String noShadowTigerMove =
       'assets/lotties/no_shadow_move/no_shadow_tiger_move.json';
 }
-
-
-
-
-
-// }

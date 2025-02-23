@@ -12,8 +12,10 @@ import '../../theme/doit_typos.dart';
 import '../common/consts/assets.dart';
 import '../common/consts/fortune_category.dart';
 import '../common/widgets/bottom_navigation_bar_widget.dart';
+import '../home/home_view_model.dart';
 import 'fortune_state.dart';
 import 'fortune_view_model.dart';
+import 'widgets/card_slider_widget.dart';
 import 'widgets/fortune_app_bar_widget.dart';
 import 'widgets/fortune_card_widget.dart';
 import 'widgets/fortune_score_gage_widget.dart';
@@ -31,6 +33,7 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
     '사주를 분석하고 있어요...',
     '운세를 살펴보는 중이에요...',
     '오늘의 운세를 풀이하고 있어요...',
+    '추천 할 일 목록을 작성하고 있어요...',
     '조금만 더 기다려주세요...',
     '거의 다 왔어요!',
   ];
@@ -44,6 +47,7 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(fortuneViewModelProvider.notifier).getUserData();
       ref.read(fortuneViewModelProvider.notifier).getFortune();
+      ref.read(fortuneViewModelProvider.notifier).getRecommendedTodoList();
     });
   }
 
@@ -78,22 +82,68 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
   Widget build(BuildContext context) {
     final FortuneState state = ref.watch(fortuneViewModelProvider);
 
+    final FortuneViewModel viewModel =
+        ref.read(fortuneViewModelProvider.notifier);
+
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
 
     // createFortuneLoadingStatus 상태 변화 감지
-    ref.listen(
-      fortuneViewModelProvider
-          .select((FortuneState state) => state.createFortuneLoadingStatus),
-      (LoadingStatus? previous, LoadingStatus next) {
-        if (next == LoadingStatus.loading) {
-          startLoadingMessages();
-        } else {
-          stopLoadingMessages();
-          currentMessageIndex = 0;
-        }
-      },
-    );
+    ref
+      ..listen(
+        fortuneViewModelProvider
+            .select((FortuneState state) => state.createFortuneLoadingStatus),
+        (LoadingStatus? previous, LoadingStatus next) async {
+          if (next == LoadingStatus.loading) {
+            startLoadingMessages();
+          } else if (next == LoadingStatus.success) {
+            stopLoadingMessages();
+            await viewModel.getRecommendedTodoList();
+            currentMessageIndex = 0;
+          } else {
+            stopLoadingMessages();
+            currentMessageIndex = 0;
+          }
+        },
+      )
+      // addTodoByRecommendLoadingStatus 상태 변화 감지
+      ..listen(
+        fortuneViewModelProvider.select(
+            (FortuneState state) => state.addTodoByRecommendLoadingStatus),
+        (LoadingStatus? previous, LoadingStatus next) async {
+          if (next == LoadingStatus.success) {
+            await ref.read(homeViewModelProvider.notifier).getTodoListWithDate(
+                  targetDate: DateTime.now(),
+                );
+
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  margin: EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                  ),
+                  behavior: SnackBarBehavior.floating, // floating 스타일로 변경
+                  content: Text('추천 할 일을 추가했어요!'),
+                ),
+              );
+            }
+          } else if (next == LoadingStatus.error) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  margin: EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                  ),
+                  behavior: SnackBarBehavior.floating, // floating 스타일로 변경
+                  content: Text('추천 할 일을 추가하는데 실패했어요!'),
+                ),
+              );
+            }
+          }
+        },
+      );
 
     return Scaffold(
       floatingActionButton: BottomNavigationBarWidget(
@@ -119,29 +169,29 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
                           : null,
                   fullFortune: state.selectedFortuneCategoryContent,
                 ),
-                const SizedBox(height: 32),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(
-                //     horizontal: 23.5,
-                //   ),
-                //   child: Row(
-                //     children: <Widget>[
-                //       SizedBox(
-                //         child: SvgPicture.asset(
-                //           Assets.fortuneColored,
-                //           width: 24,
-                //           height: 24,
-                //         ),
-                //       ),
-                //       const SizedBox(width: 8),
-                //       const Text(
-                //         '추천 할 일 목록',
-                //         style: DoitTypos.suitSB16,
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                // const CardSliderWidget(),
+                const SizedBox(height: 48),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 23.5,
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      SizedBox(
+                        child: SvgPicture.asset(
+                          Assets.fortuneColored,
+                          width: 24,
+                          height: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        '추천 할 일 목록',
+                        style: DoitTypos.suitSB16,
+                      ),
+                    ],
+                  ),
+                ),
+                const CardSliderWidget(),
               ],
             ),
           ),
@@ -233,11 +283,7 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {
-                      ref
-                          .read(fortuneViewModelProvider.notifier)
-                          .createFortune();
-                    },
+                    onPressed: viewModel.createFortune,
                     child: const Text(
                       '운세 받아오기',
                       style: DoitTypos.suitSB16,

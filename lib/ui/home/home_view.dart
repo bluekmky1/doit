@@ -5,6 +5,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../core/loading_status.dart';
 import '../../domain/todo/model/todo_model.dart';
@@ -296,6 +297,22 @@ class _TodoListSectionState extends ConsumerState<TodoListSection> {
               focusNode: _focusNode,
             ),
           ),
+
+        // 할 일 목록 로딩 중 쉬머
+        if (!state.isNotTodoLoading)
+          Shimmer.fromColors(
+            baseColor: doitColorTheme.gray10,
+            highlightColor: doitColorTheme.gray20,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+              height: 48,
+              decoration: BoxDecoration(
+                color: doitColorTheme.gray20,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+
         // 비어 있는 공간
         // 할 일 목록이 비어있고 할 일 추가 폼이 없을 때 빈 공간 표시
         // 루틴 목록이 비어있을 때 빈 공간 표시

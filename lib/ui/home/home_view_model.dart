@@ -8,6 +8,7 @@ import '../../domain/routine/use_case/get_active_routine_list_use_case.dart';
 import '../../domain/todo/model/todo_model.dart';
 import '../../domain/todo/use_case/add_todo_use_case.dart';
 import '../../domain/todo/use_case/add_todo_with_routine_use_case.dart';
+import '../../domain/todo/use_case/delete_recommend_todo_from_todo_list_use_case.dart';
 import '../../domain/todo/use_case/delete_todo_use_case.dart';
 import '../../domain/todo/use_case/get_todo_list_with_date_use_case.dart';
 import '../../domain/todo/use_case/update_todo_completed_use_case.dart';
@@ -27,6 +28,9 @@ final AutoDisposeStateNotifierProvider<HomeViewModel, HomeState>
     updateTodoUseCase: ref.watch(updateTodoUseCaseProvider),
     updateTodoCompletedUseCase: ref.watch(updateTodoCompletedUseCaseProvider),
     getActiveRoutineListUseCase: ref.watch(getActiveRoutineListUseCaseProvider),
+    deleteRecommendTodoFromTodoListUseCase: ref.watch(
+      deleteRecommendTodoFromTodoListUseCaseProvider,
+    ),
   ),
 );
 
@@ -38,6 +42,8 @@ class HomeViewModel extends StateNotifier<HomeState> {
   final UpdateTodoUseCase _updateTodoUseCase;
   final UpdateTodoCompletedUseCase _updateTodoCompletedUseCase;
   final GetActiveRoutineListUseCase _getActiveRoutineListUseCase;
+  final DeleteRecommendTodoFromTodoListUseCase
+      _deleteRecommendTodoFromTodoListUseCase;
 
   final SupabaseClient _supabaseClient;
   HomeViewModel({
@@ -50,7 +56,11 @@ class HomeViewModel extends StateNotifier<HomeState> {
     required UpdateTodoUseCase updateTodoUseCase,
     required UpdateTodoCompletedUseCase updateTodoCompletedUseCase,
     required GetActiveRoutineListUseCase getActiveRoutineListUseCase,
+    required DeleteRecommendTodoFromTodoListUseCase
+        deleteRecommendTodoFromTodoListUseCase,
   })  : _getTodoListWithDateUseCase = getTodoListWithDateUseCase,
+        _deleteRecommendTodoFromTodoListUseCase =
+            deleteRecommendTodoFromTodoListUseCase,
         _supabaseClient = supabaseClient,
         _addTodoUseCase = addTodoUseCase,
         _addTodoWithRoutineUseCase = addTodoWithRoutineUseCase,
@@ -281,6 +291,35 @@ class HomeViewModel extends StateNotifier<HomeState> {
       case FailureUseCaseResult<TodoModel>():
         state = state.copyWith(
           addTodoLoadingStatus: LoadingStatus.error,
+        );
+    }
+  }
+
+  Future<void> deleteRecommendTodoFromTodoList({
+    required String todoId,
+    required String recommendId,
+  }) async {
+    state = state.copyWith(
+      deleteRecommendTodoFromTodoListLoadingStatus: LoadingStatus.loading,
+    );
+
+    final UseCaseResult<void> result =
+        await _deleteRecommendTodoFromTodoListUseCase(
+      recommendId: recommendId,
+    );
+
+    switch (result) {
+      case SuccessUseCaseResult<void>():
+        state = state.copyWith(
+          deleteRecommendTodoFromTodoListLoadingStatus: LoadingStatus.success,
+          todoList: state.todoList
+              .where((TodoModel e) => e.todoId != todoId)
+              .toList(),
+          lastDeletedTodoId: todoId,
+        );
+      case FailureUseCaseResult<void>():
+        state = state.copyWith(
+          deleteRecommendTodoFromTodoListLoadingStatus: LoadingStatus.error,
         );
     }
   }

@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import '../../core/loading_status.dart';
 import '../../domain/fortune/model/fortune_detail_model.dart';
+import '../../domain/todo/model/recommended_todo_model.dart';
 import '../../util/date_time_format_helper.dart';
 import '../common/consts/fortune_category.dart';
 
@@ -9,6 +10,8 @@ class FortuneState extends Equatable {
   final LoadingStatus getUserDataLoadingStatus;
   final LoadingStatus getFortuneLoadingStatus;
   final LoadingStatus createFortuneLoadingStatus;
+  final LoadingStatus getRecommendedTodoListLoadingStatus;
+  final LoadingStatus addTodoByRecommendLoadingStatus;
 
   // 유저 데이터
   final String userId;
@@ -21,12 +24,17 @@ class FortuneState extends Equatable {
   final List<FortuneDetailModel> fortuneDetails;
   final DateTime fortuneCreatedAt;
 
+  // 추천 할일 목록
+  final List<RecommendedTodoModel> recommendedTodoList;
+
   final FortuneCategory selectedFortuneCategory;
 
   const FortuneState({
     required this.getUserDataLoadingStatus,
     required this.getFortuneLoadingStatus,
     required this.createFortuneLoadingStatus,
+    required this.getRecommendedTodoListLoadingStatus,
+    required this.addTodoByRecommendLoadingStatus,
     required this.selectedFortuneCategory,
     required this.userId,
     required this.birthDate,
@@ -35,6 +43,7 @@ class FortuneState extends Equatable {
     required this.fortuneSummary,
     required this.fortuneDetails,
     required this.fortuneCreatedAt,
+    required this.recommendedTodoList,
   });
 
   FortuneState.init()
@@ -42,18 +51,31 @@ class FortuneState extends Equatable {
         getUserDataLoadingStatus = LoadingStatus.none,
         getFortuneLoadingStatus = LoadingStatus.none,
         createFortuneLoadingStatus = LoadingStatus.none,
+        getRecommendedTodoListLoadingStatus = LoadingStatus.none,
+        addTodoByRecommendLoadingStatus = LoadingStatus.none,
         userId = '',
         birthDate = '',
         birthTime = '',
         gender = '',
         fortuneSummary = '',
         fortuneDetails = <FortuneDetailModel>[],
-        fortuneCreatedAt = DateTime(2025);
+        fortuneCreatedAt = DateTime(2025),
+        recommendedTodoList = <RecommendedTodoModel>[
+          RecommendedTodoModel(
+            id: '',
+            content: 'asdasd',
+            category: FortuneCategory.total.name,
+            isAdded: false,
+            createdAt: DateTime(2025),
+          ),
+        ];
 
   FortuneState copyWith({
     LoadingStatus? getUserDataLoadingStatus,
     LoadingStatus? getFortuneLoadingStatus,
     LoadingStatus? createFortuneLoadingStatus,
+    LoadingStatus? getRecommendedTodoListLoadingStatus,
+    LoadingStatus? addTodoByRecommendLoadingStatus,
     FortuneCategory? selectedFortuneCategory,
     String? userId,
     String? birthDate,
@@ -62,6 +84,7 @@ class FortuneState extends Equatable {
     String? fortuneSummary,
     List<FortuneDetailModel>? fortuneDetails,
     DateTime? fortuneCreatedAt,
+    List<RecommendedTodoModel>? recommendedTodoList,
   }) =>
       FortuneState(
         getUserDataLoadingStatus:
@@ -70,6 +93,11 @@ class FortuneState extends Equatable {
             getFortuneLoadingStatus ?? this.getFortuneLoadingStatus,
         createFortuneLoadingStatus:
             createFortuneLoadingStatus ?? this.createFortuneLoadingStatus,
+        getRecommendedTodoListLoadingStatus:
+            getRecommendedTodoListLoadingStatus ??
+                this.getRecommendedTodoListLoadingStatus,
+        addTodoByRecommendLoadingStatus: addTodoByRecommendLoadingStatus ??
+            this.addTodoByRecommendLoadingStatus,
         selectedFortuneCategory:
             selectedFortuneCategory ?? this.selectedFortuneCategory,
         userId: userId ?? this.userId,
@@ -79,6 +107,7 @@ class FortuneState extends Equatable {
         fortuneSummary: fortuneSummary ?? this.fortuneSummary,
         fortuneDetails: fortuneDetails ?? this.fortuneDetails,
         fortuneCreatedAt: fortuneCreatedAt ?? this.fortuneCreatedAt,
+        recommendedTodoList: recommendedTodoList ?? this.recommendedTodoList,
       );
 
   @override
@@ -86,6 +115,8 @@ class FortuneState extends Equatable {
         getUserDataLoadingStatus,
         getFortuneLoadingStatus,
         createFortuneLoadingStatus,
+        getRecommendedTodoListLoadingStatus,
+        addTodoByRecommendLoadingStatus,
         selectedFortuneCategory,
         userId,
         birthDate,
@@ -94,6 +125,7 @@ class FortuneState extends Equatable {
         fortuneSummary,
         fortuneDetails,
         fortuneCreatedAt,
+        recommendedTodoList,
       ];
 
   int get selectedFortuneScore {
