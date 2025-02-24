@@ -153,6 +153,11 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
       body: Stack(
         children: <Widget>[
           SingleChildScrollView(
+            physics: const BouncingScrollPhysics(
+              // 스크롤 감속 속도 설정
+              decelerationRate: ScrollDecelerationRate.fast,
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -192,6 +197,7 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
                   ),
                 ),
                 const CardSliderWidget(),
+                const SizedBox(height: 140),
               ],
             ),
           ),
