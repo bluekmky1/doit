@@ -49,6 +49,12 @@ class Routes {
     path: 'my',
   );
 
+  // 루틴 페이지
+  static const RouteInfo routine = RouteInfo(
+    name: '/home/my/routine',
+    path: 'routine',
+  );
+
   // 농장 페이지
   static const RouteInfo farm = RouteInfo(
     name: '/home/farm',

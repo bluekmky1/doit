@@ -27,26 +27,23 @@ class TodoListItemWidget extends ConsumerWidget {
     return Row(
       children: <Widget>[
         Expanded(
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      TodoDetailModalWidget(model: model),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Text(model.title),
-              ),
+          child: GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) =>
+                    TodoDetailModalWidget(model: model),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(model.title),
             ),
           ),
         ),
         Container(
-          width: 24,
-          height: 24,
+          width: 20,
+          height: 20,
           clipBehavior: Clip.hardEdge,
           margin: const EdgeInsets.only(left: 16),
           decoration: BoxDecoration(
@@ -95,14 +92,15 @@ class TodoDetailModalWidget extends ConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
                 child: Text(model.title, style: DoitTypos.suitSB20),
               ),
+              const SizedBox(width: 16),
               IconButton(
                 onPressed: () {
                   context.pop();
@@ -122,51 +120,84 @@ class TodoDetailModalWidget extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: () {
-              context.pop();
-              showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context) =>
-                    EditTodoBottomSheetWidget(model: model),
-              );
-            },
-            style: TextButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+          if (model.recommendId.isNotEmpty)
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: doitColorTheme.main.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(100),
               ),
-              overlayColor: doitColorTheme.gray80,
-              padding: EdgeInsets.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Row(
-              children: <Widget>[
-                SvgPicture.asset(
-                  Assets.edit,
-                  colorFilter: ColorFilter.mode(
-                    doitColorTheme.gray80,
-                    BlendMode.srcIn,
-                  ),
+              child: Text(
+                '추천 할 일',
+                style: DoitTypos.suitSB12.copyWith(
+                  color: doitColorTheme.main,
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  '할 일 수정하기',
-                  style: DoitTypos.suitSB16.copyWith(
-                    color: doitColorTheme.gray80,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-          Divider(
-            color: doitColorTheme.gray20,
-            height: 29,
-          ),
+          const SizedBox(height: 8),
+          if (model.recommendId.isEmpty)
+            TextButton(
+              onPressed: () {
+                context.pop();
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: doitColorTheme.background,
+                  useSafeArea: true,
+                  isScrollControlled: true,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                  ),
+                  builder: (BuildContext context) =>
+                      EditTodoBottomSheetWidget(model: model),
+                );
+              },
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                overlayColor: doitColorTheme.gray80,
+                padding: EdgeInsets.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Row(
+                children: <Widget>[
+                  SvgPicture.asset(
+                    Assets.edit,
+                    colorFilter: ColorFilter.mode(
+                      doitColorTheme.gray80,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '할 일 수정하기',
+                    style: DoitTypos.suitSB16.copyWith(
+                      color: doitColorTheme.gray80,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (model.recommendId.isEmpty)
+            Divider(
+              color: doitColorTheme.gray20,
+              height: 29,
+            ),
           TextButton(
             onPressed: () {
               context.pop();
-              viewModel.deleteTodo(id: model.todoId);
+              if (model.recommendId.isEmpty) {
+                viewModel.deleteTodo(id: model.todoId);
+              } else {
+                viewModel.deleteRecommendTodoFromTodoList(
+                  todoId: model.todoId,
+                  recommendId: model.recommendId,
+                );
+              }
             },
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(

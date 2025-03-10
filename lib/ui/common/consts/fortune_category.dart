@@ -19,7 +19,7 @@ enum FortuneCategory {
     unselectedIconName: Assets.pigOutlined,
     title: '금전운',
   ),
-  career(
+  job(
     imageAssetName: Assets.workPlace,
     selectedIconName: Assets.buildingFilled,
     unselectedIconName: Assets.buildingOutlined,
@@ -37,6 +37,25 @@ enum FortuneCategory {
     unselectedIconName: Assets.healthOutlined,
     title: '건강운',
   );
+
+  static FortuneCategory fromString(String category) {
+    switch (category) {
+      case 'total':
+        return FortuneCategory.total;
+      case 'love':
+        return FortuneCategory.love;
+      case 'money':
+        return FortuneCategory.money;
+      case 'job':
+        return FortuneCategory.job;
+      case 'study':
+        return FortuneCategory.study;
+      case 'health':
+        return FortuneCategory.health;
+      default:
+        throw Exception('Invalid category: $category');
+    }
+  }
 
   const FortuneCategory({
     required this.imageAssetName,

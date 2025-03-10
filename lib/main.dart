@@ -37,6 +37,15 @@ class MainApp extends ConsumerWidget {
         routerConfig: ref.watch(appRouterProvider).router,
         theme: ThemeData(
           scaffoldBackgroundColor: DoitColors.background,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: DoitColors.background,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+          ),
+          textSelectionTheme: const TextSelectionThemeData(
+            cursorColor: DoitColors.main,
+            selectionHandleColor: DoitColors.main,
+          ),
           extensions: const <ThemeExtension<dynamic>>[
             DoitColorTheme.light,
           ],

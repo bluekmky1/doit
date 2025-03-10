@@ -7,6 +7,7 @@ import '../../../domain/todo/model/recommended_todo_model.dart';
 import '../../../theme/doit_color_theme.dart';
 import '../../../theme/doit_typos.dart';
 import '../../common/consts/assets.dart';
+import '../../common/consts/fortune_category.dart';
 import '../fortune_state.dart';
 import '../fortune_view_model.dart';
 
@@ -18,8 +19,9 @@ class CardSliderWidget extends ConsumerStatefulWidget {
 }
 
 class _CardSliderWidgetState extends ConsumerState<CardSliderWidget> {
-  final PageController cardCarouselController =
-      PageController(viewportFraction: 300 / 375);
+  final PageController cardCarouselController = PageController();
+
+  final DateTime today = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +74,8 @@ class _AnimatedCard extends ConsumerWidget {
         Theme.of(context).extension<DoitColorTheme>()!;
 
     return Container(
-      margin: const EdgeInsets.only(right: 16, bottom: 16, top: 16),
+      margin:
+          const EdgeInsets.only(left: 23.5, right: 23.5, bottom: 16, top: 16),
       padding: const EdgeInsets.fromLTRB(20, 16, 16, 0),
       decoration: BoxDecoration(
         color: doitColorTheme.background,
@@ -95,7 +98,7 @@ class _AnimatedCard extends ConsumerWidget {
                 Expanded(
                   // 40 자까지 적을 수 있음
                   child: Text(
-                    model.title,
+                    model.content,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: DoitTypos.suitSB16,
@@ -107,7 +110,7 @@ class _AnimatedCard extends ConsumerWidget {
           Row(
             children: <Widget>[
               SvgPicture.asset(
-                fortuneIconPath,
+                FortuneCategory.fromString(model.category).unselectedIconName,
                 colorFilter: ColorFilter.mode(
                   doitColorTheme.main,
                   BlendMode.srcIn,
@@ -117,10 +120,11 @@ class _AnimatedCard extends ConsumerWidget {
               Expanded(
                 // 23 자까지 적을 수 있음
                 child: Text(
-                  '${model.fortune}이 상승하는 할 일입니다.',
+                  '${FortuneCategory.fromString(model.category).title} '
+                  '관련 추천 할 일',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: DoitTypos.suitR12,
+                  style: DoitTypos.suitR14,
                 ),
               ),
             ],
@@ -134,12 +138,13 @@ class _AnimatedCard extends ConsumerWidget {
                   child: Stack(
                     children: <Widget>[
                       Positioned(
-                        bottom: -50,
+                        bottom: -45,
                         child: SizedBox(
-                          width: 150,
-                          height: 150,
+                          width: 125,
+                          height: 125,
                           child: Image.asset(
-                            fortuneImagePath,
+                            FortuneCategory.fromString(model.category)
+                                .imageAssetName,
                           ),
                         ),
                       ),
@@ -153,17 +158,40 @@ class _AnimatedCard extends ConsumerWidget {
                   height: 53,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    color: model.isDone
+                    color: model.isAdded
                         ? doitColorTheme.main
                         : doitColorTheme.gray20,
                   ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      splashColor: doitColorTheme.main.withOpacity(0.2),
-                      onTap: () {},
+                      overlayColor: WidgetStateProperty.all(
+                        doitColorTheme.background.withOpacity(0.2),
+                      ),
+                      splashColor: doitColorTheme.background,
+                      onTap: () {
+                        if (!model.isAdded) {
+                          ref
+                              .read(fortuneViewModelProvider.notifier)
+                              .addTodoByRecommend(
+                                recommendId: model.id,
+                                title: model.content,
+                              );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('이미 추가된 할 일이에요.'),
+                              duration: Duration(milliseconds: 1500),
+                              margin: EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                      },
                       child: SvgPicture.asset(
-                        Assets.add,
+                        model.isAdded ? Assets.done : Assets.add,
                         colorFilter: ColorFilter.mode(
                           doitColorTheme.background,
                           BlendMode.srcIn,
@@ -178,31 +206,5 @@ class _AnimatedCard extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  String get fortuneIconPath {
-    if (model.fortune == '연애운') {
-      return Assets.heartOutlined;
-    }
-    if (model.fortune == '금전운') {
-      return Assets.pigOutlined;
-    }
-    if (model.fortune == '학업운') {
-      return Assets.bookOutlined;
-    }
-    return Assets.puzzle;
-  }
-
-  String get fortuneImagePath {
-    if (model.fortune == '연애운') {
-      return Assets.love;
-    }
-    if (model.fortune == '금전운') {
-      return Assets.money;
-    }
-    if (model.fortune == '학업운') {
-      return Assets.study;
-    }
-    return Assets.allLuck;
   }
 }

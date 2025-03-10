@@ -47,11 +47,21 @@ class OnboardingViewModel extends StateNotifier<OnboardingState> {
         nickname: _supabaseClient.auth.currentUser!.userMetadata?['name'],
         gender: state.gender.title,
         lunarSolar: state.lunarSolar.title,
-        birthDate: DateTime(
-          int.parse(state.birthYear),
-          int.parse(state.birthMonth),
-          int.parse(state.birthDay),
-        ),
+        birthDate: state.isBirthDateUnknown
+            // 태어난 날짜를 모르는 경우
+            ? DateTime(
+                int.parse(state.birthYear),
+                int.parse(state.birthMonth),
+                int.parse(state.birthDay),
+              )
+            // 태어난 시간을 아는 경우
+            : DateTime(
+                int.parse(state.birthYear),
+                int.parse(state.birthMonth),
+                int.parse(state.birthDay),
+                int.parse(state.birthHour),
+                int.parse(state.birthMinute),
+              ),
         unknownBirthTime: state.isBirthDateUnknown,
         consent: state.isAgreeTerms,
       ),

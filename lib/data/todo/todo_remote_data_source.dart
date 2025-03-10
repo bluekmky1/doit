@@ -2,8 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../service/supabase/supabase_service.dart';
+import 'entity/recommend_todo_entity.dart';
 import 'entity/todo_entity.dart';
+import 'request_body/add_todo_by_recommend_reqest_body.dart';
 import 'request_body/add_todo_request_body.dart';
+import 'request_body/add_todo_with_routine_request_body.dart';
 import 'request_body/update_todo_completed_request_body.dart';
 import 'request_body/update_todo_request_body.dart';
 
@@ -21,6 +24,21 @@ class TodoRemoteDataSource {
   // 할일 추가
   Future<TodoEntity> addTodo({
     required AddTodoRequestBody body,
+  }) async {
+    final PostgrestMap response =
+        await _supabaseClient.from('todo').insert(body.toJson()).select('''
+          *,
+          animal:animal_id(
+            name            
+          )
+          ''').single();
+
+    return TodoEntity.fromJson(response);
+  }
+
+  // 루틴으로 할 일 추가
+  Future<TodoEntity> addTodoWithRoutine({
+    required AddTodoWithRoutineRequestBody body,
   }) async {
     final PostgrestMap response =
         await _supabaseClient.from('todo').insert(body.toJson()).select('''
@@ -117,5 +135,54 @@ class TodoRemoteDataSource {
           )
           ''').eq('user_id', userId);
     return todoList.map(TodoEntity.fromJson).toList();
+  }
+
+  // 추천 할일 목록 조회
+  Future<List<RecommendTodoEntity>> getRecommendTodoList({
+    required String userId,
+  }) async {
+    final DateTime today = DateTime.now();
+    final DateTime startOfDay = DateTime(today.year, today.month, today.day);
+
+    final PostgrestList todoList = await _supabaseClient
+        .from('recommends')
+        .select()
+        .eq('user_id', userId)
+        .gte('created_at', startOfDay.toIso8601String());
+
+    return todoList.map(RecommendTodoEntity.fromJson).toList();
+  }
+
+  // 추천 할일을 할 일 목록에 추가
+  Future<TodoEntity> addRecommendTodoToTodoList({
+    required AddTodoByRecommendRequestBody body,
+  }) async {
+    final PostgrestMap response =
+        await _supabaseClient.from('todo').insert(body.toJson()).select('''
+          *,
+          animal:animal_id(
+            name            
+          )
+          ''').single();
+
+    // 추천 할일의 isAdded true로 전환
+    await _supabaseClient
+        .from('recommends')
+        .update(<String, bool>{'is_added': true}).eq('id', body.recommendId);
+
+    return TodoEntity.fromJson(response);
+  }
+
+  // 할 일 목록에서 추천 할일 삭제
+  Future<void> deleteRecommendTodoFromTodoList({
+    required String recommendId,
+  }) async {
+    await _supabaseClient.from('todo').delete().eq('recommend_id', recommendId);
+
+    // 추천 할 일의 isAdded false로 전환
+    await _supabaseClient
+        .from('recommends')
+        .update(<String, bool>{'is_added': false}).eq('id', recommendId);
+    print('deleteRecommendTodoFromTodoList');
   }
 }

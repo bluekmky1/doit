@@ -49,7 +49,9 @@ class FortuneScoreGageWidget extends StatelessWidget {
                       ),
                       height: 16,
                     ),
-                    Container(
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
                         gradient: LinearGradient(

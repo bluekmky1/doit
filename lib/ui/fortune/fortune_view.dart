@@ -1,18 +1,21 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter/rendering.dart';
-// import 'package:go_router/go_router.dart';
 
+import '../../core/loading_status.dart';
 import '../../routes/routes.dart';
 import '../../theme/doit_color_theme.dart';
 import '../../theme/doit_typos.dart';
 import '../common/consts/assets.dart';
+import '../common/consts/fortune_category.dart';
 import '../common/widgets/bottom_navigation_bar_widget.dart';
+import '../home/home_view_model.dart';
+import 'fortune_state.dart';
+import 'fortune_view_model.dart';
 import 'widgets/card_slider_widget.dart';
-import 'widgets/circular_graph_widget.dart';
 import 'widgets/fortune_app_bar_widget.dart';
 import 'widgets/fortune_card_widget.dart';
 import 'widgets/fortune_score_gage_widget.dart';
@@ -26,10 +29,121 @@ class FortuneView extends ConsumerStatefulWidget {
 }
 
 class _FortuneViewState extends ConsumerState<FortuneView> {
+  final List<String> loadingMessages = <String>[
+    '사주를 분석하고 있어요...',
+    '운세를 살펴보는 중이에요...',
+    '오늘의 운세를 풀이하고 있어요...',
+    '추천 할 일 목록을 작성하고 있어요...',
+    '조금만 더 기다려주세요...',
+    '거의 다 왔어요!',
+  ];
+
+  int currentMessageIndex = 0;
+  Timer? messageTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(fortuneViewModelProvider.notifier).getUserData();
+      ref.read(fortuneViewModelProvider.notifier).getFortune();
+      ref.read(fortuneViewModelProvider.notifier).getRecommendedTodoList();
+    });
+  }
+
+  @override
+  void dispose() {
+    messageTimer?.cancel();
+    super.dispose();
+  }
+
+  void startLoadingMessages() {
+    messageTimer?.cancel();
+    currentMessageIndex = 0;
+    messageTimer = Timer.periodic(
+      const Duration(milliseconds: 2500),
+      (Timer timer) {
+        if (mounted) {
+          setState(() {
+            currentMessageIndex =
+                (currentMessageIndex + 1) % loadingMessages.length;
+          });
+        }
+      },
+    );
+  }
+
+  void stopLoadingMessages() {
+    messageTimer?.cancel();
+    messageTimer = null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final FortuneState state = ref.watch(fortuneViewModelProvider);
+
+    final FortuneViewModel viewModel =
+        ref.read(fortuneViewModelProvider.notifier);
+
     final DoitColorTheme doitColorTheme =
         Theme.of(context).extension<DoitColorTheme>()!;
+
+    // createFortuneLoadingStatus 상태 변화 감지
+    ref
+      ..listen(
+        fortuneViewModelProvider
+            .select((FortuneState state) => state.createFortuneLoadingStatus),
+        (LoadingStatus? previous, LoadingStatus next) async {
+          if (next == LoadingStatus.loading) {
+            startLoadingMessages();
+          } else if (next == LoadingStatus.success) {
+            stopLoadingMessages();
+            await viewModel.getRecommendedTodoList();
+            currentMessageIndex = 0;
+          } else {
+            stopLoadingMessages();
+            currentMessageIndex = 0;
+          }
+        },
+      )
+      // addTodoByRecommendLoadingStatus 상태 변화 감지
+      ..listen(
+        fortuneViewModelProvider.select(
+            (FortuneState state) => state.addTodoByRecommendLoadingStatus),
+        (LoadingStatus? previous, LoadingStatus next) async {
+          if (next == LoadingStatus.success) {
+            await ref.read(homeViewModelProvider.notifier).getTodoListWithDate(
+                  targetDate: DateTime.now(),
+                );
+
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  margin: EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                  ),
+                  behavior: SnackBarBehavior.floating, // floating 스타일로 변경
+                  content: Text('추천 할 일을 추가했어요!'),
+                ),
+              );
+            }
+          } else if (next == LoadingStatus.error) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  margin: EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                  ),
+                  behavior: SnackBarBehavior.floating, // floating 스타일로 변경
+                  content: Text('추천 할 일을 추가하는데 실패했어요!'),
+                ),
+              );
+            }
+          }
+        },
+      );
 
     return Scaffold(
       floatingActionButton: BottomNavigationBarWidget(
@@ -39,107 +153,151 @@ class _FortuneViewState extends ConsumerState<FortuneView> {
       body: Stack(
         children: <Widget>[
           SingleChildScrollView(
+            physics: const BouncingScrollPhysics(
+              // 스크롤 감속 속도 설정
+              decelerationRate: ScrollDecelerationRate.fast,
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const FortuneAppBarWidget(),
                 const IconCardListWidget(),
-                const FortuneScoreGageWidget(
-                  title: '총운',
-                  score: 80,
+                FortuneScoreGageWidget(
+                  title: state.selectedFortuneCategory.title,
+                  score: state.selectedFortuneScore,
                 ),
-                const FortuneCardWidget(
-                  // shortFortune: '전력질주하기 좋은날',
-                  fullFortune:
-                      '''힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날힘든 일이 있어도 어렵지 않게 미소가 생기는 날''',
+                FortuneCardWidget(
+                  shortFortune:
+                      state.selectedFortuneCategory == FortuneCategory.total
+                          ? state.fortuneSummary
+                          : null,
+                  fullFortune: state.selectedFortuneCategoryContent,
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 30),
-                  child: Text(
-                    '시간대 별 운세',
-                    style: DoitTypos.suitR12,
-                  ),
-                ),
+                const SizedBox(height: 48),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 35),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      CircularGraphWidget(
-                        percentage: 84,
-                        gradiantStart: doitColorTheme.gradient2Stop0,
-                        gradiantEnd: doitColorTheme.gradient2Stop100,
-                        timeTitle: '낮',
-                      ),
-                      CircularGraphWidget(
-                        percentage: 84,
-                        gradiantStart: doitColorTheme.gradient1Stop42,
-                        gradiantEnd:
-                            doitColorTheme.gradient1Stop100.withOpacity(0.42),
-                        timeTitle: '오후',
-                      ),
-                      CircularGraphWidget(
-                        percentage: 84,
-                        gradiantStart: doitColorTheme.gradient3Stop0,
-                        gradiantEnd: doitColorTheme.gradient3Stop100,
-                        timeTitle: '밤',
-                      ),
-                    ],
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 23.5,
                   ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Row(
                     children: <Widget>[
-                      SvgPicture.asset(
-                        Assets.fortuneColored,
+                      SizedBox(
+                        child: SvgPicture.asset(
+                          Assets.fortuneColored,
+                          width: 24,
+                          height: 24,
+                        ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 8),
                       const Text(
-                        '오늘의 운세 기반 추천 미션',
+                        '추천 할 일 목록',
                         style: DoitTypos.suitSB16,
                       ),
                     ],
                   ),
                 ),
                 const CardSliderWidget(),
-                const SizedBox(height: 120),
+                const SizedBox(height: 140),
               ],
             ),
           ),
-          BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: 6.5,
-              sigmaY: 6.5,
+          // 운세 조회 중 OR 운세 조회 실패 OR 조회를 성공했더라도 오늘의 운세가 아니라면 블러 효과
+          if (state.getFortuneLoadingStatus != LoadingStatus.success ||
+              !state.isTodayFortune)
+            BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 6.5,
+                sigmaY: 6.5,
+              ),
+              child: Container(
+                color: Colors.white.withOpacity(0.3),
+                height: MediaQuery.of(context).size.height,
+              ),
             ),
-            child: Container(
-              color: Colors.white.withOpacity(0.3),
-              height: MediaQuery.of(context).size.height,
-            ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SvgPicture.asset(
-                  Assets.warning,
-                  width: 100,
-                  height: 100,
-                  colorFilter: ColorFilter.mode(
-                    doitColorTheme.main,
-                    BlendMode.srcIn,
+
+          // 운세 조회 중 로딩 인디케이터
+          if (state.getFortuneLoadingStatus == LoadingStatus.loading)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  CircularProgressIndicator(
+                    color: doitColorTheme.main,
                   ),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  '운세 페이지는 아직 준비중입니다\n' '빠르게 준비해서 업데이트 하겠습니다!',
-                  style: DoitTypos.suitSB16,
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  if (state.createFortuneLoadingStatus == LoadingStatus.loading)
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      child: Text(
+                        loadingMessages[currentMessageIndex],
+                        key: ValueKey<String>(
+                            loadingMessages[currentMessageIndex]),
+                        style: DoitTypos.suitSB16,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                ],
+              ),
             ),
-          )
+          // 운세 생성 실패 시 오류 메시지
+          if (state.createFortuneLoadingStatus == LoadingStatus.error)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SvgPicture.asset(
+                    Assets.warning,
+                    width: 100,
+                    height: 100,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    '운세를 불러오는데 실패했어요!\n관리자에게 문의해주세요.',
+                    style: DoitTypos.suitSB16,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+
+          // 운세 조회 실패 시 생성 버튼 활성화 또는 오늘의 운세가 아닐 경우 로딩중이 아닐 때는 숨김
+          if (state.getFortuneLoadingStatus != LoadingStatus.loading &&
+              state.getFortuneLoadingStatus != LoadingStatus.none &&
+              (state.getFortuneLoadingStatus == LoadingStatus.error ||
+                  !state.isTodayFortune))
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SvgPicture.asset(
+                    Assets.fortuneColored,
+                    width: 100,
+                    height: 100,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    '오늘의 특별한 운세를 확인해보세요!',
+                    style: DoitTypos.suitSB16,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: doitColorTheme.main,
+                      foregroundColor: doitColorTheme.background,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: viewModel.createFortune,
+                    child: const Text(
+                      '운세 받아오기',
+                      style: DoitTypos.suitSB16,
+                    ),
+                  ),
+                ],
+              ),
+            )
         ],
       ),
     );

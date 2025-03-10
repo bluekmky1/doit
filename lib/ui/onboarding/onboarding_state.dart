@@ -6,6 +6,7 @@ import '../common/consts/lunar_solar.dart';
 
 class OnboardingState extends Equatable {
   final LoadingStatus postUserDataLoadingStatus;
+  final LoadingStatus createFortuneLoadingStatus;
 
   final Gender gender;
   final LunarSolar lunarSolar;
@@ -34,6 +35,7 @@ class OnboardingState extends Equatable {
 
   const OnboardingState({
     required this.postUserDataLoadingStatus,
+    required this.createFortuneLoadingStatus,
     required this.gender,
     required this.lunarSolar,
     required this.birthYear,
@@ -62,6 +64,7 @@ class OnboardingState extends Equatable {
 
   const OnboardingState.init()
       : postUserDataLoadingStatus = LoadingStatus.none,
+        createFortuneLoadingStatus = LoadingStatus.none,
         gender = Gender.male,
         lunarSolar = LunarSolar.solar,
         birthYear = '',
@@ -93,6 +96,7 @@ class OnboardingState extends Equatable {
 
   OnboardingState copyWith({
     LoadingStatus? postUserDataLoadingStatus,
+    LoadingStatus? createFortuneLoadingStatus,
     Gender? gender,
     LunarSolar? lunarSolar,
     String? birthYear,
@@ -121,6 +125,8 @@ class OnboardingState extends Equatable {
       OnboardingState(
         postUserDataLoadingStatus:
             postUserDataLoadingStatus ?? this.postUserDataLoadingStatus,
+        createFortuneLoadingStatus:
+            createFortuneLoadingStatus ?? this.createFortuneLoadingStatus,
         gender: gender ?? this.gender,
         lunarSolar: lunarSolar ?? this.lunarSolar,
         birthYear: birthYear ?? this.birthYear,
@@ -150,6 +156,7 @@ class OnboardingState extends Equatable {
   @override
   List<Object> get props => <Object>[
         postUserDataLoadingStatus,
+        createFortuneLoadingStatus,
         gender,
         lunarSolar,
         birthYear,

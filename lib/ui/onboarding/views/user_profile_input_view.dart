@@ -77,55 +77,60 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
           .select((OnboardingState state) => state.postUserDataLoadingStatus),
       (LoadingStatus? previous, LoadingStatus next) {
         if (next == LoadingStatus.success) {
-          context.pushNamed(Routes.tutorial.name);
+          context.pushNamed(Routes.home.name);
         }
       },
     );
 
     return Scaffold(
-      appBar: OnboardingAppBar(
-        pageController: PageController(initialPage: 1),
-        isFirstPage: false,
-      ),
-      bottomNavigationBar: SizedBox(
-        height: 64,
-        width: double.infinity,
-        child: TextButton(
-          style: TextButton.styleFrom(
-            backgroundColor: state.isAllFormValid
-                ? doitColorTheme.main
-                : doitColorTheme.gray20,
-            foregroundColor: state.isAllFormValid
-                ? doitColorTheme.background
-                : doitColorTheme.gray80,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(0),
+      appBar: state.createFortuneLoadingStatus == LoadingStatus.loading
+          ? null
+          : OnboardingAppBar(
+              pageController: PageController(initialPage: 1),
+              isFirstPage: false,
             ),
-            padding: EdgeInsets.zero,
-          ),
-          onPressed: state.isAllFormValid
-              ? state.isAgreeTerms
-                  ? viewModel.saveUserData
-                  : () {
-                      viewModel.changeIsAgreeTerms(
-                        isAgreeTerms: true,
-                      );
-                    } // 약관 동의 진행
-              : null,
-          child: Text(
-            state.isAllFormValid
-                ? state.isAgreeTerms
-                    ? '입력완료'
-                    : '약관 동의'
-                : '올바른 정보를 입력해주세요',
-            style: DoitTypos.suitR20.copyWith(
-              color: state.isAllFormValid
-                  ? doitColorTheme.background
-                  : doitColorTheme.gray80,
-            ),
-          ),
-        ),
-      ),
+      bottomNavigationBar:
+          state.createFortuneLoadingStatus == LoadingStatus.loading
+              ? null
+              : SizedBox(
+                  height: 64,
+                  width: double.infinity,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: state.isAllFormValid
+                          ? doitColorTheme.main
+                          : doitColorTheme.gray20,
+                      foregroundColor: state.isAllFormValid
+                          ? doitColorTheme.background
+                          : doitColorTheme.gray80,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      padding: EdgeInsets.zero,
+                    ),
+                    onPressed: state.isAllFormValid
+                        ? state.isAgreeTerms
+                            ? viewModel.saveUserData
+                            : () {
+                                viewModel.changeIsAgreeTerms(
+                                  isAgreeTerms: true,
+                                );
+                              } // 약관 동의 진행
+                        : null,
+                    child: Text(
+                      state.isAllFormValid
+                          ? state.isAgreeTerms
+                              ? '입력완료'
+                              : '약관 동의'
+                          : '올바른 정보를 입력해주세요',
+                      style: DoitTypos.suitR20.copyWith(
+                        color: state.isAllFormValid
+                            ? doitColorTheme.background
+                            : doitColorTheme.gray80,
+                      ),
+                    ),
+                  ),
+                ),
       body: Stack(
         children: <Widget>[
           Padding(
@@ -496,7 +501,7 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
                           const SizedBox(height: 8),
                           const Text(
                             '입력 정보를 기반으로\n'
-                            '운세와 맞춤 목표를 추천드릴게요!',
+                            '운세를 봐드릴게요!',
                             style: DoitTypos.suitR16,
                           ),
                           const SizedBox(height: 24),
@@ -508,6 +513,33 @@ class _UserProfileInputPageState extends ConsumerState<UserProfileInputPage> {
               ),
             ],
           ),
+          if (state.createFortuneLoadingStatus == LoadingStatus.loading)
+            Column(
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          if (state.createFortuneLoadingStatus == LoadingStatus.loading)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    '당신의 하루에 행운을 더해줄\n특별한 운세를 준비중이에요!',
+                    style: DoitTypos.suitSB16,
+                  ),
+                  const SizedBox(height: 20),
+                  CircularProgressIndicator(
+                    color: doitColorTheme.main,
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
         ],
       ),
     );
